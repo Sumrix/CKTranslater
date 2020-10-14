@@ -1,0 +1,519 @@
+﻿<Window
+        x:Class="CKTranslator.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:CKTranslator"
+        xmlns:processing="clr-namespace:CKTranslator.Processing"
+        mc:Ignorable="d" Closing="Window_Closing"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+        TextElement.FontWeight="Regular"
+        TextElement.FontSize="13"
+        TextOptions.TextFormattingMode="Ideal"
+        TextOptions.TextRenderingMode="Auto"
+        Background="{DynamicResource MaterialDesignPaper}"
+        FontFamily="{DynamicResource MaterialDesignFont}"
+        Title="Переводчик модов Crusader Kings II"
+        d:DesignWidth="1141.8"
+        d:DesignHeight="558"
+        UseLayoutRounding="True">
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVis" />
+        
+        <DataTemplate x:Key="DetailTemplate">
+            <TextBox FontSize="15"
+                     IsReadOnly="True"
+                     Text="{Binding Path=Desctiption}"
+                     ScrollViewer.VerticalScrollBarVisibility="Auto"
+                     ScrollViewer.HorizontalScrollBarVisibility="Auto"/>
+        </DataTemplate>
+
+        <Color x:Key="BorderMediumColor">#FF888888</Color>
+        <Color x:Key="ProgressForeground">#5555DD55</Color>
+
+        <!--<Style x:Key="{x:Type ProgressBar}"
+                                    TargetType="{x:Type ProgressBar}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type ProgressBar}">
+                        <Grid Background="{TemplateBinding Background}">
+                            <VisualStateManager.VisualStateGroups>
+                                <VisualStateGroup x:Name="CommonStates">
+                                    <VisualState x:Name="Determinate" />
+                                    <VisualState x:Name="Indeterminate">
+                                        <Storyboard>
+                                            <ObjectAnimationUsingKeyFrames Duration="00:00:00"
+                                                                            Storyboard.TargetName="PART_Indicator"
+                                                                            Storyboard.TargetProperty="Background">
+                                                <DiscreteObjectKeyFrame KeyTime="00:00:00">
+                                                    <DiscreteObjectKeyFrame.Value>
+                                                        <SolidColorBrush>Transparent</SolidColorBrush>
+                                                    </DiscreteObjectKeyFrame.Value>
+                                                </DiscreteObjectKeyFrame>
+                                            </ObjectAnimationUsingKeyFrames>
+
+                                        </Storyboard>
+                                    </VisualState>
+                                </VisualStateGroup>
+                            </VisualStateManager.VisualStateGroups>
+                            <Border x:Name="PART_Track"
+                                    CornerRadius="0"
+                                    BorderThickness="0">
+                                <Border.BorderBrush>
+                                    <SolidColorBrush Color="{DynamicResource BorderMediumColor}" />
+                                </Border.BorderBrush>
+                            </Border>
+                            <Border x:Name="PART_Indicator"
+                                    HorizontalAlignment="Left"
+                                    Background="{TemplateBinding Foreground}">
+                            </Border>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Background">
+                <Setter.Value>
+                    <SolidColorBrush Color="Transparent" />
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Foreground">
+                <Setter.Value>
+                    <SolidColorBrush Color="{DynamicResource ProgressForeground}" />
+                </Setter.Value>
+            </Setter>
+        </Style>-->
+    </Window.Resources>
+    <Window.TaskbarItemInfo>
+        <TaskbarItemInfo ProgressState="Normal" ProgressValue="{Binding ModManager.Process.Progress.NormalValue}"/>
+    </Window.TaskbarItemInfo>
+    <DockPanel>
+        <StatusBar DockPanel.Dock="Bottom">
+            <StatusBar.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="200" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="200" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                    </Grid>
+                </ItemsPanelTemplate>
+            </StatusBar.ItemsPanel>
+            <StatusBarItem Grid.Column="0">
+                <TextBlock x:Name="StatusView"
+                           DataContext="{Binding ModManager.Process}"
+                           Text="{Binding Status}"/>
+            </StatusBarItem>
+            <StatusBarItem HorizontalAlignment="Stretch"
+                           HorizontalContentAlignment="Stretch"
+                           Grid.Column="1">
+                <ProgressBar x:Name="ProgressView" 
+                             DataContext="{Binding ModManager.Process.Progress}"
+                             Value="{Binding Value}"
+                             Maximum="{Binding Max}"
+                             HorizontalAlignment="Stretch"
+                             Height="20"
+                             Grid.ColumnSpan="2" />
+            </StatusBarItem>
+            <StatusBarItem Grid.Column="2">
+                <TextBlock x:Name="SubStatusView"
+                           DataContext="{Binding ModManager.Process}"
+                           Text="{Binding SubStatus}"/>
+            </StatusBarItem>
+            <StatusBarItem HorizontalAlignment="Stretch"
+                           HorizontalContentAlignment="Stretch"
+                           Grid.Column="3">
+                <ProgressBar x:Name="SubProgressView" 
+                             DataContext="{Binding ModManager.Process.SubProgress}"
+                             Value="{Binding Value}"
+                             Maximum="{Binding Max}"
+                             HorizontalAlignment="Stretch"
+                             Height="20"
+                             Grid.ColumnSpan="2" />
+            </StatusBarItem>
+        </StatusBar>
+        <ToolBarTray DockPanel.Dock="Top">
+            <ToolBar>
+                <ToolBar.Resources>
+                    <Style TargetType="Button">
+                        <Setter Property="Width" Value="30" />
+                    </Style>
+                </ToolBar.Resources>
+                <Button Click="LoadTranslation_Click"
+                            ToolTip="Извлечь перевод">
+                    <materialDesign:PackIcon Kind="AutoUpload" />
+                </Button>
+                <Button Click="Translate_Click"
+                            ToolTip="Перевести моды">
+                    <materialDesign:PackIcon Kind="Translate" />
+                </Button>
+                <Button Click="RestoreBakup_Click"
+                            ToolTip="Восстановить моды из резевной копии">
+                    <materialDesign:PackIcon Kind="DatabaseRefresh" />
+                </Button>
+                <Button Click="Bakup_Click"
+                            ToolTip="Создать резервную копию модов">
+                    <materialDesign:PackIcon Kind="Database" />
+                </Button>
+                <Button Click="Stop_Click"
+                            ToolTip="Стоп">
+                    <materialDesign:PackIcon Kind="Stop"
+                                                 Foreground="#A1260D"/>
+                </Button>
+                <!--Временные кнопки, нужны для дебага-->
+                <Button Click="LoadStrings_Click"
+                            ToolTip="Создать Cache">
+                    Загрузить строки
+                </Button>
+                <Button Click="AnalizeStrings_Click"
+                            ToolTip="Анализ">
+                    Анализ строк
+                </Button>
+                <Button Click="Click_Recode"
+                            ToolTip="Перекодировать">
+                    Перекодировать
+                </Button>
+            </ToolBar>
+        </ToolBarTray>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="2*"/>
+                <ColumnDefinition Width="2*"/>
+                <ColumnDefinition Width="3*"/>
+            </Grid.ColumnDefinitions>
+            <GroupBox Header="Русские моды"
+                          Grid.Column="0"
+                          Margin="0,0,5,0">
+                <DockPanel >
+                    <ListBox SelectionMode="Extended"
+                                 Style="{StaticResource MaterialDesignToolToggleFlatListBox}"
+                                 DockPanel.Dock="Top"
+                                 HorizontalAlignment="Stretch"
+                                 SelectionChanged="LogFilter_SelectionChanged">
+                        <ListBoxItem x:Name="CheckRusMods"
+                                         Selected="CheckRusMods_Click"
+                                         Unselected="CheckRusMods_Click"
+                                         Grid.Column="0">
+                            <materialDesign:PackIcon Kind="CheckboxMultipleMarkedOutline"/>
+                        </ListBoxItem>
+                        <ListBoxItem x:Name="RusShowAll"
+                                         Selected="RusShowAll_Selected"
+                                         Unselected="RusShowAll_Selected"
+                                         Grid.Column="1">
+                            <materialDesign:PackIcon Kind="FileDocumentBoxesOutline" />
+                        </ListBoxItem>
+                    </ListBox>
+                    <ListBox x:Name="RusModsView"
+                             ItemsSource="{Binding RusMods}"
+                             ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                             HorizontalContentAlignment="Stretch">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <Grid Margin="-5,-4,-5,-4"
+                                      Height="19">
+                                    <ProgressBar Value="{Binding Progress}"
+                                                 Maximum="{Binding ProgressMax}"
+                                                 VerticalAlignment="Bottom"
+                                                 Margin="0,0,0,-5"
+                                                 Background="Transparent"
+                                                 BorderBrush="Transparent"/>
+                                    <CheckBox IsChecked="{Binding IsChecked}" 
+                                              VerticalAlignment="Stretch"
+                                              HorizontalContentAlignment="Stretch"
+                                              VerticalContentAlignment="Stretch"
+                                              Margin="5,-4,5,-4"
+                                              Padding="5,0,0,0"
+                                              IsEnabled="{Binding ModInfo.HasScripts}">
+                                        <DockPanel HorizontalAlignment="Stretch"
+                                                   VerticalAlignment="Stretch">
+                                            <StackPanel DockPanel.Dock="Right"
+                                                        Orientation="Horizontal">
+                                                <Grid ToolTip="Перевод извлечён"
+                                                      HorizontalAlignment="Stretch"
+                                                      Background="Transparent"
+                                                      Visibility="{Binding ModInfo.IsTranslationLoaded, Converter={StaticResource BoolToVis}}">
+                                                    <materialDesign:PackIcon Kind="AutoUpload"
+                                                                             VerticalAlignment="Center"
+                                                                             Margin="2"/>
+                                                </Grid>
+                                                <Grid ToolTip="Переведён"
+                                                      HorizontalAlignment="Stretch"
+                                                      Background="Transparent"
+                                                      Visibility="{Binding ModInfo.IsTranslated, Converter={StaticResource BoolToVis}}">
+                                                    <materialDesign:PackIcon Kind="Translate"
+                                                                             VerticalAlignment="Center"
+                                                                             Margin="2"/>
+                                                </Grid>
+                                                <Grid ToolTip="Перекодирован"
+                                                      HorizontalAlignment="Stretch"
+                                                      Background="Transparent"
+                                                      Visibility="{Binding ModInfo.IsRecoded, Converter={StaticResource BoolToVis}}">
+                                                    <Image Source="Images/SpellingCheck_16x.png"
+                                                           Width="16"
+                                                           Margin="2"/>
+                                                </Grid>
+                                                <Grid ToolTip="Есть бэкап"
+                                                      HorizontalAlignment="Stretch"
+                                                      Background="Transparent"
+                                                      Margin="0"
+                                                      Visibility="{Binding ModInfo.IsBackuped, Converter={StaticResource BoolToVis}}">
+                                                    <materialDesign:PackIcon Kind="Database"
+                                                                             VerticalAlignment="Center"
+                                                                             Margin="2"/>
+                                                </Grid>
+                                            </StackPanel>
+                                            <TextBlock TextTrimming="WordEllipsis" 
+                                                       Text="{Binding ModInfo.Name}"
+                                                       VerticalAlignment="Center"/>
+                                        </DockPanel>
+                                    </CheckBox>
+                                </Grid>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </DockPanel>
+            </GroupBox>
+            <GridSplitter Grid.Column="0" 
+                              Width="5"/>
+            <GroupBox Header="Английские моды"
+                          Grid.Column="1"
+                          Margin="0,0,5,0">
+                <DockPanel >
+                    <ListBox SelectionMode="Extended"
+                                 Style="{StaticResource MaterialDesignToolToggleFlatListBox}"
+                                 DockPanel.Dock="Top"
+                                 HorizontalAlignment="Stretch"
+                                 SelectionChanged="LogFilter_SelectionChanged">
+                        <ListBoxItem x:Name="CheckEngMods"
+                                         Selected="CheckEngMods_Click"
+                                         Unselected="CheckEngMods_Click"
+                                         Grid.Column="0">
+                            <materialDesign:PackIcon Kind="CheckboxMultipleMarkedOutline"/>
+                        </ListBoxItem>
+                        <ListBoxItem x:Name="EngShowAll"
+                                         Selected="EngShowAll_Selected"
+                                         Unselected="EngShowAll_Selected"
+                                         Grid.Column="1">
+                            <materialDesign:PackIcon Kind="FileDocumentBoxesOutline" />
+                        </ListBoxItem>
+                    </ListBox>
+                    <ListBox x:Name="EngModsView"
+                                 ItemsSource="{Binding EngMods}"
+                                 ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                                 HorizontalContentAlignment="Stretch">
+                        <ListBox.ContextMenu>
+                            <ContextMenu>
+                                <MenuItem Header="Открыть" Click="EngModOpen_Click"/>
+                            </ContextMenu>
+                        </ListBox.ContextMenu>
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <Grid Margin="-5,-4,-5,-4"
+                                      Height="19">
+                                    <ProgressBar Value="{Binding Progress}"
+                                                 Maximum="{Binding ProgressMax}"
+                                                 VerticalAlignment="Bottom"
+                                                 Margin="0,0,0,-5"
+                                                 Background="Transparent"
+                                                 BorderBrush="Transparent"/>
+                                    <CheckBox IsChecked="{Binding IsChecked}" 
+                                              VerticalAlignment="Stretch"
+                                              HorizontalContentAlignment="Stretch"
+                                              VerticalContentAlignment="Stretch"
+                                              Margin="5,-4,5,-4"
+                                              Padding="5,0,0,0"
+                                              IsEnabled="{Binding ModInfo.HasScripts}">
+                                        <DockPanel HorizontalAlignment="Stretch"
+                                                   VerticalAlignment="Stretch">
+                                            <StackPanel DockPanel.Dock="Right"
+                                                        Orientation="Horizontal">
+                                                <Grid ToolTip="Перевод извлечён"
+                                                      HorizontalAlignment="Stretch"
+                                                      Background="Transparent"
+                                                      Visibility="{Binding ModInfo.IsTranslationLoaded, Converter={StaticResource BoolToVis}}">
+                                                    <materialDesign:PackIcon Kind="AutoUpload"
+                                                                             VerticalAlignment="Center"
+                                                                             Margin="2"/>
+                                                </Grid>
+                                                <Grid ToolTip="Переведён"
+                                                      HorizontalAlignment="Stretch"
+                                                      Background="Transparent"
+                                                      Visibility="{Binding ModInfo.IsTranslated, Converter={StaticResource BoolToVis}}">
+                                                    <materialDesign:PackIcon Kind="Translate"
+                                                                             VerticalAlignment="Center"
+                                                                             Margin="2"/>
+                                                </Grid>
+                                                <Grid ToolTip="Перекодирован"
+                                                      HorizontalAlignment="Stretch"
+                                                      Background="Transparent"
+                                                      Visibility="{Binding ModInfo.IsRecoded, Converter={StaticResource BoolToVis}}">
+                                                    <Image Source="Images/SpellingCheck_16x.png"
+                                                           Width="16"
+                                                           Margin="2"/>
+                                                </Grid>
+                                                <Grid ToolTip="Есть бэкап"
+                                                      HorizontalAlignment="Stretch"
+                                                      Background="Transparent"
+                                                      Margin="0"
+                                                      Visibility="{Binding ModInfo.IsBackuped, Converter={StaticResource BoolToVis}}">
+                                                    <materialDesign:PackIcon Kind="Database"
+                                                                             VerticalAlignment="Center"
+                                                                             Margin="2"/>
+                                                </Grid>
+                                            </StackPanel>
+                                            <TextBlock TextTrimming="WordEllipsis" 
+                                                       Text="{Binding ModInfo.Name}"
+                                                       VerticalAlignment="Center"/>
+                                        </DockPanel>
+                                    </CheckBox>
+                                </Grid>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </DockPanel>
+            </GroupBox>
+            <GridSplitter Grid.Column="1" 
+                              Width="5"/>
+            <Grid Grid.Column="2">
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <GroupBox Grid.Row="0"
+                          Header="Описание события">
+                    <ContentControl DataContext="{Binding ModManager.Process.SubEventLog}"
+                                    Content="{Binding Events}" 
+                                    ContentTemplate="{StaticResource DetailTemplate}" />
+                </GroupBox>
+                <GridSplitter Grid.Row="0"
+                              HorizontalAlignment="Stretch" 
+                              VerticalAlignment="Bottom"
+                              ResizeDirection="Rows"
+                              Height="5"/>
+                <GroupBox Grid.Row="1"
+                          Header="Журнал событий">
+                    <DockPanel>
+                        <ListBox SelectionMode="Extended"
+                                     Style="{StaticResource MaterialDesignToolToggleFlatListBox}"
+                                     DockPanel.Dock="Top"
+                                     HorizontalAlignment="Stretch"
+                                     x:Name="LogFilter"
+                                     SelectionChanged="LogFilter_SelectionChanged"
+                                     DataContext="{Binding ModManager.Process.EventLog}">
+                            <ListBoxItem x:Name="ErrorToggle">
+                                <StackPanel Orientation="Horizontal">
+                                    <Grid>
+                                        <materialDesign:PackIcon Kind="CheckboxBlankCircle" 
+                                                                         Foreground="#E51400"/>
+                                        <materialDesign:PackIcon Kind="CloseCircleOutline" 
+                                                                         Foreground="White"/>
+                                    </Grid>
+                                    <TextBlock VerticalAlignment="Center"
+                                               Text="{Binding ErrorCount}"/>
+                                </StackPanel>
+                            </ListBoxItem>
+                            <ListBoxItem x:Name="WarningToggle">
+                                <StackPanel Orientation="Horizontal">
+                                    <Grid>
+                                        <materialDesign:PackIcon Kind="Triangle" 
+                                                                 Foreground="#FFCC00"/>
+                                        <materialDesign:PackIcon Kind="AlertOutline"/>
+                                    </Grid>
+                                    <TextBlock VerticalAlignment="Center"
+                                               Text="{Binding WarningCount}"/>
+                                </StackPanel>
+                            </ListBoxItem>
+                            <ListBoxItem x:Name="InfoToggle">
+                                <StackPanel Orientation="Horizontal">
+                                    <Grid>
+                                        <materialDesign:PackIcon Kind="CheckboxBlankCircle" 
+                                                                 Foreground="#1BA1E2"/>
+                                        <materialDesign:PackIcon Kind="InfoOutline"
+                                                                 Foreground="White"/>
+                                    </Grid>
+                                    <TextBlock VerticalAlignment="Center"
+                                               Text="{Binding InfoCount}"/>
+                                </StackPanel>
+                            </ListBoxItem>
+                        </ListBox>
+                        <ListView x:Name="EventsView"
+                                  DataContext="{Binding ModManager.Process.SubEventLog}"
+                                  ItemsSource="{Binding Events}" 
+                                  IsSynchronizedWithCurrentItem="True"
+                                  MouseDoubleClick="EventsView_MouseDoubleClick">
+                            <ListView.View>
+                                <GridView>
+                                    <GridViewColumn Width="35">
+                                        <GridViewColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <Image Stretch="None">
+                                                    <Image.Style>
+                                                        <Style TargetType="{x:Type Image}">
+                                                            <Style.Triggers>
+                                                                <DataTrigger Binding="{Binding Type}"
+                                                                             Value="{x:Static processing:EventType.Error}">
+                                                                    <Setter Property="Source"
+                                                                            Value="Images/StatusCriticalError_16x.png" />
+                                                                </DataTrigger>
+                                                                <DataTrigger Binding="{Binding Type}"
+                                                                             Value="{x:Static processing:EventType.Info}">
+                                                                    <Setter Property="Source"
+                                                                            Value="Images/StatusInformation_16x.png" />
+                                                                </DataTrigger>
+                                                                <DataTrigger Binding="{Binding Type}"
+                                                                             Value="{x:Static processing:EventType.Warning}">
+                                                                    <Setter Property="Source"
+                                                                            Value="Images/StatusWarning_16x.png" />
+                                                                </DataTrigger>
+                                                            </Style.Triggers>
+                                                        </Style>
+                                                    </Image.Style>
+                                                </Image>
+                                            </DataTemplate>
+                                        </GridViewColumn.CellTemplate>
+                                    </GridViewColumn>
+                                    <GridViewColumn Width="700"
+                                                    Header="Описание">
+                                        <GridViewColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <ContentControl x:Name="FilesViewItem">
+                                                    <StackPanel Margin="0,2" >
+                                                        <TextBlock Text="{Binding FileName}" />
+                                                    </StackPanel>
+                                                </ContentControl>
+                                            </DataTemplate>
+                                        </GridViewColumn.CellTemplate>
+                                    </GridViewColumn>
+                                </GridView>
+                            </ListView.View>
+                            <!--<ListView.GroupStyle>
+                                <GroupStyle>
+                                    <GroupStyle.HeaderTemplate>
+                                        <DataTemplate>
+                                            <TextBlock VerticalAlignment="Center"
+                                                       Margin="50,5,0,0"
+                                                       FontWeight="Bold">
+                                                <Run Text="{Binding Name,Mode=OneWay}"/>
+                                                <Run Text="{Binding ItemCount,Mode=OneWay}"/>
+                                                <Run Text="item(s)"/>
+                                            </TextBlock>
+                                        </DataTemplate>
+                                    </GroupStyle.HeaderTemplate>
+                                </GroupStyle>
+                            </ListView.GroupStyle>-->
+                        </ListView>
+                    </DockPanel>
+                </GroupBox>
+            </Grid>
+        </Grid>
+    </DockPanel>
+</Window>
