@@ -1,0 +1,8 @@
+bastard_dynasty_prefix
+CULTURE*
+female_patronym
+from_dynasty_prefix
+from_dynasty_suffix
+male_patronym
+name
+set_name

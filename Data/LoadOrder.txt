@@ -1,0 +1,10 @@
+localisation
+#common\graphicalculturetypes
+#common\religions
+common\cultures
+common
+events
+history
+decisions
+#dlc_metadata
+-common\customizable_localisation
