@@ -4,7 +4,7 @@ using System.Linq;
 using MoreLinq;
 using Translation;
 
-namespace Web.Queries
+namespace Translation.Web.Queries
 {
     public abstract class LimitedQuery<TInputPart, TOuputPart> : 
         Query<IEnumerable<TInputPart>, IEnumerable<TOuputPart>>

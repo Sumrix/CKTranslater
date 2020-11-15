@@ -2,7 +2,7 @@
 using System.Net;
 using Translation;
 
-namespace Web.Queries
+namespace Translation.Web.Queries
 {
     public abstract class Query<TInput, TOutput>
     {

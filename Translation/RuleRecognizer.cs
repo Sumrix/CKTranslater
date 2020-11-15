@@ -17,11 +17,10 @@ namespace Translation
         public static List<TranslationRule> Recognize(
             Language sourceLanguage,
             Language resultLanguage,
-            LetterComparer comparer,
             IEnumerable<WordInLangs> wordTextTranslations)
         {
             List<List<GraphemeTranslation>> wordGraphemeTranslations =
-                RuleRecognizer.SplitWordsIntoGraphemes(sourceLanguage, resultLanguage, comparer, wordTextTranslations);
+                RuleRecognizer.SplitWordsIntoGraphemes(sourceLanguage, resultLanguage, wordTextTranslations);
 
             var g = wordGraphemeTranslations
                 .Where(l => l.Last().Original.Letters == "h")
@@ -39,7 +38,6 @@ namespace Translation
         private static List<List<GraphemeTranslation>> SplitWordsIntoGraphemes(
             Language language1,
             Language language2,
-            LetterComparer comparer,
             IEnumerable<WordInLangs> wordTextTranslations)
         {
             List<List<GraphemeTranslation>> results = new List<List<GraphemeTranslation>>();

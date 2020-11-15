@@ -5,7 +5,7 @@ using System.Web;
 using Newtonsoft.Json.Linq;
 using Translation;
 
-namespace Web.Queries
+namespace Translation.Web.Queries
 {
     public class PrefixSearch : Query<string, List<string>>
     {

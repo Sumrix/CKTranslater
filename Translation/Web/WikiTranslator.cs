@@ -9,7 +9,7 @@ using Translation.Transliteration;
 using Translation;
 using Translation.Matching;
 
-namespace Web
+namespace Translation.Web
 {
     /// <summary>
     /// Переводчик через википедию

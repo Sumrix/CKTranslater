@@ -6,7 +6,7 @@ using Newtonsoft.Json.Linq;
 using Translation;
 using Translation.Transliteration;
 
-namespace Web.Queries
+namespace Translation.Web.Queries
 {
     public class LangLinks : LimitedQuery<string, WordInLangs>
     {

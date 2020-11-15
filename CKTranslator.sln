@@ -40,6 +40,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "LettersSimilarity", "Letter
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Strings", "Strings", "{3EFC0CDE-445D-4732-ADBF-079AFF69FA7E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleTesting", "ConsoleTesting\ConsoleTesting.csproj", "{951BE8BE-223E-47B4-9AF2-D35173F12876}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -58,6 +60,10 @@ Global
 		{21438185-68C4-4C5F-8EBF-D9DB9A867E8F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{21438185-68C4-4C5F-8EBF-D9DB9A867E8F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{21438185-68C4-4C5F-8EBF-D9DB9A867E8F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{951BE8BE-223E-47B4-9AF2-D35173F12876}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{951BE8BE-223E-47B4-9AF2-D35173F12876}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{951BE8BE-223E-47B4-9AF2-D35173F12876}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{951BE8BE-223E-47B4-9AF2-D35173F12876}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

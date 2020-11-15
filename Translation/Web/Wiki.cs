@@ -1,9 +1,8 @@
 ﻿using Translation.Transliteration;
 using System.Collections.Generic;
-using Web.Queries;
-using Translation;
+using Translation.Web.Queries;
 
-namespace Web
+namespace Translation.Web
 {
     /// <summary>
     /// API к википедии
