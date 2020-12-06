@@ -14,7 +14,7 @@ namespace Translation
     /// </summary>
     public static class RuleRecognizer
     {
-        public static List<TranslationRule> Recognize(
+        public static List<TransliterationRule> Recognize(
             Language sourceLanguage,
             Language resultLanguage,
             IEnumerable<WordInLangs> wordTextTranslations)
@@ -29,7 +29,7 @@ namespace Translation
             List<GraphemeTranslation> correctedGraphemeTranslations =
                 RuleRecognizer.CorrectGraphemeLengths(sourceLanguage, wordGraphemeTranslations);
 
-            List<TranslationRule> rules =
+            List<TransliterationRule> rules =
                 RuleRecognizer.CreateTranslationRules(correctedGraphemeTranslations);
 
             return rules;
@@ -79,13 +79,13 @@ namespace Translation
             return correctedGraphemeTranslations;
         }
 
-        private static List<TranslationRule> CreateTranslationRules(
+        private static List<TransliterationRule> CreateTranslationRules(
             List<GraphemeTranslation> correctedGraphemeTranslations)
         {
             GraphemeStatistic statistic = GraphemeStatistic.Create(correctedGraphemeTranslations);
             var k = statistic.Values.Where(x => x.Key == "h").FirstOrDefault();
-            List<TranslationRule> rules = TranslationRule.Create(statistic);
-            foreach (TranslationRule rule in rules)
+            List<TransliterationRule> rules = TransliterationRule.Create(statistic);
+            foreach (TransliterationRule rule in rules)
             {
                 Interpolater.Interpolate(rule.Target, Bit.OnesCount((uint)rule.Target.Length - 1));
             }

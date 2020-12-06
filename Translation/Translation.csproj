@@ -97,9 +97,10 @@
     <Compile Include="Storages\TranslatedDB.cs" />
     <Compile Include="Storages\TranslatedStringsDB.cs" />
     <Compile Include="Transliteration\GraphemeVariants.cs" />
-    <Compile Include="Transliteration\SimpleTranslator.cs" />
-    <Compile Include="Transliteration\TranslationRule.cs" />
+    <Compile Include="Transliteration\SimpleTransliterator.cs" />
     <Compile Include="Transliteration\Translator.cs" />
+    <Compile Include="Transliteration\TransliterationRule.cs" />
+    <Compile Include="Transliteration\Transliterator.cs" />
     <Compile Include="Transliteration\WordInLangs.cs" />
     <Compile Include="Web\Queries\LangLinks.cs" />
     <Compile Include="Web\Queries\LimitedQuery.cs" />

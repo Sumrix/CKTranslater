@@ -44,5 +44,10 @@ namespace Translation.Storages
                 ? translation
                 : null;
         }
+
+        public void Clear()
+        {
+            this.data.Clear();
+        }
     }
 }

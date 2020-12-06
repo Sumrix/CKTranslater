@@ -6,14 +6,14 @@ using Translation.Graphemes;
 namespace Translation.Transliteration
 {
     /// <summary>
-    /// Правило перевода
+    /// Правило траслитерации
     /// </summary>
-    public class TranslationRule
+    public class TransliterationRule
     {
         public string Source;
         public string[] Target;
 
-        public TranslationRule()
+        public TransliterationRule()
         {
         }
 
@@ -28,9 +28,9 @@ namespace Translation.Transliteration
             public int Occurrences;
         }
 
-        public static List<TranslationRule> Create(GraphemeStatistic statistic)
+        public static List<TransliterationRule> Create(GraphemeStatistic statistic)
         {
-            var rules = new List<TranslationRule>();
+            var rules = new List<TransliterationRule>();
             foreach (var srcLetter in statistic.Values)
             {
                 TranslationOccurrences[] occurrences = null;
@@ -53,7 +53,7 @@ namespace Translation.Transliteration
                         }
                     }
                 }
-                rules.Add(new TranslationRule
+                rules.Add(new TransliterationRule
                 {
                     Source = srcLetter.Key,
                     Target = occurrences

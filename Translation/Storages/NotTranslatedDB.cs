@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Translation.Storages
 {
@@ -17,6 +18,16 @@ namespace Translation.Storages
         public void Add(string word)
         {
             this.data.Add(word);
+        }
+
+        public void AddRange(IEnumerable<string> words)
+        {
+            this.data.UnionWith(words);
+        }
+
+        public void Clear()
+        {
+            this.data.Clear();
         }
     }
 }

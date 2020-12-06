@@ -5,6 +5,8 @@
         public string Lang1Word;
         public string Lang2Word;
 
+        public bool IsTranslated => string.IsNullOrEmpty(this.Lang2Word);
+
         public WordInLangs(string source, string target)
         {
             this.Lang1Word = source;

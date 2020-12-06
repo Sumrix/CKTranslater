@@ -1,97 +1,151 @@
-﻿using System.Collections.Generic;
-using Translation.Graphemes;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using Translation.Storages;
+using MoreLinq;
+using Translation.Web;
 
 namespace Translation.Transliteration
 {
     /// <summary>
-    /// Переводчик
+    /// Переводчик слов
     /// </summary>
     public class Translator
     {
-        private GraphemeVariant[] tree;
-        private Language srcLanguage;
-        private int offset;
-
-        public static Translator Create(IEnumerable<TranslationRule> rules, Language srcLanguage)
+        /// <summary>
+        /// Перевести слова
+        /// </summary>
+        /// <param name="englishWords"></param>
+        /// <returns></returns>
+        public  IEnumerable<WordInLangs> Translate(IEnumerable<string> englishWords)
         {
-            int variantCount = srcLanguage.MaxLetter - srcLanguage.MinLetter + 1;
-
-            Translator t = new Translator
+            if (!englishWords.Any())
             {
-                tree = new GraphemeVariant[variantCount],
-                srcLanguage = srcLanguage,
-                offset = srcLanguage.MinLetter
-            };
-
-            foreach (TranslationRule rule in rules)
-            {
-                ref GraphemeVariant[] vs = ref t.tree;
-                GraphemeVariant v = null;
-
-                foreach (char letter in rule.Source)
-                {
-                    vs ??= new GraphemeVariant[variantCount];
-                    v = vs[letter - t.offset];
-                    if (v == null)
-                    {
-                        v = new GraphemeVariant();
-                        vs[letter - t.offset] = v;
-                    }
-                    vs = ref v.Variants;
-                }
-
-                v.Options = rule.Target;
+                return Enumerable.Empty<WordInLangs>();
             }
 
-            return t;
+            // Достаём переводы из кэша
+            var (cacheMisses, cacheHits) = this.GetTranslationsFromCache(englishWords);
+            var (cacheTranslated, cacheNotTranslated) = cacheHits.Partition(w => w.IsTranslated);
+
+            // То что не перевелось, переводим через интернет
+            var (webMisses, webHits) = this.GetTranslationsFromWeb(cacheMisses);
+
+            // Переведённое через интернет сохраняем в кэш
+            this.CacheTranslations(webMisses, webHits);
+
+            // Транслитерируем непереведённое
+            var toTransliterate = webMisses.Union(cacheNotTranslated.Select(w => w.Lang1Word));
+            var transliterations = this.Transliterate(toTransliterate);
+
+            // Объединяем результаты в один список
+            return cacheTranslated.Union(webHits).Union(transliterations);
         }
 
-        public string Translate(string word)
+        /// <summary>
+        /// Получить данные по переводам из кэша
+        /// </summary>
+        /// <param name="words"></param>
+        /// <returns></returns>
+        private (IEnumerable<string> misses, IEnumerable<WordInLangs> hits) GetTranslationsFromCache(IEnumerable<string> words)
         {
-            word = word.ToLower();
-            // Графемы слова word
-            var graphemes = this.srcLanguage.ToGraphemes(word);
-            // Позиции в слове word
-            int curPos = 0;
-            int maxPos = graphemes.Count - 1;
-            int savedPos = 0;
-            // Узлы дерева парсинга
-            GraphemeVariant[] vs = this.tree;
-            GraphemeVariant v;
-            string graphemeTranslation = "";
-            // Перевод
-            string translation = "";
-            Grapheme grapheme = new Grapheme(GraphemeType.Silent, "");
+            List<WordInLangs> hits = new List<WordInLangs>();
+            List<string> misses = new List<string>();
 
-            while (curPos <= maxPos)
+            foreach (string word in words)
             {
-                grapheme.MergeWith(graphemes[curPos]);
-                char letter = word[curPos];
-                v = vs[letter - this.offset];
-
-                if (v != null)
+                // Проверить наличие слов в БД переводов.
+                string translation = DB.Translated.GetTranslation(word);
+                if (translation != null)
                 {
-                    if (v.Options != null)
+                    hits.Add(new WordInLangs(word, translation));
+                }
+                else
+                {
+                    // Проверить наличие слов в БД без переводов
+                    // Буквы через wiki не переводить, они не переведутся
+                    if (DB.NotTranslated.Contains(word) || word.Length == 1)
                     {
-                        savedPos = curPos;
-                        graphemeTranslation = v.Options[grapheme.Flags.Value];
+                        hits.Add(new WordInLangs(word, null));
                     }
-
-                    if (v.Variants != null && curPos < maxPos)
+                    else
                     {
-                        curPos++;
-                        vs = v.Variants;
-                        continue;
+                        misses.Add(word);
                     }
                 }
-
-                translation += graphemeTranslation;
-                vs = this.tree;
-                curPos = savedPos + 1;
-                grapheme = new Grapheme(GraphemeType.Silent, "");
             }
 
-            return translation;
+            return (misses, hits);
+        }
+
+        /// <summary>
+        /// Получить данные по переводам из интернета
+        /// </summary>
+        /// <param name="words"></param>
+        /// <returns></returns>
+        private (IEnumerable<string> misses, IEnumerable<WordInLangs> hits) GetTranslationsFromWeb(IEnumerable<string> words)
+        {
+            if (!words.Any())
+            {
+                return (Enumerable.Empty<string>(), Enumerable.Empty<WordInLangs>());
+            }
+
+            List<WordInLangs> hits = new List<WordInLangs>();
+            List<string> misses = new List<string>();
+
+            Language language0 = Language.Load(DB.EngLetters);
+            Language language1 = Language.Load(DB.RusLetters);
+
+            // Wiki перевод
+            List<WordInLangs> wikiTranslations = WikiTranslator.Translate(words, language0, language1).ToList();
+            foreach (WordInLangs wordInLangs in wikiTranslations)
+            {
+                if (wordInLangs.Lang2Word != null)
+                {
+                    hits.Add(wordInLangs);
+                }
+                else
+                {
+                    misses.Add(wordInLangs.Lang1Word);
+                }
+            }
+
+            return (misses, hits);
+        }
+
+        private void CacheTranslations(IEnumerable<string> failedTranslations, IEnumerable<WordInLangs> successfulTranslations)
+        {
+            DB.Translated.AddRange(successfulTranslations);
+            DB.NotTranslated.AddRange(failedTranslations);
+            DB.Save();
+        }
+
+        private IEnumerable<WordInLangs> Transliterate(IEnumerable<string> toTransliterateWords)
+        {
+            Language language0 = Language.Load(DB.EngLetters);
+            Language language1 = Language.Load(DB.RusLetters);
+
+            // Производим обучение переводчика
+            IEnumerable<WordInLangs> wordsToLearn = DB.Translated.WordsInLangs
+                .Where(w => !w.Lang1Word.Contains(" ") && !w.Lang2Word.Contains(" "))
+                .Union(DB.EngToRusMap.Select(x => new WordInLangs(x.eng.ToString(), x.rus)));
+
+            List<TransliterationRule> rules = RuleRecognizer.Recognize(language0, language1, wordsToLearn);
+            RulesDB rulesDB = new RulesDB();
+            rulesDB.AddRange(rules);
+            rulesDB.Save(FileName.RulesDB);
+
+            // Производим транслитерацию списка слов отложенных для транслитерации
+            Transliterator translator = Transliterator.Create(rules, language0);
+
+            List<WordInLangs> translatedWords = new List<WordInLangs>();
+            foreach (string word in toTransliterateWords)
+            {
+                translatedWords.Add(new WordInLangs(word, translator.Translate(word)));
+            }
+
+            return translatedWords;
         }
     }
 }

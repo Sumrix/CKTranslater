@@ -13,6 +13,9 @@ using Newtonsoft.Json;
 
 namespace ConsoleTesting
 {
+    /// <summary>
+    /// Методы для ручного тестирования модуля перевода
+    /// </summary>
     class Program
     {
         static void Main(string[] args)
@@ -24,7 +27,8 @@ namespace ConsoleTesting
             //PrepareToManualTranslate();
             //DB.Save();
             //TestTimer();
-            WikiTest();
+            //WikiTest();
+            TestNewTranslator();
 
             //Console.ReadKey();
         }
@@ -44,6 +48,19 @@ namespace ConsoleTesting
                 WikiTranslator.TranslateExact(Wiki.GetSimilar("Abi'l-Hadid"))
                     .Select(x => x.ToString())
                     .ToArray()
+            );
+        }
+
+        private static void TestNewTranslator()
+        {
+            string[] toTranslateWords = File.ReadAllLines(FileName.ToTranslateWords);
+
+            Translator translator = new Translator();
+            var translatedWords = translator.Translate(toTranslateWords);
+
+            File.WriteAllLines(
+                @"D:\Desktop\CK2Works\Translated.txt",
+                translatedWords.Select(wordInLangs => wordInLangs.ToString())
             );
         }
 
@@ -173,13 +190,13 @@ namespace ConsoleTesting
             IEnumerable<WordInLangs> wordsToLearn = DB.Translated.WordsInLangs
                 .Union(DB.EngToRusMap.Select(x => new WordInLangs(x.eng.ToString(), x.rus)));
 
-            List<TranslationRule> rules = RuleRecognizer.Recognize(language0, language1, wordsToLearn);
+            List<TransliterationRule> rules = RuleRecognizer.Recognize(language0, language1, wordsToLearn);
             RulesDB rulesDB = new RulesDB();
             rulesDB.AddRange(rules);
             rulesDB.Save(FileName.RulesDB);
 
             // 5. Производим транслитерацию списка слов отложенных для транслитерации
-            Translator translator = Translator.Create(rules, language0);
+            Transliterator translator = Transliterator.Create(rules, language0);
 
             foreach (string word in toTransliterateWords)
             {
@@ -209,9 +226,9 @@ namespace ConsoleTesting
             IEnumerable<WordInLangs> wordsToLearn = DB.Translated.WordsInLangs
                 .Union(DB.EngToRusMap.Select(x => new WordInLangs(x.eng.ToString(), x.rus)));
 
-            List<TranslationRule> rules = RuleRecognizer.Recognize(language0, language1, wordsToLearn);
+            List<TransliterationRule> rules = RuleRecognizer.Recognize(language0, language1, wordsToLearn);
 
-            Translator translator = Translator.Create(rules, language0);
+            Transliterator translator = Transliterator.Create(rules, language0);
             List<WordInLangs> transliteratedWords = new List<WordInLangs>();
 
             foreach (string word in toTranslateWords)
