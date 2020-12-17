@@ -106,8 +106,9 @@
     <Compile Include="Web\Queries\LimitedQuery.cs" />
     <Compile Include="Web\Queries\PrefixSearch.cs" />
     <Compile Include="Web\Queries\Query.cs" />
+    <Compile Include="Web\Queries\Search.cs" />
+    <Compile Include="Web\WikiApi.cs" />
     <Compile Include="Web\Wiki.cs" />
-    <Compile Include="Web\WikiTranslator.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

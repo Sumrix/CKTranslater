@@ -13,6 +13,7 @@ namespace Translation
     public class Language
     {
         private readonly Grapheme[] graphemesByChar;
+        // Значение по-умолчанию -1, указывает на то что идентификатора для символа нет
         private readonly int[] identifiersByChar;
         private readonly Grapheme[] graphemesByIdentifier;
         private readonly char[] charsByIdentifier;
@@ -42,6 +43,12 @@ namespace Translation
             Language language = new Language(minLetter, maxLetter);
             GraphemeType[] types = new[] { GraphemeType.Vowel, GraphemeType.Consonant, GraphemeType.Silent };
             int identifier = 0;
+
+            // Значение по-умолчанию -1, указывает на то что идентификатора для символа нет
+            for (int i = 0; i < language.identifiersByChar[0]; i++)
+            {
+                language.identifiersByChar[i] = -1;
+            }
 
             foreach ((IEnumerable<char> letters, GraphemeType type) in groups.Zip(types))
             {
@@ -167,6 +174,16 @@ namespace Translation
         public Grapheme ToGrapheme(int identifier)
         {
             return this.graphemesByIdentifier[identifier].Clone();
+        }
+
+        public bool Belongs(char letter)
+        {
+            return letter > this.MinLetter && letter < this.MaxLetter && this.identifiersByChar[letter - this.MinLetter] >= 0;
+        }
+
+        public bool Belongs(string word)
+        {
+            return word.All(letter => this.Belongs(letter));
         }
     }
 }

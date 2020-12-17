@@ -1,11 +1,16 @@
-﻿namespace Translation.Transliteration
+﻿using MoreLinq;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+namespace Translation.Transliteration
 {
     public class WordInLangs
     {
         public string Lang1Word;
         public string Lang2Word;
 
-        public bool IsTranslated => string.IsNullOrEmpty(this.Lang2Word);
+        public bool IsTranslated => !string.IsNullOrEmpty(this.Lang2Word);
 
         public WordInLangs(string source, string target)
         {

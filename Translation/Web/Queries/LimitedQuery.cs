@@ -6,18 +6,24 @@ using Translation;
 
 namespace Translation.Web.Queries
 {
+    /// <summary>
+    /// Запрос выполняемый пачками
+    /// </summary>
+    /// <typeparam name="TInputPart">Тип входящих данных</typeparam>
+    /// <typeparam name="TOuputPart">Тип исходящих данных</typeparam>
     public abstract class LimitedQuery<TInputPart, TOuputPart> : 
         Query<IEnumerable<TInputPart>, IEnumerable<TOuputPart>>
     {
-        protected abstract int BatchSize { get; }
+        private readonly int batchSize;
 
-        public LimitedQuery(QueueTimer queryTimer) : base(queryTimer)
+        protected LimitedQuery(QueueTimer queryTimer, int batchSize) : base(queryTimer)
         {
+            this.batchSize = batchSize;
         }
 
         public override IEnumerable<TOuputPart> Execute(IEnumerable<TInputPart> input) => 
             input
-            .Batch(this.BatchSize)
+            .Batch(this.batchSize)
             .SelectMany(base.Execute);
     }
 }

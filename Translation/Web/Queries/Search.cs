@@ -6,25 +6,22 @@ using Newtonsoft.Json.Linq;
 
 namespace Translation.Web.Queries
 {
-    /// <summary>
-    /// Поиск по префиксу.
-    /// </summary>
-    public class PrefixSearch : Query<string, List<string>>
+    public class Search : Query<string, List<string>>
     {
-        public PrefixSearch(QueueTimer queryTimer) : base(queryTimer)
+        public Search(QueueTimer queryTimer) : base(queryTimer)
         {
         }
 
         protected override string CreateRequest(string input) =>
-            "https://en.wikipedia.org/w/api.php?action=query&format=json&uselang=rus&list=prefixsearch&pssearch="
+            "https://en.wikipedia.org/w/api.php?action=query&format=json&list=search&utf8=1&srsearch="
             + HttpUtility.UrlEncode(input)
-            + "&pslimit=500";
+            + "&srlimit=500&srprop=";
 
         protected override List<string> ParseResult(string response)
         {
             JObject o = JObject.Parse(response);
 
-            return o["query"]["prefixsearch"]
+            return o["query"]["search"]
                 .Select(s => (string)s["title"])
                 .ToList();
         }

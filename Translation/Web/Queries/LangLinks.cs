@@ -3,21 +3,25 @@ using System.Linq;
 using System.Web;
 
 using Newtonsoft.Json.Linq;
-using Translation;
 using Translation.Transliteration;
 
 namespace Translation.Web.Queries
 {
+    /// <summary>
+    /// В LangLinks есть ограничение на количество заголовков в одном запросе,
+    /// по этому наследуем функционал от LimitedQuery, которы разделит входящие
+    /// данные на куски по 50 и выполнит отдельно.
+    /// </summary>
     public class LangLinks : LimitedQuery<string, WordInLangs>
     {
-        protected override int BatchSize => 50;
+        private const int maxNumOfTitles = 50;
 
         protected override string CreateRequest(IEnumerable<string> input) =>
             @"https://en.wikipedia.org/w/api.php?action=query&format=json&uselang=rus&prop=langlinks&titles="
             + HttpUtility.UrlEncode(string.Join("|", input))
             + "&redirects=1&lllang=ru&lllimit=max";
 
-        public LangLinks(QueueTimer queryTimer) : base(queryTimer)
+        public LangLinks(QueueTimer queryTimer) : base(queryTimer, maxNumOfTitles)
         {
         }
 

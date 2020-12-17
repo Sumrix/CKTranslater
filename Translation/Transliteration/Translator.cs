@@ -98,7 +98,7 @@ namespace Translation.Transliteration
             Language language1 = Language.Load(DB.RusLetters);
 
             // Wiki перевод
-            List<WordInLangs> wikiTranslations = WikiTranslator.Translate(words, language0, language1).ToList();
+            List<WordInLangs> wikiTranslations = Wiki.Translate(words, language0, language1).ToList();
             foreach (WordInLangs wordInLangs in wikiTranslations)
             {
                 if (wordInLangs.Lang2Word != null)

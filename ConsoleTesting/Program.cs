@@ -10,6 +10,7 @@ using System.IO;
 using Translation.Transliteration;
 using Translation.Web;
 using Newtonsoft.Json;
+using MoreLinq;
 
 namespace ConsoleTesting
 {
@@ -27,8 +28,8 @@ namespace ConsoleTesting
             //PrepareToManualTranslate();
             //DB.Save();
             //TestTimer();
-            //WikiTest();
-            TestNewTranslator();
+            WikiTest();
+            //TestNewTranslator();
 
             //Console.ReadKey();
         }
@@ -39,16 +40,21 @@ namespace ConsoleTesting
             Language language1 = Language.Load(DB.RusLetters);
 
             //string[] toTranslateWords = File.ReadAllLines(FileName.ToTranslateWords);
-            //var translatedWords = WikiTranslator.Translate(toTranslateWords, language0, language1);
+            //var translatedWords = Wiki.Translate(toTranslateWords, language0, language1)
+            //    .OrderBy(x => x.Lang1Word);
             //File.WriteAllLines(@"D:\Desktop\out.txt", translatedWords.Select(x => x.ToString()).ToArray());
 
-            //var v = WikiTranslator.TranslateRough(new[] { "abi'l" }, language0, language1).ToList();
-            File.WriteAllLines(
-                @"D:\Desktop\Wiki.GetSimilar.txt",
-                WikiTranslator.TranslateExact(Wiki.GetSimilar("Abi'l-Hadid"))
-                    .Select(x => x.ToString())
-                    .ToArray()
-            );
+            //var v = Wiki.Translate(new[] { "abah" }, language0, language1).ToList();
+            //File.WriteAllLines(
+            //    @"D:\Desktop\Wiki.GetSimilar.txt",
+            //    WikiTranslator.TranslateExact(Wiki.Search("Abi'l-Hadid"))
+            //        .Select(x => x.ToString())
+            //        .ToArray()
+            //);
+
+            // У prefix search результаты лучше
+            var s1 = WikiApi.Search("abah");
+            var s2 = WikiApi.PrefixSearch("abah");
         }
 
         private static void TestNewTranslator()
@@ -171,7 +177,7 @@ namespace ConsoleTesting
             }
 
             // 3. Wiki перевод
-            List<WordInLangs> wikiTranslations = WikiTranslator.Translate(toWikiTranslate, language0, language1).ToList();
+            List<WordInLangs> wikiTranslations = Wiki.Translate(toWikiTranslate, language0, language1).ToList();
             foreach (WordInLangs wordInLangs in wikiTranslations)
             {
                 if (wordInLangs.Lang2Word != null)
