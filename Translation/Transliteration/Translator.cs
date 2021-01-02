@@ -128,24 +128,17 @@ namespace Translation.Transliteration
 
             // Производим обучение переводчика
             IEnumerable<WordInLangs> wordsToLearn = DB.Translations
-                .Where(w => !w.Lang1Word.Contains(" ") && !w.Lang2Word.Contains(" "))
-                .Union(DB.EngToRusMap.Select(x => new WordInLangs(x.eng.ToString(), x.rus)));
+                .Where(w => !w.Lang1Word.Contains(" ") && !w.Lang2Word.Contains(" "));
 
             List<TransliterationRule> rules = RuleRecognizer.Recognize(language0, language1, wordsToLearn);
-            TransliterationRulesRepository transliterationRules = new TransliterationRulesRepository();
-            transliterationRules.AddRange(rules);
-            transliterationRules.Save(FileName.TransliterationRules);
+            DB.TransliterationRules.AddRange(rules);
+            DB.TransliterationRules.Save();
 
             // Производим транслитерацию списка слов отложенных для транслитерации
             Transliterator translator = Transliterator.Create(rules, language0);
-
-            List<WordInLangs> translatedWords = new List<WordInLangs>();
-            foreach (string word in toTransliterateWords)
-            {
-                translatedWords.Add(new WordInLangs(word, translator.Translate(word)));
-            }
-
-            return translatedWords;
+            return toTransliterateWords
+                .Select(word => new WordInLangs(word, translator.Translate(word)))
+                .ToList();
         }
     }
 }

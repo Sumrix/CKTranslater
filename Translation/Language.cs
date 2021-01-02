@@ -69,6 +69,19 @@ namespace Translation
             return this.graphemesByChar[letter - this.MinLetter].Clone();
         }
 
+        public Grapheme ToGrapheme(string letters)
+        {
+            var graphemes = this.ToGraphemes(letters);
+            Grapheme graphemeSum = Grapheme.Empty();
+
+            foreach (Grapheme grapheme in graphemes)
+            {
+                graphemeSum.MergeWith(grapheme);
+            }
+
+            return graphemeSum;
+        }
+
         public List<Grapheme> ToGraphemes(string word)
         {
             List<Grapheme> vowels = new List<Grapheme>(word.Length);

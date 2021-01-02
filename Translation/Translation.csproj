@@ -88,7 +88,7 @@
     <Compile Include="Parsing\TranslationLengthCorrector.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="QueueTimer.cs" />
-    <Compile Include="RuleRecognizer.cs" />
+    <Compile Include="Transliteration\RuleRecognizer.cs" />
     <Compile Include="Storages\DictionaryRepository.cs" />
     <Compile Include="Storages\HashSetRepository.cs" />
     <Compile Include="Storages\Repository.cs" />

@@ -32,7 +32,7 @@ namespace Translation.Graphemes
             return new GraphemeTranslation(this.Original.Clone(), this.Translation);
         }
 
-        public static List<GraphemeTranslation> Convert(IReadOnlyCollection<LettersMatch> matches,
+        public static List<GraphemeTranslation> Create(IReadOnlyCollection<LettersMatch> matches,
             IEnumerable<Grapheme> graphemes)
         {
             List<GraphemeTranslation> translations = new List<GraphemeTranslation>(matches.Count);

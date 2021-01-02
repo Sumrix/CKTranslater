@@ -65,7 +65,7 @@ namespace Translation.Storages
         public void Add(TItem item)
         {
             var keyValuePair = this.Item2KeyValuePair(item);
-            ((ICollection<KeyValuePair<TKey, TValue>>) this.dictionary).Add(keyValuePair);
+            this.dictionary[keyValuePair.Key] = keyValuePair.Value;
         }
 
         public void AddRange(IEnumerable<TItem> items)

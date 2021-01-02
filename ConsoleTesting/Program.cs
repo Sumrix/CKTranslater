@@ -41,10 +41,10 @@ namespace ConsoleTesting
             Language language0 = Language.Load(DB.EngLetters);
             Language language1 = Language.Load(DB.RusLetters);
 
-            //string[] toTranslateWords = File.ReadAllLines(FileName.ToTranslateWords);
-            //var translatedWords = Wiki.Translate(toTranslateWords, language0, language1)
-            //    .OrderBy(x => x.Lang1Word);
-            //File.WriteAllLines(@"D:\Desktop\out.txt", translatedWords.Select(x => x.ToString()).ToArray());
+            string[] toTranslateWords = File.ReadAllLines(FileName.ToTranslateWords);
+            var translatedWords = Wiki.Translate(toTranslateWords, language0, language1)
+                .OrderBy(x => x.Lang1Word);
+            File.WriteAllLines(@"D:\Desktop\out.txt", translatedWords.Select(x => x.ToString()).ToArray());
 
             //var v = Wiki.Translate(new[] { "abah" }, language0, language1).ToList();
             //File.WriteAllLines(
@@ -55,8 +55,8 @@ namespace ConsoleTesting
             //);
 
             // У prefix search результаты лучше
-            var s1 = WikiApi.Search("abah");
-            var s2 = WikiApi.PrefixSearch("abah");
+            //var s1 = WikiApi.Search("abah");
+            //var s2 = WikiApi.PrefixSearch("abah");
         }
 
         private static void TestNewTranslator()
