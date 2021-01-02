@@ -4,7 +4,7 @@ using System.Linq;
 namespace Translation.Transliteration
 {
     /// <summary>
-    /// Элементарный переводчик
+    ///     Элементарный переводчик
     /// </summary>
     public class SimpleTransliterator
     {

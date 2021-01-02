@@ -1,7 +1,4 @@
-﻿using MoreLinq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using Newtonsoft.Json;
 
 namespace Translation.Transliteration
 {
@@ -10,13 +7,13 @@ namespace Translation.Transliteration
         public string Lang1Word;
         public string Lang2Word;
 
-        public bool IsTranslated => !string.IsNullOrEmpty(this.Lang2Word);
-
         public WordInLangs(string source, string target)
         {
             this.Lang1Word = source;
             this.Lang2Word = target;
         }
+
+        [JsonIgnore] public bool IsTranslated => !string.IsNullOrEmpty(this.Lang2Word);
 
         public override string ToString()
         {

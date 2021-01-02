@@ -7,12 +7,23 @@ using Timer = System.Timers.Timer;
 namespace Translation
 {
     /// <summary>
-    /// Таймер вызывающий по очереди подписанные методы
+    ///     Таймер вызывающий по очереди подписанные методы
     /// </summary>
     public class QueueTimer
     {
         private readonly List<EventHandler> eventHandlers;
         private readonly Timer timer;
+
+        /// <summary>
+        ///     Инициализирует таймер
+        /// </summary>
+        /// <param name="intervals">Время между тиками в миллисекундах</param>
+        public QueueTimer(double intervals)
+        {
+            this.eventHandlers = new List<EventHandler>();
+            this.timer = new Timer(intervals);
+            this.timer.Elapsed += this.Timer_Elapsed;
+        }
 
         public event EventHandler Tick
         {
@@ -31,17 +42,6 @@ namespace Translation
                     this.eventHandlers.Remove(value);
                 }
             }
-        }
-
-        /// <summary>
-        /// Инициализирует таймер
-        /// </summary>
-        /// <param name="intervals">Время между тиками в миллисекундах</param>
-        public QueueTimer(double intervals)
-        {
-            this.eventHandlers = new List<EventHandler>();
-            this.timer = new Timer(intervals);
-            this.timer.Elapsed += this.Timer_Elapsed;
         }
 
         private void Timer_Elapsed(object sender, ElapsedEventArgs e)

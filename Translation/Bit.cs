@@ -1,7 +1,7 @@
 ﻿namespace Translation
 {
     /// <summary>
-    /// Класс реализует битовые операции
+    ///     Класс реализует битовые операции
     /// </summary>
     public static class Bit
     {
@@ -9,7 +9,7 @@
         {
             ulong result = num - ((num >> 1) & 0x5555555555555555UL);
             result = (result & 0x3333333333333333UL) + ((result >> 2) & 0x3333333333333333UL);
-            return (int)(unchecked(((result + (result >> 4)) & 0xF0F0F0F0F0F0F0FUL) * 0x101010101010101UL) >> 56);
+            return (int) (unchecked(((result + (result >> 4)) & 0xF0F0F0F0F0F0F0FUL) * 0x101010101010101UL) >> 56);
         }
 
         public static string ToString(uint num, int length)
@@ -23,6 +23,7 @@
                 maskOne >>= 1;
                 numOne >>= 1;
             }
+
             return new string(s);
         }
 

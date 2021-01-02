@@ -4,19 +4,19 @@ using Translation.Collections;
 
 namespace Translation.Graphemes
 {
-    public enum GraphemeType : int
+    public enum GraphemeType
     {
         Silent,
         Mixed,
         Vowel,
-        Consonant,
+        Consonant
     }
 
     [Flags]
     public enum CommonFlag : uint
     {
         First = 1 << 0,
-        Last = 1 << 1,
+        Last = 1 << 1
     }
 
     [Flags]
@@ -27,7 +27,7 @@ namespace Translation.Graphemes
         OpenSyllable = 1 << 2,
         PreviousVowel = 1 << 3,
         NextVowel = 1 << 4,
-        Stressed = 1 << 5,
+        Stressed = 1 << 5
     }
 
     [Flags]
@@ -36,25 +36,25 @@ namespace Translation.Graphemes
         First = CommonFlag.First,
         Last = CommonFlag.Last,
         NextVowel = 1 << 2,
-        PreviousVowel = 1 << 3,
+        PreviousVowel = 1 << 3
     }
 
     public class Grapheme
     {
-        public GraphemeType Type { get; private set; }
-        public string Letters { get; private set; }
-        public FlagSet Flags;
-
         public static readonly uint[] MaxFlag = new uint[4]
         {
-            0, (uint)CommonFlag.Last, (uint)VowelFlag.Stressed, (uint)ConsonantFlag.PreviousVowel
+            0, (uint) CommonFlag.Last, (uint) VowelFlag.Stressed, (uint) ConsonantFlag.PreviousVowel
         };
-        public static readonly int[] FlagVariants = Grapheme.MaxFlag
-            .Select(f => f == 0 ? 1 : (int)(f << 1))
+
+        public static readonly int[] FlagVariants = MaxFlag
+            .Select(f => f == 0 ? 1 : (int) (f << 1))
             .ToArray();
-        public static readonly int[] FlagBitNum = Grapheme.MaxFlag
-            .Select(f => f == 0 ? 0 : (Bit.OnesCount(f - 1) + 1))
+
+        public static readonly int[] FlagBitNum = MaxFlag
+            .Select(f => f == 0 ? 0 : Bit.OnesCount(f - 1) + 1)
             .ToArray();
+
+        public FlagSet Flags;
 
         public Grapheme(GraphemeType type, string letters, FlagSet flags = default)
         {
@@ -62,6 +62,9 @@ namespace Translation.Graphemes
             this.Letters = letters;
             this.Flags = flags;
         }
+
+        public GraphemeType Type { get; private set; }
+        public string Letters { get; private set; }
 
         public Grapheme Clone()
         {
@@ -108,35 +111,42 @@ namespace Translation.Graphemes
                     {
                         case GraphemeType.Mixed:
                             this.Type = GraphemeType.Mixed;
-                            this.Flags = new FlagSet((uint)MergeFlags((CommonFlag)this.Flags.Value, (CommonFlag)other.Flags.Value));
+                            this.Flags = new FlagSet((uint) MergeFlags((CommonFlag) this.Flags.Value,
+                                (CommonFlag) other.Flags.Value));
                             break;
                         case GraphemeType.Vowel:
-                            this.Flags = new FlagSet((uint)MergeFlags((VowelFlag)this.Flags.Value, (VowelFlag)other.Flags.Value));
+                            this.Flags = new FlagSet((uint) MergeFlags((VowelFlag) this.Flags.Value,
+                                (VowelFlag) other.Flags.Value));
                             break;
                         case GraphemeType.Consonant:
                             this.Type = GraphemeType.Mixed;
                             this.Flags = new FlagSet(0);
                             break;
                     }
+
                     break;
                 case GraphemeType.Consonant:
                     switch (other.Type)
                     {
                         case GraphemeType.Mixed:
                             this.Type = GraphemeType.Mixed;
-                            this.Flags = new FlagSet((uint)MergeFlags((CommonFlag)this.Flags.Value, (CommonFlag)other.Flags.Value));
+                            this.Flags = new FlagSet((uint) MergeFlags((CommonFlag) this.Flags.Value,
+                                (CommonFlag) other.Flags.Value));
                             break;
                         case GraphemeType.Vowel:
                             this.Type = GraphemeType.Mixed;
                             this.Flags = new FlagSet(0);
                             break;
                         case GraphemeType.Consonant:
-                            this.Flags = new FlagSet((uint)MergeFlags((ConsonantFlag)this.Flags.Value, (ConsonantFlag)other.Flags.Value));
+                            this.Flags = new FlagSet((uint) MergeFlags((ConsonantFlag) this.Flags.Value,
+                                (ConsonantFlag) other.Flags.Value));
                             break;
                     }
+
                     break;
                 case GraphemeType.Mixed:
-                    this.Flags = new FlagSet((uint)MergeFlags((CommonFlag)this.Flags.Value, (CommonFlag)other.Flags.Value));
+                    this.Flags =
+                        new FlagSet((uint) MergeFlags((CommonFlag) this.Flags.Value, (CommonFlag) other.Flags.Value));
                     break;
             }
 
@@ -144,19 +154,25 @@ namespace Translation.Graphemes
         }
 
         private static VowelFlag MergeFlags(VowelFlag left, VowelFlag right)
-            => left & (VowelFlag.First | VowelFlag.PreviousVowel | VowelFlag.Stressed)
-            | right & (VowelFlag.Last | VowelFlag.OpenSyllable | VowelFlag.NextVowel | VowelFlag.Stressed);
+        {
+            return (left & (VowelFlag.First | VowelFlag.PreviousVowel | VowelFlag.Stressed))
+                   | (right & (VowelFlag.Last | VowelFlag.OpenSyllable | VowelFlag.NextVowel | VowelFlag.Stressed));
+        }
 
         private static ConsonantFlag MergeFlags(ConsonantFlag left, ConsonantFlag right)
-            => left & (ConsonantFlag.First | ConsonantFlag.PreviousVowel)
-            | right & (ConsonantFlag.Last | ConsonantFlag.NextVowel);
+        {
+            return (left & (ConsonantFlag.First | ConsonantFlag.PreviousVowel))
+                   | (right & (ConsonantFlag.Last | ConsonantFlag.NextVowel));
+        }
 
         private static CommonFlag MergeFlags(CommonFlag left, CommonFlag right)
-            => (CommonFlag)(((uint)left & 3) | ((uint)right & 3));
+        {
+            return (CommonFlag) (((uint) left & 3) | ((uint) right & 3));
+        }
 
         public override string ToString()
         {
-            return $"{this.Type} \"{this.Letters}\" [{Bit.ToString(this.Flags.Value, Grapheme.FlagBitNum[(int)this.Type])}]";
+            return $"{this.Type} \"{this.Letters}\" [{Bit.ToString(this.Flags.Value, FlagBitNum[(int) this.Type])}]";
         }
     }
 }

@@ -1,24 +1,25 @@
 ﻿using System;
-using System.Linq;
 using System.Collections.Generic;
-
+using System.Linq;
 using Translation.Graphemes;
 using Translation.Storages;
 
 namespace Translation
 {
     /// <summary>
-    /// Класс реализует функционал связанный с языком
+    ///     Класс реализует функционал связанный с языком
     /// </summary>
     public class Language
     {
+        private readonly char[] charsByIdentifier;
         private readonly Grapheme[] graphemesByChar;
+
+        private readonly Grapheme[] graphemesByIdentifier;
+
         // Значение по-умолчанию -1, указывает на то что идентификатора для символа нет
         private readonly int[] identifiersByChar;
-        private readonly Grapheme[] graphemesByIdentifier;
-        private readonly char[] charsByIdentifier;
-        public readonly int MinLetter;
         public readonly int MaxLetter;
+        public readonly int MinLetter;
 
         private Language(int minLetter, int maxLetter)
         {
@@ -30,18 +31,18 @@ namespace Translation
             this.MaxLetter = maxLetter;
         }
 
-        public static Language Load(LettersDB lettersDB)
+        public static Language Load(LettersRepository lettersDB)
         {
             var groups = new[] { lettersDB.Vowels, lettersDB.Consonants, lettersDB.Silents };
 
             (int minLetter, int maxLetter) = groups
                 .SelectMany(group => group)
                 .Aggregate(
-                    (min: (int)char.MaxValue, max: (int)char.MinValue),
+                    (min: (int) char.MaxValue, max: (int) char.MinValue),
                     (a, l) => (Math.Min(a.min, l), Math.Max(a.max, l)));
 
             Language language = new Language(minLetter, maxLetter);
-            GraphemeType[] types = new[] { GraphemeType.Vowel, GraphemeType.Consonant, GraphemeType.Silent };
+            GraphemeType[] types = { GraphemeType.Vowel, GraphemeType.Consonant, GraphemeType.Silent };
             int identifier = 0;
 
             // Значение по-умолчанию -1, указывает на то что идентификатора для символа нет
@@ -51,15 +52,13 @@ namespace Translation
             }
 
             foreach ((IEnumerable<char> letters, GraphemeType type) in groups.Zip(types))
+            foreach (char letter in letters)
             {
-                foreach (char letter in letters)
-                {
-                    Grapheme g = new Grapheme(type, letter.ToString());
-                    language.graphemesByIdentifier[identifier] = g;
-                    language.charsByIdentifier[identifier] = letter;
-                    language.graphemesByChar[letter - minLetter] = g;
-                    language.identifiersByChar[letter - minLetter] = identifier++;
-                }
+                Grapheme g = new Grapheme(type, letter.ToString());
+                language.graphemesByIdentifier[identifier] = g;
+                language.charsByIdentifier[identifier] = letter;
+                language.graphemesByChar[letter - minLetter] = g;
+                language.identifiersByChar[letter - minLetter] = identifier++;
             }
 
             return language;
@@ -96,7 +95,7 @@ namespace Translation
                     {
                         if (consonantsInRow < 2)
                         {
-                            lasVowel.Flags.Set((uint)VowelFlag.OpenSyllable);
+                            lasVowel.Flags.Set((uint) VowelFlag.OpenSyllable);
                         }
                     }
 
@@ -112,11 +111,16 @@ namespace Translation
                 {
                     if (lastNotSilent.Type == GraphemeType.Vowel)
                     {
-                        current.Flags.Set(current.Type == GraphemeType.Vowel ? (uint)VowelFlag.PreviousVowel : (uint)ConsonantFlag.PreviousVowel);
+                        current.Flags.Set(current.Type == GraphemeType.Vowel
+                            ? (uint) VowelFlag.PreviousVowel
+                            : (uint) ConsonantFlag.PreviousVowel);
                     }
+
                     if (current.Type == GraphemeType.Vowel)
                     {
-                        lastNotSilent.Flags.Set(lastNotSilent.Type == GraphemeType.Vowel ? (uint)VowelFlag.NextVowel : (uint)ConsonantFlag.NextVowel);
+                        lastNotSilent.Flags.Set(lastNotSilent.Type == GraphemeType.Vowel
+                            ? (uint) VowelFlag.NextVowel
+                            : (uint) ConsonantFlag.NextVowel);
                     }
                 }
 
@@ -127,23 +131,24 @@ namespace Translation
             {
                 if (vowels.Count <= 2)
                 {
-                    vowels[0].Flags.Set((uint)VowelFlag.Stressed);
+                    vowels[0].Flags.Set((uint) VowelFlag.Stressed);
                 }
                 else
                 {
-                    vowels[vowels.Count - 3].Flags.Set((uint)VowelFlag.Stressed);
+                    vowels[vowels.Count - 3].Flags.Set((uint) VowelFlag.Stressed);
                 }
             }
 
             Grapheme first = graphemes[0];
             if (first.Type == GraphemeType.Vowel || first.Type == GraphemeType.Consonant)
             {
-                first.Flags.Set((uint)CommonFlag.First);
+                first.Flags.Set((uint) CommonFlag.First);
             }
+
             Grapheme last = graphemes[graphemes.Count - 1];
             if (last.Type == GraphemeType.Vowel || last.Type == GraphemeType.Consonant)
             {
-                last.Flags.Set((uint)CommonFlag.Last);
+                last.Flags.Set((uint) CommonFlag.Last);
             }
 
             return graphemes;
@@ -178,7 +183,8 @@ namespace Translation
 
         public bool Belongs(char letter)
         {
-            return letter > this.MinLetter && letter < this.MaxLetter && this.identifiersByChar[letter - this.MinLetter] >= 0;
+            return letter > this.MinLetter && letter < this.MaxLetter &&
+                   this.identifiersByChar[letter - this.MinLetter] >= 0;
         }
 
         public bool Belongs(string word)

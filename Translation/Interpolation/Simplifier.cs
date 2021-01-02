@@ -22,6 +22,7 @@ namespace Translation.Interpolation
                     {
                         groups[numOnes] = new HashSet<uint>();
                     }
+
                     groups[numOnes].Add(t);
                 }
 
@@ -74,7 +75,8 @@ namespace Translation.Interpolation
             return marked;
         }
 
-        public static IEnumerable<uint> GetEssentialImplicants(List<uint> essentialTerms, IEnumerable<uint> implicants, int numBits)
+        public static IEnumerable<uint> GetEssentialImplicants(List<uint> essentialTerms, IEnumerable<uint> implicants,
+            int numBits)
         {
             foreach (uint implicant in implicants)
             {
@@ -104,7 +106,7 @@ namespace Translation.Interpolation
 
             uint maxVariant = Bit.MaxNum(variantLength);
 
-            for (;variant <= maxVariant; variant++)
+            for (; variant <= maxVariant; variant++)
             {
                 uint variantOne = 1;
                 uint lastVariantOne = 1u << variantLength;
@@ -122,11 +124,12 @@ namespace Translation.Interpolation
                         {
                             premutation |= maskOne;
                         }
+
                         variantOne <<= 1;
                     }
+
                     maskOne <<= 1;
-                }
-                while (variantOne < lastVariantOne);
+                } while (variantOne < lastVariantOne);
 
                 yield return premutation;
             }
@@ -135,9 +138,9 @@ namespace Translation.Interpolation
         // Метод Петрика
         public static IEnumerable<uint> ReduceImplicants(uint[] impls, List<uint> terms, int numBits)
         {
-            var implCoverages = new uint[impls.Length];
-            var sortedImpls = impls
-                .OrderByDescending(impl => (((uint)Bit.OnesCount(impl >> numBits)) << numBits) + (impl >> numBits))
+            uint[]? implCoverages = new uint[impls.Length];
+            uint[]? sortedImpls = impls
+                .OrderByDescending(impl => ((uint) Bit.OnesCount(impl >> numBits) << numBits) + (impl >> numBits))
                 .ToArray();
             uint coverage;
 
@@ -178,7 +181,6 @@ namespace Translation.Interpolation
                         coverage |= implCoverages[implNum];
                     }
                 }
-
             }
 
             for (int implNum = 0; implNum < sortedImpls.Length; implNum++)

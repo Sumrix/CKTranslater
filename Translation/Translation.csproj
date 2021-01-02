@@ -26,6 +26,8 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <DocumentationFile>
+    </DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -73,6 +75,7 @@
     <Compile Include="Graphemes\GraphemeTranslation.cs" />
     <Compile Include="Interpolation\Interpolater.cs" />
     <Compile Include="Interpolation\Simplifier.cs" />
+    <Compile Include="JsonHelper.cs" />
     <Compile Include="Language.cs" />
     <Compile Include="Matching\LetterComparer.cs" />
     <Compile Include="Matching\LettersMatch.cs" />
@@ -86,16 +89,17 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="QueueTimer.cs" />
     <Compile Include="RuleRecognizer.cs" />
-    <Compile Include="Storages\BaseDB.cs" />
+    <Compile Include="Storages\DictionaryRepository.cs" />
+    <Compile Include="Storages\HashSetRepository.cs" />
+    <Compile Include="Storages\Repository.cs" />
     <Compile Include="Storages\DB.cs" />
-    <Compile Include="Storages\EngToRusMapDB.cs" />
-    <Compile Include="Storages\LettersDB.cs" />
-    <Compile Include="Storages\EngToRusSimilaritiesDB.cs" />
-    <Compile Include="Storages\NotTranslatedDB.cs" />
-    <Compile Include="Storages\NotTranslatedStringsDB.cs" />
-    <Compile Include="Storages\RulesDB.cs" />
-    <Compile Include="Storages\TranslatedDB.cs" />
-    <Compile Include="Storages\TranslatedStringsDB.cs" />
+    <Compile Include="Storages\EngToRusMapRepository.cs" />
+    <Compile Include="Storages\LettersRepository.cs" />
+    <Compile Include="Storages\EngToRusSimilaritiesRepository.cs" />
+    <Compile Include="Storages\WebTranslationMissesRepository.cs" />
+    <Compile Include="Storages\TransliterationRulesRepository.cs" />
+    <Compile Include="Storages\TranslationsRepository.cs" />
+    <Compile Include="Storages\EngToRusScriptLinesRepository.cs" />
     <Compile Include="Transliteration\GraphemeVariants.cs" />
     <Compile Include="Transliteration\SimpleTransliterator.cs" />
     <Compile Include="Transliteration\Translator.cs" />

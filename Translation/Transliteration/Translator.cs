@@ -1,24 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
+﻿using System.Collections.Generic;
 using System.Linq;
-using Translation.Storages;
 using MoreLinq;
+using Translation.Storages;
 using Translation.Web;
 
 namespace Translation.Transliteration
 {
     /// <summary>
-    /// Переводчик слов
+    ///     Переводчик слов
     /// </summary>
     public class Translator
     {
         /// <summary>
-        /// Перевести слова
+        ///     Перевести слова
         /// </summary>
         /// <param name="englishWords"></param>
         /// <returns></returns>
-        public  IEnumerable<WordInLangs> Translate(IEnumerable<string> englishWords)
+        public IEnumerable<WordInLangs> Translate(IEnumerable<string> englishWords)
         {
             if (!englishWords.Any())
             {
@@ -44,11 +42,12 @@ namespace Translation.Transliteration
         }
 
         /// <summary>
-        /// Получить данные по переводам из кэша
+        ///     Получить данные по переводам из кэша
         /// </summary>
         /// <param name="words"></param>
         /// <returns></returns>
-        private (IEnumerable<string> misses, IEnumerable<WordInLangs> hits) GetTranslationsFromCache(IEnumerable<string> words)
+        private (IEnumerable<string> misses, IEnumerable<WordInLangs> hits) GetTranslationsFromCache(
+            IEnumerable<string> words)
         {
             List<WordInLangs> hits = new List<WordInLangs>();
             List<string> misses = new List<string>();
@@ -56,8 +55,7 @@ namespace Translation.Transliteration
             foreach (string word in words)
             {
                 // Проверить наличие слов в БД переводов.
-                string translation = DB.Translated.GetTranslation(word);
-                if (translation != null)
+                if (DB.Translations.TryGetValue(word, out string translation))
                 {
                     hits.Add(new WordInLangs(word, translation));
                 }
@@ -65,7 +63,7 @@ namespace Translation.Transliteration
                 {
                     // Проверить наличие слов в БД без переводов
                     // Буквы через wiki не переводить, они не переведутся
-                    if (DB.NotTranslated.Contains(word) || word.Length == 1)
+                    if (DB.WebTranslationMisses.Contains(word) || word.Length == 1)
                     {
                         hits.Add(new WordInLangs(word, null));
                     }
@@ -80,11 +78,12 @@ namespace Translation.Transliteration
         }
 
         /// <summary>
-        /// Получить данные по переводам из интернета
+        ///     Получить данные по переводам из интернета
         /// </summary>
         /// <param name="words"></param>
         /// <returns></returns>
-        private (IEnumerable<string> misses, IEnumerable<WordInLangs> hits) GetTranslationsFromWeb(IEnumerable<string> words)
+        private (IEnumerable<string> misses, IEnumerable<WordInLangs> hits) GetTranslationsFromWeb(
+            IEnumerable<string> words)
         {
             if (!words.Any())
             {
@@ -114,10 +113,11 @@ namespace Translation.Transliteration
             return (misses, hits);
         }
 
-        private void CacheTranslations(IEnumerable<string> failedTranslations, IEnumerable<WordInLangs> successfulTranslations)
+        private void CacheTranslations(IEnumerable<string> failedTranslations,
+            IEnumerable<WordInLangs> successfulTranslations)
         {
-            DB.Translated.AddRange(successfulTranslations);
-            DB.NotTranslated.AddRange(failedTranslations);
+            DB.Translations.AddRange(successfulTranslations);
+            DB.WebTranslationMisses.AddRange(failedTranslations);
             DB.Save();
         }
 
@@ -127,14 +127,14 @@ namespace Translation.Transliteration
             Language language1 = Language.Load(DB.RusLetters);
 
             // Производим обучение переводчика
-            IEnumerable<WordInLangs> wordsToLearn = DB.Translated.WordsInLangs
+            IEnumerable<WordInLangs> wordsToLearn = DB.Translations
                 .Where(w => !w.Lang1Word.Contains(" ") && !w.Lang2Word.Contains(" "))
                 .Union(DB.EngToRusMap.Select(x => new WordInLangs(x.eng.ToString(), x.rus)));
 
             List<TransliterationRule> rules = RuleRecognizer.Recognize(language0, language1, wordsToLearn);
-            RulesDB rulesDB = new RulesDB();
-            rulesDB.AddRange(rules);
-            rulesDB.Save(FileName.RulesDB);
+            TransliterationRulesRepository transliterationRules = new TransliterationRulesRepository();
+            transliterationRules.AddRange(rules);
+            transliterationRules.Save(FileName.TransliterationRules);
 
             // Производим транслитерацию списка слов отложенных для транслитерации
             Transliterator translator = Transliterator.Create(rules, language0);

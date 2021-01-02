@@ -20,11 +20,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Data", "Data", "{806A63C9-F
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DB", "DB", "{24EAD81E-0055-4862-929F-D21B87533F7C}"
 	ProjectSection(SolutionItems) = preProject
-		Data\DB\NotTranslated.json = Data\DB\NotTranslated.json
-		Data\DB\NotTranslatedStrings.json = Data\DB\NotTranslatedStrings.json
-		Data\DB\Rules.json = Data\DB\Rules.json
-		Data\DB\Translated.json = Data\DB\Translated.json
-		Data\DB\TranslatedStrings.json = Data\DB\TranslatedStrings.json
+		Data\DB\EngToRusScriptLines.json = Data\DB\EngToRusScriptLines.json
+		Data\DB\Translations.json = Data\DB\Translations.json
+		Data\DB\TransliterationRules.json = Data\DB\TransliterationRules.json
+		Data\DB\WebTranslationMisses.json = Data\DB\WebTranslationMisses.json
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Languages", "Languages", "{4261C616-63D6-4916-93FC-8D496CD56289}"

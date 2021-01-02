@@ -6,11 +6,13 @@ namespace Translation.Parsing
     // Маленькие графемы собираются в большие, если уже такие есть
     public class TranslationLengthCorrector
     {
-        // Дерево существующих графем
-        private GraphemeVariant root;
         private int offset;
 
-        public static TranslationLengthCorrector Create(IEnumerable<GraphemeTranslation> translations, Language srcLanguage)
+        // Дерево существующих графем
+        private GraphemeVariant root;
+
+        public static TranslationLengthCorrector Create(IEnumerable<GraphemeTranslation> translations,
+            Language srcLanguage)
         {
             int variantCount = srcLanguage.MaxLetter - srcLanguage.MinLetter + 1;
 
@@ -27,7 +29,7 @@ namespace Translation.Parsing
                     continue;
                 }
 
-                ref GraphemeVariant[] vs = ref t.root.Variants;
+                ref var vs = ref t.root.Variants;
                 GraphemeVariant v = null;
 
                 foreach (char letter in translation.Original.Letters)
@@ -39,6 +41,7 @@ namespace Translation.Parsing
                         v = new GraphemeVariant();
                         vs[letter - t.offset] = v;
                     }
+
                     vs = ref v.Variants;
                 }
 
@@ -49,7 +52,7 @@ namespace Translation.Parsing
         }
 
         /// <summary>
-        /// Объединить графемы, если есть такая возможность
+        ///     Объединить графемы, если есть такая возможность
         /// </summary>
         /// <param name="translations"></param>
         /// <returns></returns>

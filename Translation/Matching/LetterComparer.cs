@@ -25,16 +25,15 @@ namespace Translation.Matching
             LetterComparer comparer = new LetterComparer(sourceCount, targetCount);
 
             for (int sourceIndex = 0; sourceIndex < sourceCount; sourceIndex++)
+            for (int targetIndex = 0; targetIndex < targetCount; targetIndex++)
             {
-                for (int targetIndex = 0; targetIndex < targetCount; targetIndex++)
+                int similarity = int.Parse(similarities[sourceIndex][targetIndex]);
+                if (similarity > 0)
                 {
-                    int similarity = int.Parse(similarities[sourceIndex][targetIndex]);
-                    if (similarity > 0)
-                    {
-                        similarity++;
-                    }
-                    comparer.similarities[sourceIndex, targetIndex] = similarity / 10f;
+                    similarity++;
                 }
+
+                comparer.similarities[sourceIndex, targetIndex] = similarity / 10f;
             }
 
             return comparer;

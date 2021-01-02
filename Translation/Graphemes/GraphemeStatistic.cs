@@ -30,14 +30,14 @@ namespace Translation.Graphemes
                     }
                     else
                     {
-                        flagsStatistic = new int[Grapheme.FlagVariants[(int)match.Original.Type]];
+                        flagsStatistic = new int[Grapheme.FlagVariants[(int) match.Original.Type]];
                         flagsStatistic[match.Original.Flags.Value] = 1;
                         translationStatistic[match.Translation] = flagsStatistic;
                     }
                 }
                 else
                 {
-                    int[] flagsStatistic = new int[Grapheme.FlagVariants[(int)match.Original.Type]];
+                    int[] flagsStatistic = new int[Grapheme.FlagVariants[(int) match.Original.Type]];
                     flagsStatistic[match.Original.Flags.Value] = 1;
 
                     statistic[match.Original.Letters] = new Dictionary<string, int[]>
@@ -58,11 +58,10 @@ namespace Translation.Graphemes
                     this.Values
                         .OrderBy(g => g.Key)
                         .Select(g => string.Format("{0}\n├─{1}", g.Key,
-                                        string.Join("\n├─", g.Value.Select(t =>
-                                     string.Format("{0}\n│ ├─{1}", t.Key,
-                                        string.Join("\n│ ├─", t.Value.Select((f, i) =>
-                                     f == 0 ? null :
-                                     string.Format("{0} - {1}", Bit.ToString((uint)i, 6), f))
+                            string.Join("\n├─", g.Value.Select(t =>
+                                string.Format("{0}\n│ ├─{1}", t.Key,
+                                    string.Join("\n│ ├─", t.Value.Select((f, i) =>
+                                            f == 0 ? null : string.Format("{0} - {1}", Bit.ToString((uint) i, 6), f))
                                         .Where(s => s != null))))))
                         )
                 );

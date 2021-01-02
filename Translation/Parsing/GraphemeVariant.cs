@@ -2,7 +2,7 @@
 {
     public class GraphemeVariant
     {
-        public GraphemeVariant[] Variants;
         public bool ExistGrapheme;
+        public GraphemeVariant[] Variants;
     }
 }

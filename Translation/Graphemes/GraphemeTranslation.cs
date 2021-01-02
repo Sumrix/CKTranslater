@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-
 using Translation.Matching;
 
 namespace Translation.Graphemes
@@ -33,7 +32,8 @@ namespace Translation.Graphemes
             return new GraphemeTranslation(this.Original.Clone(), this.Translation);
         }
 
-        public static List<GraphemeTranslation> Convert(IReadOnlyCollection<LettersMatch> matches, IEnumerable<Grapheme> graphemes)
+        public static List<GraphemeTranslation> Convert(IReadOnlyCollection<LettersMatch> matches,
+            IEnumerable<Grapheme> graphemes)
         {
             List<GraphemeTranslation> translations = new List<GraphemeTranslation>(matches.Count);
             IEnumerator<Grapheme> ge = graphemes.GetEnumerator();

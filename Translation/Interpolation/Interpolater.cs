@@ -8,13 +8,6 @@ namespace Translation.Interpolation
     {
         public static bool Debug = false;
 
-        private class DontCare
-        {
-            public string Type;
-            public int TypeRank;
-            public int ImplRank;
-        }
-
         public static void Interpolate(string[] vector, int numBits)
         {
             string[] types = vector.Distinct().Where(c => !string.IsNullOrEmpty(c)).ToArray();
@@ -31,12 +24,12 @@ namespace Translation.Interpolation
 
                 foreach (uint impl in reducedImpls)
                 {
-                    var perms = Simplifier.Permutations(impl, numBits).ToArray();
-                    
+                    uint[]? perms = Simplifier.Permutations(impl, numBits).ToArray();
+
                     if (Debug)
                     {
-                        Console.Write(type + ": " + string.Concat(ToVector(perms, vector.Length, type)) + 
-                            " " +Bit.ToString(impl, numBits));
+                        Console.Write(type + ": " + string.Concat(ToVector(perms, vector.Length, type)) +
+                                      " " + Bit.ToString(impl, numBits));
                         Console.WriteLine();
                     }
 
@@ -51,7 +44,7 @@ namespace Translation.Interpolation
                         int implRank = Bit.OnesCount(impl >> numBits);
 
                         if (dc.ImplRank < implRank ||
-                            (dc.ImplRank == implRank && dc.TypeRank < typeRank))
+                            dc.ImplRank == implRank && dc.TypeRank < typeRank)
                         {
                             dc.Type = type;
                             dc.TypeRank = typeRank;
@@ -85,6 +78,7 @@ namespace Translation.Interpolation
                     positions.Add(p);
                 }
             }
+
             return positions;
         }
 
@@ -106,6 +100,13 @@ namespace Translation.Interpolation
             }
 
             return vector;
+        }
+
+        private class DontCare
+        {
+            public int ImplRank;
+            public string Type;
+            public int TypeRank;
         }
     }
 }

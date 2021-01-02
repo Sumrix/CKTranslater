@@ -1,6 +1,5 @@
 ﻿using System.IO;
 using System.Net;
-using Translation;
 
 namespace Translation.Web.Queries
 {
@@ -28,10 +27,10 @@ namespace Translation.Web.Queries
         {
             this.queryTimer.WaitMyTurn();
 
-            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(uri);
+            HttpWebRequest request = (HttpWebRequest) WebRequest.Create(uri);
             request.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
 
-            using HttpWebResponse response = (HttpWebResponse)request.GetResponse();
+            using HttpWebResponse response = (HttpWebResponse) request.GetResponse();
             using Stream stream = response.GetResponseStream();
             using StreamReader reader = new StreamReader(stream);
             return reader.ReadToEnd();

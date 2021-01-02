@@ -4,16 +4,16 @@ using Translation.Graphemes;
 namespace Translation.Transliteration
 {
     /// <summary>
-    /// Траслитератор
+    ///     Траслитератор
     /// </summary>
     public class Transliterator
     {
-        private GraphemeVariant[] tree;
-        private Language srcLanguage;
         private int offset;
+        private Language srcLanguage;
+        private GraphemeVariant[] tree;
 
         /// <summary>
-        /// Создать новый транслитератор на основе правил транслитерации
+        ///     Создать новый транслитератор на основе правил транслитерации
         /// </summary>
         /// <param name="rules">Правила траслитерации</param>
         /// <param name="srcLanguage">Язык траслитерируемых слов</param>
@@ -31,7 +31,7 @@ namespace Translation.Transliteration
 
             foreach (TransliterationRule rule in rules)
             {
-                ref GraphemeVariant[] vs = ref t.tree;
+                ref var vs = ref t.tree;
                 GraphemeVariant v = null;
 
                 foreach (char letter in rule.Source)
@@ -43,6 +43,7 @@ namespace Translation.Transliteration
                         v = new GraphemeVariant();
                         vs[letter - t.offset] = v;
                     }
+
                     vs = ref v.Variants;
                 }
 

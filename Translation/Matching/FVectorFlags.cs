@@ -7,6 +7,6 @@ namespace Translation.Matching
     {
         Last01 = 1 << 2,
         Last0 = 1 << 1,
-        ValueType = 1 << 0,
+        ValueType = 1 << 0
     }
 }

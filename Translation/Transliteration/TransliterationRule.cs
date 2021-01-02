@@ -1,31 +1,20 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-
 using Translation.Graphemes;
 
 namespace Translation.Transliteration
 {
     /// <summary>
-    /// Правило траслитерации
+    ///     Правило траслитерации
     /// </summary>
     public class TransliterationRule
     {
         public string Source;
         public string[] Target;
 
-        public TransliterationRule()
-        {
-        }
-
         public override int GetHashCode()
         {
             return this.Source.GetHashCode();
-        }
-
-        private class TranslationOccurrences
-        {
-            public string Translation;
-            public int Occurrences;
         }
 
         public static List<TransliterationRule> Create(GraphemeStatistic statistic)
@@ -45,6 +34,7 @@ namespace Translation.Transliteration
                             o = new TranslationOccurrences();
                             occurrences[flags] = o;
                         }
+
                         ref int occurrence = ref trgLetter.Value[flags];
                         if (occurrence > o.Occurrences)
                         {
@@ -53,6 +43,7 @@ namespace Translation.Transliteration
                         }
                     }
                 }
+
                 rules.Add(new TransliterationRule
                 {
                     Source = srcLetter.Key,
@@ -63,6 +54,17 @@ namespace Translation.Transliteration
             }
 
             return rules;
+        }
+
+        public override string ToString()
+        {
+            return $"{this.Source}:{this.Target.Length}";
+        }
+
+        private class TranslationOccurrences
+        {
+            public int Occurrences;
+            public string Translation;
         }
     }
 }

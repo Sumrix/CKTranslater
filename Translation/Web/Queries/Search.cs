@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Web;
-
 using Newtonsoft.Json.Linq;
 
 namespace Translation.Web.Queries
@@ -12,17 +11,19 @@ namespace Translation.Web.Queries
         {
         }
 
-        protected override string CreateRequest(string input) =>
-            "https://en.wikipedia.org/w/api.php?action=query&format=json&list=search&utf8=1&srsearch="
-            + HttpUtility.UrlEncode(input)
-            + "&srlimit=500&srprop=";
+        protected override string CreateRequest(string input)
+        {
+            return "https://en.wikipedia.org/w/api.php?action=query&format=json&list=search&utf8=1&srsearch="
+                   + HttpUtility.UrlEncode(input)
+                   + "&srlimit=500&srprop=";
+        }
 
         protected override List<string> ParseResult(string response)
         {
             JObject o = JObject.Parse(response);
 
             return o["query"]["search"]
-                .Select(s => (string)s["title"])
+                .Select(s => (string) s["title"])
                 .ToList();
         }
     }

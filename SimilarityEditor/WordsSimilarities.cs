@@ -55,7 +55,7 @@ namespace SimilarityEditor
             foreach (string word in this.toTranslateWords)
             {
                 // 1. Проверить наличие слов в БД переводов.
-                string translation = DB.Translated.GetTranslation(word);
+                string translation = DB.Translations[word];
                 if (translation != null)
                 {
                     translatedWords.Add(new WordInLangs(word, translation));
@@ -63,7 +63,7 @@ namespace SimilarityEditor
                 else
                 {
                     // 2. Проверить наличие слов в БД без переводов
-                    if (DB.NotTranslated.Contains(word))
+                    if (DB.WebTranslationMisses.Contains(word))
                     {
                         toTransliterateWords.Add(word);
                     }
@@ -75,7 +75,7 @@ namespace SimilarityEditor
             }
 
             // 4. Производим обучение переводчика
-            IEnumerable<WordInLangs> wordsToLearn = DB.Translated.WordsInLangs
+            IEnumerable<WordInLangs> wordsToLearn = DB.Translations
                 .Union(DB.EngToRusMap.Select(x => new WordInLangs(x.eng.ToString(), x.rus)));
 
             this.words = wordsToLearn

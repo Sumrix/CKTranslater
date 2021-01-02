@@ -2,8 +2,8 @@
 {
     public class MaxFRoute
     {
-        public FVector Value;
         public FVector Null;
+        public FVector Value;
 
         public override string ToString()
         {

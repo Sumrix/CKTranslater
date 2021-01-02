@@ -1,36 +1,48 @@
 ﻿namespace Translation.Storages
 {
     /// <summary>
-    /// Хранилища к которым осуществляется доступ в проекте
+    ///     Хранилища к которым осуществляется доступ в проекте
     /// </summary>
     public static class DB
     {
-        private static TranslatedStringsDB translatedStrings;
-        private static NotTranslatedStringsDB notTranslatedStrings;
-        private static RulesDB rules;
-        private static NotTranslatedDB notTranslated;
-        private static TranslatedDB translated;
-        private static EngToRusMapDB engToRusMap;
-        private static LettersDB engLetters;
-        private static LettersDB rusLetters;
-        private static EngToRusSimilaritiesDB engToRusSimilarities;
+        private static EngToRusScriptLinesRepository engToRusScriptLines;
+        private static TransliterationRulesRepository transliterationRules;
+        private static WebTranslationMissesRepository webTranslationMisses;
+        private static TranslationsRepository translated;
+        private static EngToRusMapRepository engToRusMap;
+        private static LettersRepository engLetters;
+        private static LettersRepository rusLetters;
+        private static EngToRusSimilaritiesRepository engToRusSimilarities;
 
-        public static TranslatedStringsDB TranslatedStrings => translatedStrings ??= TranslatedStringsDB.Load();
-        public static NotTranslatedStringsDB NotTranslatedStrings => notTranslatedStrings ??= NotTranslatedStringsDB.Load();
-        public static RulesDB Rules => rules ??= RulesDB.Load();
-        public static NotTranslatedDB NotTranslated => notTranslated ??= NotTranslatedDB.Load();
-        public static TranslatedDB Translated => translated ??= TranslatedDB.Load();
-        public static EngToRusMapDB EngToRusMap => engToRusMap ??= EngToRusMapDB.Load();
-        public static LettersDB EngLetters => engLetters ??= LettersDB.Load(FileName.EngLanguage);
-        public static LettersDB RusLetters => rusLetters ??= LettersDB.Load(FileName.RusLanguage);
-        public static EngToRusSimilaritiesDB EngToRusSimilarities => engToRusSimilarities ??= EngToRusSimilaritiesDB.Load();
+        public static EngToRusScriptLinesRepository EngToRusScriptLines => engToRusScriptLines
+            ??= Repository.Load<EngToRusScriptLinesRepository>(FileName.EngToRusScriptLines);
+
+        public static TransliterationRulesRepository TransliterationRules => transliterationRules
+            ??= Repository.Load<TransliterationRulesRepository>(FileName.TransliterationRules);
+
+        public static WebTranslationMissesRepository WebTranslationMisses => webTranslationMisses
+            ??= Repository.Load<WebTranslationMissesRepository>(FileName.WebTranslationMisses);
+
+        public static TranslationsRepository Translations => translated
+            ??= Repository.Load<TranslationsRepository>(FileName.Translations);
+
+        public static EngToRusMapRepository EngToRusMap => engToRusMap
+            ??= Repository.Load<EngToRusMapRepository>(FileName.EngToRusMap);
+
+        public static LettersRepository EngLetters => engLetters
+            ??= Repository.Load<LettersRepository>(FileName.EngLetters);
+
+        public static LettersRepository RusLetters => rusLetters
+            ??= Repository.Load<LettersRepository>(FileName.RusLetters);
+
+        public static EngToRusSimilaritiesRepository EngToRusSimilarities => engToRusSimilarities
+            ??= Repository.Load<EngToRusSimilaritiesRepository>(FileName.EngToRusSimilarities);
 
         public static void Save()
         {
-            translatedStrings?.Save();
-            notTranslatedStrings?.Save();
-            rules?.Save();
-            notTranslated?.Save();
+            engToRusScriptLines?.Save();
+            transliterationRules?.Save();
+            webTranslationMisses?.Save();
             translated?.Save();
             engToRusMap?.Save();
             engLetters?.Save();

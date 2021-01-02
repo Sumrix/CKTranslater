@@ -28,10 +28,12 @@ namespace ConsoleTesting
             //PrepareToManualTranslate();
             //DB.Save();
             //TestTimer();
-            WikiTest();
-            //TestNewTranslator();
+            //WikiTest();
+            TestNewTranslator();
 
             //Console.ReadKey();
+
+            DB.Save();
         }
 
         private static void WikiTest()
@@ -65,7 +67,7 @@ namespace ConsoleTesting
             var translatedWords = translator.Translate(toTranslateWords);
 
             File.WriteAllLines(
-                @"D:\Desktop\CK2Works\Translated.txt",
+                @"D:\Desktop\CK2Works\Translations.txt",
                 translatedWords.Select(wordInLangs => wordInLangs.ToString())
             );
         }
@@ -81,31 +83,31 @@ namespace ConsoleTesting
             Console.WriteLine("5");
         }
 
-        private static void RepairSimilaritiesDB()
-        {
-            EngToRusSimilaritiesDB.Matrix oldItems = null;
+        //private static void RepairSimilaritiesDB()
+        //{
+        //    EngToRusSimilaritiesDB.Matrix oldItems = null;
 
-            if (File.Exists(FileName.EngToRusSimilarities))
-            {
-                using (StreamReader file = File.OpenText(FileName.EngToRusSimilarities))
-                {
-                    JsonSerializer serializer = new JsonSerializer();
-                    oldItems = (EngToRusSimilaritiesDB.Matrix)serializer.Deserialize(file, typeof(EngToRusSimilaritiesDB.Matrix));
-                }
-            }
+        //    if (File.Exists(FileName.EngToRusSimilarities))
+        //    {
+        //        using (StreamReader file = File.OpenText(FileName.EngToRusSimilarities))
+        //        {
+        //            JsonSerializer serializer = new JsonSerializer();
+        //            oldItems = (EngToRusSimilaritiesDB.Matrix)serializer.Deserialize(file, typeof(EngToRusSimilaritiesDB.Matrix));
+        //        }
+        //    }
 
-            var newDB = new EngToRusSimilaritiesDB();
+        //    var newDB = new EngToRusSimilaritiesDB();
 
-            for (int rusLetter = 0; rusLetter < newDB.RusCount - 1; rusLetter++)
-            {
-                for (int engLetter = 0; engLetter < newDB.EngCount - 1; engLetter++)
-                {
-                    newDB[engLetter, rusLetter] = oldItems.Items[rusLetter, engLetter];
-                }
-            }
+        //    for (int rusLetter = 0; rusLetter < newDB.RusCount - 1; rusLetter++)
+        //    {
+        //        for (int engLetter = 0; engLetter < newDB.EngCount - 1; engLetter++)
+        //        {
+        //            newDB[engLetter, rusLetter] = oldItems.Items[rusLetter, engLetter];
+        //        }
+        //    }
 
-            newDB.Save(FileName.EngToRusSimilarities);
-        }
+        //    newDB.Save(FileName.EngToRusSimilarities);
+        //}
 
         private static void NewMatches()
         {
@@ -156,7 +158,7 @@ namespace ConsoleTesting
             foreach (string word in toTranslateWords)
             {
                 // 1. Проверить наличие слов в БД переводов.
-                string translation = DB.Translated.GetTranslation(word);
+                string translation = DB.Translations[word];
                 if (translation != null)
                 {
                     translatedWords.Add(new WordInLangs(word, translation));
@@ -165,7 +167,7 @@ namespace ConsoleTesting
                 {
                     // 2.Проверить наличие слов в БД без переводов
                     // Буквы через wiki не переводить, они не переведутся
-                    if (DB.NotTranslated.Contains(word) || word.Length == 1)
+                    if (DB.WebTranslationMisses.Contains(word) || word.Length == 1)
                     {
                         toTransliterateWords.Add(word);
                     }
@@ -182,24 +184,24 @@ namespace ConsoleTesting
             {
                 if (wordInLangs.Lang2Word != null)
                 {
-                    DB.Translated.Add(wordInLangs);
+                    DB.Translations.Add(wordInLangs);
                     translatedWords.Add(wordInLangs);
                 }
                 else
                 {
-                    DB.NotTranslated.Add(wordInLangs.Lang1Word);
+                    DB.WebTranslationMisses.Add(wordInLangs.Lang1Word);
                     toTransliterateWords.Add(wordInLangs.Lang1Word);
                 }
             }
 
             // 4. Производим обучение переводчика
-            IEnumerable<WordInLangs> wordsToLearn = DB.Translated.WordsInLangs
+            IEnumerable<WordInLangs> wordsToLearn = DB.Translations
                 .Union(DB.EngToRusMap.Select(x => new WordInLangs(x.eng.ToString(), x.rus)));
 
             List<TransliterationRule> rules = RuleRecognizer.Recognize(language0, language1, wordsToLearn);
-            RulesDB rulesDB = new RulesDB();
-            rulesDB.AddRange(rules);
-            rulesDB.Save(FileName.RulesDB);
+            TransliterationRulesRepository transliterationRules = new TransliterationRulesRepository();
+            transliterationRules.AddRange(rules);
+            transliterationRules.Save(FileName.TransliterationRules);
 
             // 5. Производим транслитерацию списка слов отложенных для транслитерации
             Transliterator translator = Transliterator.Create(rules, language0);
@@ -209,9 +211,9 @@ namespace ConsoleTesting
                 translatedWords.Add(new WordInLangs(word, translator.Translate(word)));
             }
 
-            File.Delete(@"D:\Desktop\CK2Works\Translated.txt");
+            File.Delete(@"D:\Desktop\CK2Works\Translations.txt");
             File.WriteAllLines(
-                @"D:\Desktop\CK2Works\Translated.txt",
+                @"D:\Desktop\CK2Works\Translations.txt",
                 translatedWords.Select(wordInLangs => wordInLangs.ToString())
             );
 
@@ -229,7 +231,7 @@ namespace ConsoleTesting
             List<string> toWikiTranslate = new List<string>();
 
 
-            IEnumerable<WordInLangs> wordsToLearn = DB.Translated.WordsInLangs
+            IEnumerable<WordInLangs> wordsToLearn = DB.Translations
                 .Union(DB.EngToRusMap.Select(x => new WordInLangs(x.eng.ToString(), x.rus)));
 
             List<TransliterationRule> rules = RuleRecognizer.Recognize(language0, language1, wordsToLearn);
@@ -240,7 +242,7 @@ namespace ConsoleTesting
             foreach (string word in toTranslateWords)
             {
                 // 1. Проверить наличие слов в БД переводов.
-                string translation = DB.Translated.GetTranslation(word);
+                string translation = DB.Translations[word];
                 if (translation != null && WordMatch.Create(word, translation, language0, language1).Similarity >= 0.68)
                 {
                     translatedWords.Add((word, translation, translator.Translate(word)));
