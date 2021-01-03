@@ -14,7 +14,8 @@ namespace Translation.Web.Queries
     {
         private readonly int batchSize;
 
-        protected LimitedQuery(QueueTimer queryTimer, int batchSize) : base(queryTimer)
+        protected LimitedQuery(QueueTimer queryTimer, int batchSize, string logPath)
+            : base(queryTimer, logPath)
         {
             this.batchSize = batchSize;
         }

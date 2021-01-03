@@ -15,7 +15,8 @@ namespace Translation.Web.Queries
     {
         private const int maxNumOfTitles = 50;
 
-        public LangLinks(QueueTimer queryTimer) : base(queryTimer, maxNumOfTitles)
+        public LangLinks(QueueTimer queryTimer, string logPath)
+            : base(queryTimer, LangLinks.maxNumOfTitles, logPath)
         {
         }
 

@@ -29,5 +29,15 @@ namespace Translation
             JsonSerializer serializer = JsonSerializer.Create(settings);
             serializer.Serialize(file, obj);
         }
+
+        public static string JsonPrettify(string json)
+        {
+            using StringReader stringReader = new StringReader(json);
+            using StringWriter stringWriter = new StringWriter();
+            JsonTextReader jsonReader = new JsonTextReader(stringReader);
+            JsonTextWriter jsonWriter = new JsonTextWriter(stringWriter) { Formatting = Formatting.Indented };
+            jsonWriter.WriteToken(jsonReader);
+            return stringWriter.ToString();
+        }
     }
 }

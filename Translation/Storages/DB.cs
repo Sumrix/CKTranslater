@@ -42,7 +42,7 @@
         {
             DB.engToRusScriptLines?.Save();
             DB.transliterationRules?.Save();
-            DB.webTranslationMisses?.Save();
+            //DB.webTranslationMisses?.Save();
             // Закоментировано, что бы не сохранять неправильные переводы, пока переводчик не будет работать хорошо
             //DB.translations?.Save();
             DB.engToRusMap?.Save();

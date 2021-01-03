@@ -28,8 +28,8 @@ namespace ConsoleTesting
             //PrepareToManualTranslate();
             //DB.Save();
             //TestTimer();
-            //WikiTest();
-            TestNewTranslator();
+            WikiTest();
+            //TestNewTranslator();
 
             //Console.ReadKey();
 
@@ -46,10 +46,12 @@ namespace ConsoleTesting
                 .OrderBy(x => x.Lang1Word);
             File.WriteAllLines(@"D:\Desktop\out.txt", translatedWords.Select(x => x.ToString()).ToArray());
 
-            //var v = Wiki.Translate(new[] { "abah" }, language0, language1).ToList();
+            //var v = Wiki.Translate(new[] { "aban" }, language0, language1)
+            //    .ToList();
+
             //File.WriteAllLines(
             //    @"D:\Desktop\Wiki.GetSimilar.txt",
-            //    WikiTranslator.TranslateExact(Wiki.Search("Abi'l-Hadid"))
+            //    Wiki.TranslateExact(Wiki.Search("Abi'l-Hadid"))
             //        .Select(x => x.ToString())
             //        .ToArray()
             //);
@@ -62,9 +64,8 @@ namespace ConsoleTesting
         private static void TestNewTranslator()
         {
             string[] toTranslateWords = File.ReadAllLines(FileName.ToTranslateWords);
-
-            Translator translator = new Translator();
-            var translatedWords = translator.Translate(toTranslateWords);
+            
+            var translatedWords = Translator.Translate(toTranslateWords);
 
             File.WriteAllLines(
                 @"D:\Desktop\CK2Works\Translations.txt",

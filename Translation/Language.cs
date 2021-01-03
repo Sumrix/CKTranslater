@@ -46,7 +46,7 @@ namespace Translation
             int identifier = 0;
 
             // Значение по-умолчанию -1, указывает на то что идентификатора для символа нет
-            for (int i = 0; i < language.identifiersByChar[0]; i++)
+            for (int i = 0; i < language.identifiersByChar.Length; i++)
             {
                 language.identifiersByChar[i] = -1;
             }

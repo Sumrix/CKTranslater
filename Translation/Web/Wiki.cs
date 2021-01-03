@@ -16,7 +16,7 @@ namespace Translation.Web
         private static readonly Regex removePattern = new Regex("(\\(.*\\) ?)");
 
         /// <summary>
-        ///     Перевод строк lines из языка language0 в language1
+        ///     Перевод строк lines из языка language1 в language2
         /// </summary>
         /// <param name="lines">Строки</param>
         /// <param name="sourceLanguage">Исходный язык перевода</param>
@@ -26,7 +26,7 @@ namespace Translation.Web
             Language targetLanguage)
         {
             // То что можем, переводим точно
-            var (exactTranslasions, notTranslatedLines) = TranslateExact(lines)
+            var (exactTranslasions, notTranslatedLines) = Wiki.TranslateExact(lines)
                 .Partition(
                     trans => trans.Lang2Word != null &&
                              targetLanguage.Belongs(trans.Lang2Word),
@@ -37,7 +37,7 @@ namespace Translation.Web
                 );
 
             // Там где нет точных переводов, ищем примерные
-            var (foundResults, notFoundLines) = Search(notTranslatedLines)
+            var (foundResults, notFoundLines) = Wiki.Search(notTranslatedLines)
                 .Partition(
                     result => result.Results.Any(),
                     (True, False) => (
@@ -51,7 +51,7 @@ namespace Translation.Web
             // блоки будут полупустыми, а количество запросов будет больше. По этому для экономии
             // объединим всё в один список, тогда все блоки будут полными и запросов будет меньше.
             var allResults = foundResults.SelectMany(s => s.Results);
-            var allResultTrans = TranslateExact(allResults).ToList();
+            var allResultTrans = Wiki.TranslateExact(allResults).ToList();
 
             var originalsByResult = foundResults
                 .SelectMany(foundResult =>
@@ -66,8 +66,9 @@ namespace Translation.Web
                 .GroupBy(x => x.original, x => x.wordInLangs)
                 .ToDictionary(x => x.Key);
             var roughTrans = resultTrans
-                .Select(result => GetMostSuitableTranslation(result.Key, result.Value, sourceLanguage, targetLanguage))
-                .Select(Normalize)
+                .Select(result =>
+                    Wiki.GetMostSuitableTranslation(result.Key, result.Value, sourceLanguage, targetLanguage))
+                .Select(Wiki.Normalize)
                 .ToList();
 
             return roughTrans
@@ -75,7 +76,7 @@ namespace Translation.Web
                 .Union(notFoundLines
                     .Select(line => new WordInLangs(line, null))
                 )
-                .Select(Normalize);
+                .Select(Wiki.Normalize);
         }
 
         /// <summary>
@@ -88,16 +89,12 @@ namespace Translation.Web
             return lines?.Any() != true
                 ? Array.Empty<WordInLangs>()
                 : WikiApi.GetTranslations(lines)
-                    .Select(Normalize);
+                    .Select(Wiki.Normalize);
         }
 
         /// <summary>
-        ///     Примерный перевод
+        ///     Найти похожие слова
         /// </summary>
-        /// <param name="lines">Строки для перевода</param>
-        /// <param name="sourceLanguage">Исходный язык перевода</param>
-        /// <param name="targetLanguage">Целевой язык перевода</param>
-        /// <returns>Примерные переводы</returns>
         public static List<(string Line, List<string> Results)> Search(IEnumerable<string> lines)
         {
             return lines
@@ -105,7 +102,7 @@ namespace Translation.Web
                 (
                     line,
                     WikiApi.PrefixSearch(line)
-                        .Select(s => Normalize(s))
+                        .Select(s => Wiki.Normalize(s))
                         .Where(s => s.IndexOf(line, StringComparison.InvariantCultureIgnoreCase) >= 0)
                         .ToList()
                 ))
@@ -113,32 +110,33 @@ namespace Translation.Web
         }
 
         private static WordInLangs GetMostSuitableTranslation(string line, IEnumerable<WordInLangs> translations,
-            Language language0, Language language1)
+            Language language1, Language language2)
         {
-            (string translation, float Similarity) mostSuitableTranslation = translations
+            var (mostSuitableTranslation, _) = translations
                 // Берём подходящие пары слово-перевод
                 .Where(x => x.Lang1Word.Contains(line, StringComparison.InvariantCultureIgnoreCase)
                             && !string.IsNullOrEmpty(x.Lang2Word))
                 // Разбиваем перевод на слова
                 .SelectMany(x => x.Lang2Word.Split(c => !char.IsLetter(c), cs => string.Concat(cs)))
                 // Выбираем адекватные переводы
-                .Where(translation => !string.IsNullOrEmpty(translation) && language1.Belongs(translation))
+                .Where(translation => !string.IsNullOrEmpty(translation) && language2.Belongs(translation))
                 // Выбираем наиболее подходящее слово
                 .Select(translation =>
-                    (translation, WordMatch.Create(line, translation, language0, language1).Similarity))
-                .MaxBy(x => x.Similarity)
+                    (translation, matchInfo: WordMatch.Create(line, translation, language1, language2)))
+                .Where(x => x.matchInfo.Success)
+                .MaxBy(x => x.matchInfo.Similarity)
                 .FirstOrDefault();
 
-            return new WordInLangs(line, mostSuitableTranslation.translation);
+            return new WordInLangs(line, mostSuitableTranslation);
         }
 
         private static WordInLangs Normalize(WordInLangs trans)
         {
             return new WordInLangs(
-                Normalize(trans.Lang1Word),
+                Wiki.Normalize(trans.Lang1Word),
                 trans.Lang2Word == null
                     ? null
-                    : removePattern.Replace(trans.Lang2Word, "").ToLower()
+                    : Wiki.removePattern.Replace(trans.Lang2Word, "").ToLower()
             );
         }
 

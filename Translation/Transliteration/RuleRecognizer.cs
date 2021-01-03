@@ -23,7 +23,7 @@ namespace Translation.Transliteration
             List<List<GraphemeTranslation>> wordGraphemeTranslations = (
                 from t in wordTextTranslations
                 let match = WordMatch.Create(t.Lang1Word, t.Lang2Word, sourceLanguage, resultLanguage)
-                where match.Similarity >= RuleRecognizer.MinimumSimilarity
+                where match.Success
                 select GraphemeTranslation.Create(match.LetterMatches, sourceLanguage.ToGraphemes(t.Lang1Word))
             ).ToList();
 

@@ -9,6 +9,7 @@ namespace Translation.Matching
     /// </summary>
     public class WordMatch
     {
+        private const float MinimumSimilarityToMatch = 0.68f;
         private readonly CalculationCell[,] calcCells;
         private IReadOnlyCollection<LettersMatch> matches;
         private float similarity = -1;
@@ -44,6 +45,8 @@ namespace Translation.Matching
             }
         }
 
+        public bool Success => this.Similarity > WordMatch.MinimumSimilarityToMatch;
+
         private static float SimilarityF(int? eng, int? rus)
         {
             return eng == null && rus == null ? 0 :
@@ -54,7 +57,8 @@ namespace Translation.Matching
 
         public static WordMatch Create(string word0, string word1, Language language0, Language language1)
         {
-            CalculationCell[,] steps = FillCalculationArray(word0, word1, language0, language1, SimilarityF);
+            CalculationCell[,] steps =
+                WordMatch.FillCalculationArray(word0, word1, language0, language1, WordMatch.SimilarityF);
 
             return new WordMatch(steps);
         }

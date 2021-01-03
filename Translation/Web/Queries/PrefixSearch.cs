@@ -10,7 +10,8 @@ namespace Translation.Web.Queries
     /// </summary>
     public class PrefixSearch : Query<string, List<string>>
     {
-        public PrefixSearch(QueueTimer queryTimer) : base(queryTimer)
+        public PrefixSearch(QueueTimer queryTimer, string logPath)
+            : base(queryTimer, logPath)
         {
         }
 

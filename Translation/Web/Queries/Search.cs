@@ -7,7 +7,8 @@ namespace Translation.Web.Queries
 {
     public class Search : Query<string, List<string>>
     {
-        public Search(QueueTimer queryTimer) : base(queryTimer)
+        public Search(QueueTimer queryTimer, string logPath)
+            : base(queryTimer, logPath)
         {
         }
 
