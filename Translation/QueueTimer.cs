@@ -8,8 +8,10 @@ namespace Translation
 {
     /// <summary>
     ///     Таймер вызывающий по очереди подписанные методы.
-    ///     <para>Используется в <see cref="Web.Queries.Query{TInput,TOutput}"/> Query, что бы
-    ///     все запросы вызывались по очереди и с промежутком времени.</para>
+    ///     <para>
+    ///         Используется в <see cref="Web.Queries.Query{TInput,TOutput}" /> Query, что бы
+    ///         все запросы вызывались по очереди и с промежутком времени.
+    ///     </para>
     /// </summary>
     public class QueueTimer
     {
@@ -68,7 +70,7 @@ namespace Translation
         }
 
         /// <summary>
-        /// Ждать моей очереди
+        ///     Ждать моей очереди
         /// </summary>
         public void WaitMyTurn()
         {

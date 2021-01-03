@@ -74,7 +74,7 @@ namespace CKTranslator
 
             this.InitializeComponent();
 
-            var dpd = DependencyPropertyDescriptor.FromProperty(ItemsControl.ItemsSourceProperty, typeof(ListView));
+            DependencyPropertyDescriptor dpd = DependencyPropertyDescriptor.FromProperty(ItemsControl.ItemsSourceProperty, typeof(ListView));
             if (dpd != null)
             {
                 dpd.AddValueChanged(this.EventsView, this.EventsView_ItemsSourceChanged);

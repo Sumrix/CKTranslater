@@ -42,7 +42,7 @@ namespace ConsoleTesting
             Language language1 = Language.Load(DB.RusLetters);
 
             string[] toTranslateWords = File.ReadAllLines(FileName.ToTranslateWords);
-            var translatedWords = Wiki.Translate(toTranslateWords, language0, language1)
+            IOrderedEnumerable<WordInLangs> translatedWords = Wiki.Translate(toTranslateWords, language0, language1)
                 .OrderBy(x => x.Lang1Word);
             File.WriteAllLines(@"D:\Desktop\out.txt", translatedWords.Select(x => x.ToString()).ToArray());
 
@@ -65,7 +65,7 @@ namespace ConsoleTesting
         {
             string[] toTranslateWords = File.ReadAllLines(FileName.ToTranslateWords);
             
-            var translatedWords = Translator.Translate(toTranslateWords);
+            IEnumerable<WordInLangs> translatedWords = Translator.Translate(toTranslateWords);
 
             File.WriteAllLines(
                 @"D:\Desktop\CK2Works\Translations.txt",
@@ -115,27 +115,27 @@ namespace ConsoleTesting
             Language language0 = Language.Load(DB.EngLetters);
             Language language1 = Language.Load(DB.RusLetters);
 
-            var paris = new[]
+            (string, string)[] paris = new[]
             {
                 //("yffe", "иф"),
                 ("richuin", "ришьон")
             };
 
-            foreach (var (w0, w1) in paris)
+            foreach ((string w0, string w1) in paris)
             {
                 WordMatch match = WordMatch.Create(w0, w1, language0, language1);
 
                 Console.WriteLine($"Words: {w0}, {w1}");
                 Console.Write("Matches:");
 
-                foreach (var m in match.LetterMatches)
+                foreach (LettersMatch m in match.LetterMatches)
                 {
                     Console.Write($" {m.Letters0}-{m.Letters1}");
                 }
 
                 Console.WriteLine();
 
-                foreach (var lm in match.LetterMatches)
+                foreach (LettersMatch lm in match.LetterMatches)
                 {
                     Console.WriteLine($" {lm.Letters0}-{lm.Letters1}-{lm.Similarity}");
                 }

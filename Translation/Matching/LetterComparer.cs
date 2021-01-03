@@ -13,6 +13,11 @@ namespace Translation.Matching
             this.similarities = new float[sourceCount, targetCount];
         }
 
+        public float Compare(int letterIndex1, int letterIndex2)
+        {
+            return this.similarities[letterIndex1, letterIndex2];
+        }
+
         public static LetterComparer Load(string fileName)
         {
             string[][] similarities = File.ReadAllLines(fileName)
@@ -37,11 +42,6 @@ namespace Translation.Matching
             }
 
             return comparer;
-        }
-
-        public float Compare(int letterIndex1, int letterIndex2)
-        {
-            return this.similarities[letterIndex1, letterIndex2];
         }
     }
 }

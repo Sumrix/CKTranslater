@@ -15,31 +15,6 @@ namespace Translation.Transliteration
     {
         private const float MinimumSimilarity = 0.68f;
 
-        public static List<TransliterationRule> Recognize(
-            Language sourceLanguage,
-            Language resultLanguage,
-            IEnumerable<WordInLangs> wordTextTranslations)
-        {
-            List<List<GraphemeTranslation>> wordGraphemeTranslations = (
-                from t in wordTextTranslations
-                let match = WordMatch.Create(t.Lang1Word, t.Lang2Word, sourceLanguage, resultLanguage)
-                where match.Success
-                select GraphemeTranslation.Create(match.LetterMatches, sourceLanguage.ToGraphemes(t.Lang1Word))
-            ).ToList();
-
-            List<GraphemeTranslation> correctedGraphemeTranslations =
-                RuleRecognizer.CorrectGraphemeLengths(sourceLanguage, wordGraphemeTranslations);
-
-            IEnumerable<GraphemeTranslation> allGraphemeTranslations = DB.EngToRusMap
-                .Select(x => new GraphemeTranslation(sourceLanguage.ToGrapheme(x.eng.ToString()), x.rus))
-                .Union(correctedGraphemeTranslations);
-
-            List<TransliterationRule> rules =
-                RuleRecognizer.CreateTranslationRules(allGraphemeTranslations);
-
-            return rules;
-        }
-
         private static List<GraphemeTranslation> CorrectGraphemeLengths(
             Language srcLanguage,
             IReadOnlyCollection<IReadOnlyList<GraphemeTranslation>> wordGraphemeTranslations)
@@ -64,6 +39,31 @@ namespace Translation.Transliteration
             {
                 Interpolater.Interpolate(rule.Target, Bit.OnesCount((uint) rule.Target.Length - 1));
             }
+
+            return rules;
+        }
+
+        public static List<TransliterationRule> Recognize(
+            Language sourceLanguage,
+            Language resultLanguage,
+            IEnumerable<WordInLangs> wordTextTranslations)
+        {
+            List<List<GraphemeTranslation>> wordGraphemeTranslations = (
+                from t in wordTextTranslations
+                let match = WordMatch.Create(t.Lang1Word, t.Lang2Word, sourceLanguage, resultLanguage)
+                where match.Success
+                select GraphemeTranslation.Create(match.LetterMatches, sourceLanguage.ToGraphemes(t.Lang1Word))
+            ).ToList();
+
+            List<GraphemeTranslation> correctedGraphemeTranslations =
+                RuleRecognizer.CorrectGraphemeLengths(sourceLanguage, wordGraphemeTranslations);
+
+            IEnumerable<GraphemeTranslation> allGraphemeTranslations = DB.EngToRusMap
+                .Select(x => new GraphemeTranslation(sourceLanguage.ToGrapheme(x.eng.ToString()), x.rus))
+                .Union(correctedGraphemeTranslations);
+
+            List<TransliterationRule> rules =
+                RuleRecognizer.CreateTranslationRules(allGraphemeTranslations);
 
             return rules;
         }

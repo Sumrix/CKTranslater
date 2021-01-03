@@ -5,6 +5,26 @@
     /// </summary>
     public static class Bit
     {
+        public static uint GetFirst(uint num, int length)
+        {
+            return num & Bit.Ones(length);
+        }
+
+        public static uint GetRange(uint num, int start, int length)
+        {
+            return (num & (Bit.Ones(length) << start)) >> start;
+        }
+
+        public static uint MaxNum(int bitCount)
+        {
+            return Bit.Ones(bitCount);
+        }
+
+        public static uint Ones(int length)
+        {
+            return uint.MaxValue >> (32 - length);
+        }
+
         public static int OnesCount(uint num)
         {
             ulong result = num - ((num >> 1) & 0x5555555555555555UL);
@@ -25,26 +45,6 @@
             }
 
             return new string(s);
-        }
-
-        public static uint GetFirst(uint num, int length)
-        {
-            return num & Ones(length);
-        }
-
-        public static uint GetRange(uint num, int start, int length)
-        {
-            return (num & (Ones(length) << start)) >> start;
-        }
-
-        public static uint Ones(int length)
-        {
-            return uint.MaxValue >> (32 - length);
-        }
-
-        public static uint MaxNum(int bitCount)
-        {
-            return Ones(bitCount);
         }
     }
 }

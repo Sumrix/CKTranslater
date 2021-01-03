@@ -75,7 +75,7 @@ namespace CKTranslator.Processing
 
             //SaveToFile(ids, "ids.txt");
 
-            var name2 = new HashSet<string>
+            HashSet<string> name2 = new HashSet<string>
             {
                 "add_character_modifier.name",
                 "character_event.name",
@@ -87,7 +87,7 @@ namespace CKTranslator.Processing
                 "add_province_modifier.name"
             };
 
-            var strs = this.rusScripts.Strings
+            IEnumerable<KeyValuePair<ScriptKey, string>> strs = this.rusScripts.Strings
                     .Union(this.engScripts.Strings)
                     .Where(x => !IdManager.IgnoreValueRegex.IsMatch(x.Value) &&
                                 IdManager.StringKeys.Any(keyPattern => x.Key.Path.LastStep.EqualsWildcard(keyPattern)) &&
@@ -103,12 +103,12 @@ namespace CKTranslator.Processing
                                 !(x.Value.Length > 1 && char.IsUpper(x.Value.First()) && x.Value.Skip(1).All(c=>char.IsLower(c))));
 
             // Идентификаторы которым присваиваются строковые значения
-            var stringIdentifiers = strs
+            HashSet<string> stringIdentifiers = strs
                     .Select(x => x.Key.Path.LastStep)
                     .ToHashSet();
 
             // Пути по которым идентификаторам присваиваются строковые значения
-            var stringPaths = strs
+            HashSet<string> stringPaths = strs
                     .GroupBy(x => string.Join(".", x.Key.Path.Steps.Reverse<string>()), x => x.Value)
                     .Select(x => x.Key + " = " + x.First())
                     //.Select(x => string.Join(".", x.Key.Path.Steps.Reverse<string>()) + " = " + x.Value)

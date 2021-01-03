@@ -316,7 +316,7 @@ namespace CKTranslator
         /// </summary>
         private IList<ModViewData> SortByDependencies(IList<ModViewData> mods)
         {
-            var comparer = Comparer<ModViewData>.Create(
+            Comparer<ModViewData> comparer = Comparer<ModViewData>.Create(
                 (a, b) => b.ModInfo.Dependencies != null && b.ModInfo.Dependencies.Contains(a.ModInfo)
                           ? -1
                           : a.ModInfo.Name.CompareTo(b.ModInfo.Name)

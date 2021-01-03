@@ -47,63 +47,12 @@ namespace Translation.Matching
 
         public bool Success => this.Similarity > WordMatch.MinimumSimilarityToMatch;
 
-        private static float SimilarityF(int? eng, int? rus)
-        {
-            return eng == null && rus == null ? 0 :
-                eng == null ? DB.EngToRusSimilarities.EmptyEngToRus(rus.Value) :
-                rus == null ? DB.EngToRusSimilarities.EmptyRusToEng(eng.Value) :
-                DB.EngToRusSimilarities[eng.Value, rus.Value];
-        }
-
         public static WordMatch Create(string word0, string word1, Language language0, Language language1)
         {
             CalculationCell[,] steps =
                 WordMatch.FillCalculationArray(word0, word1, language0, language1, WordMatch.SimilarityF);
 
             return new WordMatch(steps);
-        }
-
-        //private float GetSimilarity()
-        //{
-        //    int index0 = this.word0.Length - 1;
-        //    int index1 = this.word1.Length - 1;
-
-        //    CalculationCell step = this.calcCells[index0, index1];
-
-        //    return FVector.Max(
-        //        step.Route0.Null,
-        //        step.Route0.Value,
-        //        step.Route1.Null,
-        //        step.Route1.Value
-        //    ).PathAverage;
-        //}
-
-        private IReadOnlyCollection<LettersMatch> GetMatches()
-        {
-            Stack<LettersMatch> matches = new Stack<LettersMatch>();
-
-            int index0 = this.calcCells.GetLength(0) - 1;
-            int index1 = this.calcCells.GetLength(1) - 1;
-
-            CalculationCell lastCell = this.calcCells[index0, index1];
-            CalculationCell lastValueCell = this.calcCells[index0 - 1, index1 - 1];
-            FVector vector = FVector.Max(
-                lastCell?.Route0?.Null,
-                lastCell?.Route1?.Null,
-                //lastValueCell?.Route0?.Null,
-                lastValueCell?.Route0?.Value,
-                //lastValueCell?.Route1?.Null,
-                lastValueCell?.Route1?.Value
-            );
-
-            this.similarity = vector.PathAverage;
-
-            for (; vector != null; vector = vector.Previous)
-            {
-                matches.Push(new LettersMatch(vector.Letters0 ?? "", vector.Letters1 ?? "", vector.Average));
-            }
-
-            return matches;
         }
 
         /// <summary>
@@ -207,6 +156,57 @@ namespace Translation.Matching
             }
 
             return calcs01;
+        }
+
+        //private float GetSimilarity()
+        //{
+        //    int index0 = this.word0.Length - 1;
+        //    int index1 = this.word1.Length - 1;
+
+        //    CalculationCell step = this.calcCells[index0, index1];
+
+        //    return FVector.Max(
+        //        step.Route0.Null,
+        //        step.Route0.Value,
+        //        step.Route1.Null,
+        //        step.Route1.Value
+        //    ).PathAverage;
+        //}
+
+        private IReadOnlyCollection<LettersMatch> GetMatches()
+        {
+            Stack<LettersMatch> matches = new Stack<LettersMatch>();
+
+            int index0 = this.calcCells.GetLength(0) - 1;
+            int index1 = this.calcCells.GetLength(1) - 1;
+
+            CalculationCell lastCell = this.calcCells[index0, index1];
+            CalculationCell lastValueCell = this.calcCells[index0 - 1, index1 - 1];
+            FVector vector = FVector.Max(
+                lastCell?.Route0?.Null,
+                lastCell?.Route1?.Null,
+                //lastValueCell?.Route0?.Null,
+                lastValueCell?.Route0?.Value,
+                //lastValueCell?.Route1?.Null,
+                lastValueCell?.Route1?.Value
+            );
+
+            this.similarity = vector.PathAverage;
+
+            for (; vector != null; vector = vector.Previous)
+            {
+                matches.Push(new LettersMatch(vector.Letters0 ?? "", vector.Letters1 ?? "", vector.Average));
+            }
+
+            return matches;
+        }
+
+        private static float SimilarityF(int? eng, int? rus)
+        {
+            return eng == null && rus == null ? 0 :
+                eng == null ? DB.EngToRusSimilarities.EmptyEngToRus(rus.Value) :
+                rus == null ? DB.EngToRusSimilarities.EmptyRusToEng(eng.Value) :
+                DB.EngToRusSimilarities[eng.Value, rus.Value];
         }
     }
 }

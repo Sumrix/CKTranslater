@@ -42,7 +42,7 @@ namespace CKTranslator.Parsing.Listeners
         {
             this.curPath = new Path(this.pathList.ToList());
 
-            var rvalue = context.rvalue();
+            CKParser.RvalueContext rvalue = context.rvalue();
             if (rvalue != null)
             {
                 this.ProcessRValue(rvalue);
@@ -66,7 +66,7 @@ namespace CKTranslator.Parsing.Listeners
 
         private void ProcessRValue(CKParser.RvalueContext rvalue)
         {
-            var @string = rvalue.STRING();
+            ITerminalNode @string = rvalue.STRING();
             if (@string != null)
             {
                 this.UpdateRepetitionIndex();
@@ -74,7 +74,7 @@ namespace CKTranslator.Parsing.Listeners
                 return;
             }
 
-            var stringArray = rvalue.block()?.array()?.STRING();
+            ITerminalNode[] stringArray = rvalue.block()?.array()?.STRING();
             if (stringArray != null && allowedArrays.Contains(this.pathList.Last.Value))
             {
                 this.UpdateRepetitionIndex();

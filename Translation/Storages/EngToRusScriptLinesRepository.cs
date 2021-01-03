@@ -39,25 +39,6 @@ namespace Translation.Storages
             return this.GetEnumerator();
         }
 
-        protected override void LoadData(string fileName)
-        {
-            this.data = JsonHelper.Deserialize<EngToRusScriptLinesData>(fileName);
-        }
-
-        protected override object GetDataToSave()
-        {
-            // Перемещаем данные в сортированные коллекции, для упорядоченного хранения данных в файлах.
-            // Чисто для красоты и удобного отслеживания изменений. Потом можно убрать.
-            var sortedData = new SortedDictionary<string, SortedDictionary<string, string>>();
-            foreach (var engToRusScriptLine in this.data)
-            {
-                var sortedRusScriptLines = new SortedDictionary<string, string>(engToRusScriptLine.Value);
-                sortedData.Add(engToRusScriptLine.Key, sortedRusScriptLines);
-            }
-
-            return sortedData;
-        }
-
         public void Add(string engLine, string rusLine, string rusLinePath)
         {
             if (this.data.TryGetValue(engLine, out Dictionary<string, string> rusScriptLines))
@@ -72,6 +53,25 @@ namespace Translation.Storages
             {
                 this.data[engLine] = new Dictionary<string, string> { { rusLinePath, rusLine } };
             }
+        }
+
+        public bool Contains(string engLine)
+        {
+            return this.data.ContainsKey(engLine);
+        }
+
+        protected override object GetDataToSave()
+        {
+            // Перемещаем данные в сортированные коллекции, для упорядоченного хранения данных в файлах.
+            // Чисто для красоты и удобного отслеживания изменений. Потом можно убрать.
+            var sortedData = new SortedDictionary<string, SortedDictionary<string, string>>();
+            foreach (var engToRusScriptLine in this.data)
+            {
+                var sortedRusScriptLines = new SortedDictionary<string, string>(engToRusScriptLine.Value);
+                sortedData.Add(engToRusScriptLine.Key, sortedRusScriptLines);
+            }
+
+            return sortedData;
         }
 
         public string GetRusLine(string engLine, string rusLinePath)
@@ -98,9 +98,9 @@ namespace Translation.Storages
             return rusLine;
         }
 
-        public bool Contains(string engLine)
+        protected override void LoadData(string fileName)
         {
-            return this.data.ContainsKey(engLine);
+            this.data = JsonHelper.Deserialize<EngToRusScriptLinesData>(fileName);
         }
     }
 }

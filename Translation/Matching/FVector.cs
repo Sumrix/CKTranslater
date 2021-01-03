@@ -46,37 +46,6 @@ namespace Translation.Matching
 
         public float Average => this.Sum / this.Length;
 
-        public static FVector Start(float value, char? letter0, char? letter1)
-        {
-            return new FVector
-            (
-                null,
-                value,
-                1,
-                0,
-                0,
-                0,
-                letter0?.ToString(),
-                letter1?.ToString(),
-                value
-            );
-        }
-
-        public static FVector New(FVector p, float value, char? letter0, char? letter1)
-        {
-            return new FVector
-            (
-                p,
-                value,
-                letter0 == null && letter1 == null ? 0 : 1,
-                p.previousSums + p.Sum,
-                p.previousLenghts + p.Length,
-                p.Number + 1,
-                letter0?.ToString(),
-                letter1?.ToString()
-            );
-        }
-
         public static FVector Continue(FVector p, float value, char? letter0, char? letter1)
         {
             return new FVector
@@ -90,6 +59,11 @@ namespace Translation.Matching
                 p.Letters0 + letter0,
                 p.Letters1 + letter1
             );
+        }
+
+        public FVector Continue(float value, char? letter0, char? letter1)
+        {
+            return FVector.Continue(this, value, letter0, letter1);
         }
 
         public static FVector Max(FVector first, FVector second)
@@ -124,17 +98,43 @@ namespace Translation.Matching
 
         public static FVector Max(params FVector[] vectors)
         {
-            return vectors.Aggregate(Max);
+            return vectors.Aggregate(FVector.Max);
         }
 
-        public FVector Continue(float value, char? letter0, char? letter1)
+        public static FVector New(FVector p, float value, char? letter0, char? letter1)
         {
-            return Continue(this, value, letter0, letter1);
+            return new FVector
+            (
+                p,
+                value,
+                letter0 == null && letter1 == null ? 0 : 1,
+                p.previousSums + p.Sum,
+                p.previousLenghts + p.Length,
+                p.Number + 1,
+                letter0?.ToString(),
+                letter1?.ToString()
+            );
         }
 
         public FVector New(float value, char? letter0, char? letter1)
         {
-            return New(this, value, letter0, letter1);
+            return FVector.New(this, value, letter0, letter1);
+        }
+
+        public static FVector Start(float value, char? letter0, char? letter1)
+        {
+            return new FVector
+            (
+                null,
+                value,
+                1,
+                0,
+                0,
+                0,
+                letter0?.ToString(),
+                letter1?.ToString(),
+                value
+            );
         }
 
         public override string ToString()

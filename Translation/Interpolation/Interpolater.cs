@@ -8,6 +8,20 @@ namespace Translation.Interpolation
     {
         public static bool Debug = false;
 
+        private static List<uint> GetTerms(string[] vector, params string[] values)
+        {
+            List<uint> positions = new List<uint>();
+            for (uint p = 0; p < vector.Length; p++)
+            {
+                if (values.Contains(vector[p]))
+                {
+                    positions.Add(p);
+                }
+            }
+
+            return positions;
+        }
+
         public static void Interpolate(string[] vector, int numBits)
         {
             string[] types = vector.Distinct().Where(c => !string.IsNullOrEmpty(c)).ToArray();
@@ -16,8 +30,8 @@ namespace Translation.Interpolation
             foreach (string type in types)
             {
                 int typeRank = vector.Count(t => t == type);
-                var terms = GetTerms(vector, type, null);
-                var essentialTerms = GetTerms(vector, type);
+                var terms = Interpolater.GetTerms(vector, type, null);
+                var essentialTerms = Interpolater.GetTerms(vector, type);
                 var prime = Simplifier.GetPrimeImplicants(terms, numBits);
                 var essentialImpls = Simplifier.GetEssentialImplicants(essentialTerms, prime, numBits);
                 var reducedImpls = Simplifier.ReduceImplicants(essentialImpls.ToArray(), essentialTerms, numBits);
@@ -26,9 +40,9 @@ namespace Translation.Interpolation
                 {
                     uint[]? perms = Simplifier.Permutations(impl, numBits).ToArray();
 
-                    if (Debug)
+                    if (Interpolater.Debug)
                     {
-                        Console.Write(type + ": " + string.Concat(ToVector(perms, vector.Length, type)) +
+                        Console.Write(type + ": " + string.Concat(Interpolater.ToVector(perms, vector.Length, type)) +
                                       " " + Bit.ToString(impl, numBits));
                         Console.WriteLine();
                     }
@@ -66,20 +80,6 @@ namespace Translation.Interpolation
 
                 vector[term] ??= types.Length == 0 ? "" : types[0];
             }
-        }
-
-        private static List<uint> GetTerms(string[] vector, params string[] values)
-        {
-            List<uint> positions = new List<uint>();
-            for (uint p = 0; p < vector.Length; p++)
-            {
-                if (values.Contains(vector[p]))
-                {
-                    positions.Add(p);
-                }
-            }
-
-            return positions;
         }
 
         private static string[] ToVector(uint[] terms, int length, string value)

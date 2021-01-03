@@ -19,14 +19,6 @@ namespace Translation.Graphemes
             this.Translation = translation;
         }
 
-        public GraphemeTranslation MergeWith(GraphemeTranslation other)
-        {
-            this.Original.MergeWith(other.Original);
-            this.Translation += other.Translation;
-
-            return this;
-        }
-
         public GraphemeTranslation Clone()
         {
             return new GraphemeTranslation(this.Original.Clone(), this.Translation);
@@ -53,6 +45,14 @@ namespace Translation.Graphemes
             }
 
             return translations;
+        }
+
+        public GraphemeTranslation MergeWith(GraphemeTranslation other)
+        {
+            this.Original.MergeWith(other.Original);
+            this.Translation += other.Translation;
+
+            return this;
         }
 
         public override string ToString()

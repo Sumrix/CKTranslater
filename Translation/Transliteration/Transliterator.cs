@@ -31,7 +31,7 @@ namespace Translation.Transliteration
 
             foreach (TransliterationRule rule in rules)
             {
-                ref var vs = ref t.tree;
+                ref GraphemeVariant[]? vs = ref t.tree;
                 GraphemeVariant v = null;
 
                 foreach (char letter in rule.Source)

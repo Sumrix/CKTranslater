@@ -20,9 +20,9 @@ namespace Translation.Web.Queries
             this.batchSize = batchSize;
         }
 
-        public override IEnumerable<TOuputPart> Execute(IEnumerable<TInputPart> input)
+        public override IEnumerable<TOuputPart> Execute(IEnumerable<TInputPart> param)
         {
-            return input
+            return param
                 .Batch(this.batchSize)
                 .SelectMany(base.Execute);
         }

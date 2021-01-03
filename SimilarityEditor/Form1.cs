@@ -1,5 +1,6 @@
 ﻿using BrightIdeasSoftware;
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
@@ -95,7 +96,7 @@ namespace SimilarityEditor
 
             if (match != null)
             {
-                var pairs = from letter0 in string.IsNullOrEmpty(match.Letters0) ? "_" : match.Letters0
+                IEnumerable<(char letter0, char letter1)> pairs = from letter0 in string.IsNullOrEmpty(match.Letters0) ? "_" : match.Letters0
                             from letter1 in string.IsNullOrEmpty(match.Letters1) ? "_" : match.Letters1
                             select (letter0, letter1);
                 this.similarities.HighlightCells(pairs);

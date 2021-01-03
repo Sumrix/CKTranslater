@@ -7,6 +7,11 @@
     {
         protected string fileName;
 
+        protected virtual object GetDataToSave()
+        {
+            return this;
+        }
+
         public static TRepository Load<TRepository>(string fileName)
             where TRepository : Repository, new()
         {
@@ -29,11 +34,6 @@
         public void Save(string fileName = null)
         {
             JsonHelper.Serialize(this.GetDataToSave(), fileName ?? this.fileName);
-        }
-
-        protected virtual object GetDataToSave()
-        {
-            return this;
         }
     }
 }

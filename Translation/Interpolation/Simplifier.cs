@@ -5,6 +5,23 @@ namespace Translation.Interpolation
 {
     public static class Simplifier
     {
+        public static IEnumerable<uint> GetEssentialImplicants(List<uint> essentialTerms, IEnumerable<uint> implicants,
+            int numBits)
+        {
+            foreach (uint implicant in implicants)
+            {
+                uint mask = ~(implicant >> numBits) & Bit.Ones(numBits);
+                foreach (uint term in essentialTerms)
+                {
+                    if ((term & mask) == (implicant & mask))
+                    {
+                        yield return implicant;
+                        break;
+                    }
+                }
+            }
+        }
+
         // Метод Куайна-МакКласки
         public static HashSet<uint> GetPrimeImplicants(List<uint> terms, int numBits)
         {
@@ -73,23 +90,6 @@ namespace Translation.Interpolation
             }
 
             return marked;
-        }
-
-        public static IEnumerable<uint> GetEssentialImplicants(List<uint> essentialTerms, IEnumerable<uint> implicants,
-            int numBits)
-        {
-            foreach (uint implicant in implicants)
-            {
-                uint mask = ~(implicant >> numBits) & Bit.Ones(numBits);
-                foreach (uint term in essentialTerms)
-                {
-                    if ((term & mask) == (implicant & mask))
-                    {
-                        yield return implicant;
-                        break;
-                    }
-                }
-            }
         }
 
         public static IEnumerable<uint> Permutations(uint value, int numBits)

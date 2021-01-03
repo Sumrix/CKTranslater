@@ -1,4 +1,5 @@
-﻿using Antlr4.Runtime;
+﻿using System.Collections.Generic;
+using Antlr4.Runtime;
 using Antlr4.Runtime.Tree;
 using System.Linq;
 
@@ -19,7 +20,7 @@ namespace CKTranslator.Parsing.Listeners
         {
             base.ProcessString(@string);
 
-            var name2 = new System.Collections.Generic.HashSet<string>
+            HashSet<string> name2 = new System.Collections.Generic.HashSet<string>
             {
                 "add_character_modifier.name",
                 "character_event.name",

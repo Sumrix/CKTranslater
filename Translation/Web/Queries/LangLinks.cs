@@ -20,19 +20,19 @@ namespace Translation.Web.Queries
         {
         }
 
-        protected override string CreateRequest(IEnumerable<string> input)
+        protected override string CreateRequest(IEnumerable<string> param)
         {
             return @"https://en.wikipedia.org/w/api.php?action=query&format=json&uselang=rus&prop=langlinks&titles="
-                   + HttpUtility.UrlEncode(string.Join("|", input))
+                   + HttpUtility.UrlEncode(string.Join("|", param))
                    + "&redirects=1&lllang=ru&lllimit=max";
         }
 
-        protected override IEnumerable<WordInLangs> ParseResult(string response)
+        protected override IEnumerable<WordInLangs> ParseResponse(string response)
         {
             JObject o = JObject.Parse(response);
 
             JToken? query = o["query"];
-            var redirects = (query["redirects"] ?? new JObject())
+            Dictionary<string, IGrouping<string, string>>? redirects = (query["redirects"] ?? new JObject())
                 .Select(r => new
                 {
                     To = (string) r["to"],

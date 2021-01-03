@@ -11,34 +11,12 @@ namespace Translation.Transliteration
     /// </summary>
     public static class Translator
     {
-        /// <summary>
-        ///     Перевести слова
-        /// </summary>
-        /// <param name="englishWords"></param>
-        /// <returns></returns>
-        public static IEnumerable<WordInLangs> Translate(IEnumerable<string> englishWords)
+        private static void CacheTranslations(IEnumerable<string> failedTranslations,
+            IEnumerable<WordInLangs> successfulTranslations)
         {
-            if (!englishWords.Any())
-            {
-                return Enumerable.Empty<WordInLangs>();
-            }
-
-            // Достаём переводы из кэша
-            var (cacheMisses, cacheHits) = Translator.GetTranslationsFromCache(englishWords);
-            var (cacheTranslated, cacheNotTranslated) = cacheHits.Partition(w => w.IsTranslated);
-
-            // То что не перевелось, переводим через интернет
-            var (webMisses, webHits) = Translator.GetTranslationsFromWeb(cacheMisses);
-
-            // Переведённое через интернет сохраняем в кэш
-            Translator.CacheTranslations(webMisses, webHits);
-
-            // Транслитерируем не переведённое
-            var toTransliterate = webMisses.Union(cacheNotTranslated.Select(w => w.Lang1Word));
-            var transliterations = Translator.Transliterate(toTransliterate);
-
-            // Объединяем результаты в один список
-            return cacheTranslated.Union(webHits).Union(transliterations);
+            DB.Translations.AddRange(successfulTranslations);
+            DB.WebTranslationMisses.AddRange(failedTranslations);
+            DB.Save();
         }
 
         /// <summary>
@@ -113,12 +91,34 @@ namespace Translation.Transliteration
             return (misses, hits);
         }
 
-        private static void CacheTranslations(IEnumerable<string> failedTranslations,
-            IEnumerable<WordInLangs> successfulTranslations)
+        /// <summary>
+        ///     Перевести слова
+        /// </summary>
+        /// <param name="englishWords"></param>
+        /// <returns></returns>
+        public static IEnumerable<WordInLangs> Translate(IEnumerable<string> englishWords)
         {
-            DB.Translations.AddRange(successfulTranslations);
-            DB.WebTranslationMisses.AddRange(failedTranslations);
-            DB.Save();
+            if (!englishWords.Any())
+            {
+                return Enumerable.Empty<WordInLangs>();
+            }
+
+            // Достаём переводы из кэша
+            (var cacheMisses, var cacheHits) = Translator.GetTranslationsFromCache(englishWords);
+            (var cacheTranslated, var cacheNotTranslated) = cacheHits.Partition(w => w.IsTranslated);
+
+            // То что не перевелось, переводим через интернет
+            (var webMisses, var webHits) = Translator.GetTranslationsFromWeb(cacheMisses);
+
+            // Переведённое через интернет сохраняем в кэш
+            Translator.CacheTranslations(webMisses, webHits);
+
+            // Транслитерируем не переведённое
+            var toTransliterate = webMisses.Union(cacheNotTranslated.Select(w => w.Lang1Word));
+            var transliterations = Translator.Transliterate(toTransliterate);
+
+            // Объединяем результаты в один список
+            return cacheTranslated.Union(webHits).Union(transliterations);
         }
 
         private static IEnumerable<WordInLangs> Transliterate(IEnumerable<string> toTransliterateWords)

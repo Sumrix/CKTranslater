@@ -7,10 +7,10 @@ namespace CKTranslator
     {
         public static IEnumerable<T> TSort<T>(this IEnumerable<T> source, Func<T, IEnumerable<T>> dependencies, bool throwOnCycle = false)
         {
-            var sorted = new List<T>();
-            var visited = new HashSet<T>();
+            List<T> sorted = new List<T>();
+            HashSet<T> visited = new HashSet<T>();
 
-            foreach (var item in source)
+            foreach (T item in source)
                 Visit(item, visited, sorted, dependencies, throwOnCycle);
 
             return sorted;
@@ -22,7 +22,7 @@ namespace CKTranslator
             {
                 visited.Add(item);
 
-                foreach (var dep in dependencies(item))
+                foreach (T dep in dependencies(item))
                     Visit(dep, visited, sorted, dependencies, throwOnCycle);
 
                 sorted.Add(item);

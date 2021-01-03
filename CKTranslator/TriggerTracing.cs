@@ -103,7 +103,7 @@ namespace CKTranslator
 
         private static void OnTraceEnabledChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var triggerBase = d as TriggerBase;
+            TriggerBase triggerBase = d as TriggerBase;
 
             if (triggerBase == null)
                 return;
@@ -115,7 +115,7 @@ namespace CKTranslator
             {
                 // insert dummy story-boards which can later be traced using WPF animation tracing
 
-                var storyboard = new TriggerTraceStoryboard(triggerBase, TriggerTraceStoryboardType.Enter);
+                TriggerTraceStoryboard storyboard = new TriggerTraceStoryboard(triggerBase, TriggerTraceStoryboardType.Enter);
                 triggerBase.EnterActions.Insert(0, new BeginStoryboard() { Storyboard = storyboard });
 
                 storyboard = new TriggerTraceStoryboard(triggerBase, TriggerTraceStoryboardType.Exit);

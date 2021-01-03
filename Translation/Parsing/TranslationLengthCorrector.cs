@@ -11,46 +11,6 @@ namespace Translation.Parsing
         // Дерево существующих графем
         private GraphemeVariant root;
 
-        public static TranslationLengthCorrector Create(IEnumerable<GraphemeTranslation> translations,
-            Language srcLanguage)
-        {
-            int variantCount = srcLanguage.MaxLetter - srcLanguage.MinLetter + 1;
-
-            TranslationLengthCorrector t = new TranslationLengthCorrector
-            {
-                root = new GraphemeVariant { Variants = new GraphemeVariant[variantCount] },
-                offset = srcLanguage.MinLetter
-            };
-
-            foreach (GraphemeTranslation translation in translations)
-            {
-                if (string.IsNullOrEmpty(translation.Original.Letters))
-                {
-                    continue;
-                }
-
-                ref var vs = ref t.root.Variants;
-                GraphemeVariant v = null;
-
-                foreach (char letter in translation.Original.Letters)
-                {
-                    vs ??= new GraphemeVariant[variantCount];
-                    v = vs[letter - t.offset];
-                    if (v == null)
-                    {
-                        v = new GraphemeVariant();
-                        vs[letter - t.offset] = v;
-                    }
-
-                    vs = ref v.Variants;
-                }
-
-                v.ExistGrapheme = true;
-            }
-
-            return t;
-        }
-
         /// <summary>
         ///     Объединить графемы, если есть такая возможность
         /// </summary>
@@ -126,6 +86,46 @@ namespace Translation.Parsing
             {
                 yield return savedMergedTranslation;
             }
+        }
+
+        public static TranslationLengthCorrector Create(IEnumerable<GraphemeTranslation> translations,
+            Language srcLanguage)
+        {
+            int variantCount = srcLanguage.MaxLetter - srcLanguage.MinLetter + 1;
+
+            TranslationLengthCorrector t = new TranslationLengthCorrector
+            {
+                root = new GraphemeVariant { Variants = new GraphemeVariant[variantCount] },
+                offset = srcLanguage.MinLetter
+            };
+
+            foreach (GraphemeTranslation translation in translations)
+            {
+                if (string.IsNullOrEmpty(translation.Original.Letters))
+                {
+                    continue;
+                }
+
+                ref GraphemeVariant[]? vs = ref t.root.Variants;
+                GraphemeVariant v = null;
+
+                foreach (char letter in translation.Original.Letters)
+                {
+                    vs ??= new GraphemeVariant[variantCount];
+                    v = vs[letter - t.offset];
+                    if (v == null)
+                    {
+                        v = new GraphemeVariant();
+                        vs[letter - t.offset] = v;
+                    }
+
+                    vs = ref v.Variants;
+                }
+
+                v.ExistGrapheme = true;
+            }
+
+            return t;
         }
     }
 }

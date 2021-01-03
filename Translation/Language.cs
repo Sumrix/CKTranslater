@@ -31,9 +31,20 @@ namespace Translation
             this.MaxLetter = maxLetter;
         }
 
+        public bool Belongs(char letter)
+        {
+            return letter > this.MinLetter && letter < this.MaxLetter &&
+                   this.identifiersByChar[letter - this.MinLetter] >= 0;
+        }
+
+        public bool Belongs(string word)
+        {
+            return word.All(letter => this.Belongs(letter));
+        }
+
         public static Language Load(LettersRepository lettersDB)
         {
-            var groups = new[] { lettersDB.Vowels, lettersDB.Consonants, lettersDB.Silents };
+            List<char>[]? groups = { lettersDB.Vowels, lettersDB.Consonants, lettersDB.Silents };
 
             (int minLetter, int maxLetter) = groups
                 .SelectMany(group => group)
@@ -80,6 +91,11 @@ namespace Translation
             }
 
             return graphemeSum;
+        }
+
+        public Grapheme ToGrapheme(int identifier)
+        {
+            return this.graphemesByIdentifier[identifier].Clone();
         }
 
         public List<Grapheme> ToGraphemes(string word)
@@ -187,22 +203,6 @@ namespace Translation
         public char ToLetter(int identifier)
         {
             return this.charsByIdentifier[identifier];
-        }
-
-        public Grapheme ToGrapheme(int identifier)
-        {
-            return this.graphemesByIdentifier[identifier].Clone();
-        }
-
-        public bool Belongs(char letter)
-        {
-            return letter > this.MinLetter && letter < this.MaxLetter &&
-                   this.identifiersByChar[letter - this.MinLetter] >= 0;
-        }
-
-        public bool Belongs(string word)
-        {
-            return word.All(letter => this.Belongs(letter));
         }
     }
 }

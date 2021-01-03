@@ -1,4 +1,5 @@
-﻿using CKTranslator.Parsing;
+﻿using System.Collections.Generic;
+using CKTranslator.Parsing;
 using CKTranslator.Storages;
 using System.Linq;
 
@@ -57,7 +58,7 @@ namespace CKTranslator.Processing
 
         public void FillDictionary()
         {
-            foreach (var eng in this.engLoader.Strings)
+            foreach (KeyValuePair<ScriptKey, string> eng in this.engLoader.Strings)
             {
                 if (eng.Value.Any(IsRusLetter))
                 {

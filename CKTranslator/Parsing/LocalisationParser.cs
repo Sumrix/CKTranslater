@@ -84,7 +84,7 @@ namespace CKTranslator.Parsing
 
                 writer.Flush();
 
-                using (var fileStream = File.Create(fileName))
+                using (FileStream fileStream = File.Create(fileName))
                 {
                     memory.Seek(0, SeekOrigin.Begin);
                     memory.CopyTo(fileStream);

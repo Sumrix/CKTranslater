@@ -21,6 +21,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DB", "DB", "{24EAD81E-0055-4862-929F-D21B87533F7C}"
 	ProjectSection(SolutionItems) = preProject
 		Data\DB\EngToRusScriptLines.json = Data\DB\EngToRusScriptLines.json
+		Data\DB\QueryCache.json = Data\DB\QueryCache.json
 		Data\DB\Translations.json = Data\DB\Translations.json
 		Data\DB\TransliterationRules.json = Data\DB\TransliterationRules.json
 		Data\DB\WebTranslationMisses.json = Data\DB\WebTranslationMisses.json

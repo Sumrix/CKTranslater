@@ -15,6 +15,59 @@ namespace Translation.Web
     {
         private static readonly Regex removePattern = new Regex("(\\(.*\\) ?)");
 
+        private static WordInLangs GetMostSuitableTranslation(string line, IEnumerable<WordInLangs> translations,
+            Language language1, Language language2)
+        {
+            (string? mostSuitableTranslation, _) = translations
+                // Берём подходящие пары слово-перевод
+                .Where(x => x.Lang1Word.Contains(line, StringComparison.InvariantCultureIgnoreCase)
+                            && !string.IsNullOrEmpty(x.Lang2Word))
+                // Разбиваем перевод на слова
+                .SelectMany(x => x.Lang2Word.Split(c => !char.IsLetter(c), cs => string.Concat(cs)))
+                // Выбираем адекватные переводы
+                .Where(translation => !string.IsNullOrEmpty(translation) && language2.Belongs(translation))
+                // Выбираем наиболее подходящее слово
+                .Select(translation =>
+                    (translation, matchInfo: WordMatch.Create(line, translation, language1, language2)))
+                .Where(x => x.matchInfo.Success)
+                .MaxBy(x => x.matchInfo.Similarity)
+                .FirstOrDefault();
+
+            return new WordInLangs(line, mostSuitableTranslation);
+        }
+
+        private static WordInLangs Normalize(WordInLangs trans)
+        {
+            return new WordInLangs(
+                Wiki.Normalize(trans.Lang1Word),
+                trans.Lang2Word == null
+                    ? null
+                    : Wiki.removePattern.Replace(trans.Lang2Word, "").ToLower()
+            );
+        }
+
+        private static string Normalize(string line)
+        {
+            return line.ToLower();
+        }
+
+        /// <summary>
+        ///     Найти похожие слова
+        /// </summary>
+        public static List<(string Line, List<string> Results)> Search(IEnumerable<string> lines)
+        {
+            return lines
+                .Select(line =>
+                (
+                    line,
+                    WikiApi.PrefixSearch(line)
+                        .Select(s => Wiki.Normalize(s))
+                        .Where(s => s.IndexOf(line, StringComparison.InvariantCultureIgnoreCase) >= 0)
+                        .ToList()
+                ))
+                .ToList();
+        }
+
         /// <summary>
         ///     Перевод строк lines из языка language1 в language2
         /// </summary>
@@ -26,7 +79,7 @@ namespace Translation.Web
             Language targetLanguage)
         {
             // То что можем, переводим точно
-            var (exactTranslasions, notTranslatedLines) = Wiki.TranslateExact(lines)
+            (var exactTranslasions, var notTranslatedLines) = Wiki.TranslateExact(lines)
                 .Partition(
                     trans => trans.Lang2Word != null &&
                              targetLanguage.Belongs(trans.Lang2Word),
@@ -37,7 +90,7 @@ namespace Translation.Web
                 );
 
             // Там где нет точных переводов, ищем примерные
-            var (foundResults, notFoundLines) = Wiki.Search(notTranslatedLines)
+            (var foundResults, var notFoundLines) = Wiki.Search(notTranslatedLines)
                 .Partition(
                     result => result.Results.Any(),
                     (True, False) => (
@@ -58,7 +111,7 @@ namespace Translation.Web
                     foundResult.Results.Select(result => (foundResult.Line, result))
                 )
                 .ToLookup(x => x.result, x => x.Line);
-            var resultTrans = allResultTrans
+            Dictionary<string, IGrouping<string, WordInLangs>>? resultTrans = allResultTrans
                 .SelectMany(wordInLangs =>
                     originalsByResult[wordInLangs.Lang1Word]
                         .Select(original => (original, wordInLangs))
@@ -90,59 +143,6 @@ namespace Translation.Web
                 ? Array.Empty<WordInLangs>()
                 : WikiApi.GetTranslations(lines)
                     .Select(Wiki.Normalize);
-        }
-
-        /// <summary>
-        ///     Найти похожие слова
-        /// </summary>
-        public static List<(string Line, List<string> Results)> Search(IEnumerable<string> lines)
-        {
-            return lines
-                .Select(line =>
-                (
-                    line,
-                    WikiApi.PrefixSearch(line)
-                        .Select(s => Wiki.Normalize(s))
-                        .Where(s => s.IndexOf(line, StringComparison.InvariantCultureIgnoreCase) >= 0)
-                        .ToList()
-                ))
-                .ToList();
-        }
-
-        private static WordInLangs GetMostSuitableTranslation(string line, IEnumerable<WordInLangs> translations,
-            Language language1, Language language2)
-        {
-            var (mostSuitableTranslation, _) = translations
-                // Берём подходящие пары слово-перевод
-                .Where(x => x.Lang1Word.Contains(line, StringComparison.InvariantCultureIgnoreCase)
-                            && !string.IsNullOrEmpty(x.Lang2Word))
-                // Разбиваем перевод на слова
-                .SelectMany(x => x.Lang2Word.Split(c => !char.IsLetter(c), cs => string.Concat(cs)))
-                // Выбираем адекватные переводы
-                .Where(translation => !string.IsNullOrEmpty(translation) && language2.Belongs(translation))
-                // Выбираем наиболее подходящее слово
-                .Select(translation =>
-                    (translation, matchInfo: WordMatch.Create(line, translation, language1, language2)))
-                .Where(x => x.matchInfo.Success)
-                .MaxBy(x => x.matchInfo.Similarity)
-                .FirstOrDefault();
-
-            return new WordInLangs(line, mostSuitableTranslation);
-        }
-
-        private static WordInLangs Normalize(WordInLangs trans)
-        {
-            return new WordInLangs(
-                Wiki.Normalize(trans.Lang1Word),
-                trans.Lang2Word == null
-                    ? null
-                    : Wiki.removePattern.Replace(trans.Lang2Word, "").ToLower()
-            );
-        }
-
-        private static string Normalize(string line)
-        {
-            return line.ToLower();
         }
     }
 }

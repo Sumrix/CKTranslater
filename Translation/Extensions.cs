@@ -40,6 +40,11 @@ namespace Translation
             }
         }
 
+        public static bool Contains(this string text, string value, StringComparison comparsionType)
+        {
+            return text.IndexOf(text, comparsionType) >= 0;
+        }
+
         public static IEnumerable<(TFirst First, TSecond Second)> Zip<TFirst, TSecond>(
             this IEnumerable<TFirst> first, IEnumerable<TSecond> second)
         {
@@ -50,11 +55,6 @@ namespace Translation
             {
                 yield return (enumerator1.Current, enumerator2.Current);
             }
-        }
-
-        public static bool Contains(this string text, string value, StringComparison comparsionType)
-        {
-            return text.IndexOf(text, comparsionType) >= 0;
         }
     }
 }

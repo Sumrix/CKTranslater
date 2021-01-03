@@ -24,7 +24,7 @@ namespace Translation.Graphemes
             {
                 if (statistic.TryGetValue(match.Original.Letters, out var translationStatistic))
                 {
-                    if (translationStatistic.TryGetValue(match.Translation, out var flagsStatistic))
+                    if (translationStatistic.TryGetValue(match.Translation, out int[]? flagsStatistic))
                     {
                         flagsStatistic[match.Original.Flags.Value]++;
                     }

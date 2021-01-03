@@ -1,39 +1,93 @@
 ﻿using System;
 using System.IO;
 using System.Net;
+using Translation.Storages;
 
 namespace Translation.Web.Queries
 {
-    public abstract class Query<TInput, TOutput>
+    /// <summary>
+    ///     Performs HTTP request to the website
+    /// </summary>
+    /// <typeparam name="TParam">Query parameter type</typeparam>
+    /// <typeparam name="TResult">Query result data type</typeparam>
+    public abstract class Query<TParam, TResult>
     {
         /// <summary>
-        ///     Таймер вызова запроса, что бы не слишком загружать сервер.
+        ///     The path to the folder for logging.
+        /// </summary>
+        private readonly string logPath;
+
+        /// <summary>
+        ///     Timer for calling the request, so as not to overload the server.
         /// </summary>
         private readonly QueueTimer queryTimer;
 
         /// <summary>
-        ///     Путь к папке для логгирования
+        ///     Initializes query with <see cref="QueueTimer" /> and path to log.
         /// </summary>
-        private readonly string logPath;
-
+        /// <param name="queryTimer"></param>
+        /// <param name="logPath"></param>
         protected Query(QueueTimer queryTimer, string logPath = null)
         {
             this.queryTimer = queryTimer;
             this.logPath = logPath;
         }
 
-        public virtual TOutput Execute(TInput input)
+        /// <summary>
+        ///     Creates an HTTP request line.
+        /// </summary>
+        /// <param name="param">Parameters for creating a request.</param>
+        /// <returns>HTTP request line.</returns>
+        protected abstract string CreateRequest(TParam param);
+
+        /// <summary>
+        ///     Executes the request.
+        /// </summary>
+        /// <param name="param">Request parameters.</param>
+        /// <returns>Query result.</returns>
+        public virtual TResult Execute(TParam param)
         {
-            string request = this.CreateRequest(input);
-            string response = this.Get(request);
+            string request = this.CreateRequest(param);
+
+            // Cache response
+            if (!DB.QueryCache.TryGetValue(request, out string response))
+            {
+                response = this.Get(request);
+                DB.QueryCache[request] = response;
+            }
+
+            // Log query if it's necessary
             if (this.logPath != null)
             {
                 this.Log(request, response);
             }
 
-            return this.ParseResult(response);
+            return this.ParseResponse(response);
         }
 
+        /// <summary>
+        ///     Performs a Get request.
+        /// </summary>
+        /// <param name="uri">String with URI of request.</param>
+        /// <returns>String with request result.</returns>
+        private string Get(string uri)
+        {
+            this.queryTimer.WaitMyTurn();
+
+            HttpWebRequest request = (HttpWebRequest) WebRequest.Create(uri);
+            request.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
+
+            using HttpWebResponse response = (HttpWebResponse) request.GetResponse();
+            using Stream stream = response.GetResponseStream();
+            using StreamReader reader = new StreamReader(stream);
+            return reader.ReadToEnd();
+        }
+
+        /// <summary>
+        ///     Logs the query.
+        /// </summary>
+        /// <param name="request">Request string.</param>
+        /// <param name="response">Query response string.</param>
         private void Log(string request, string response)
         {
             string shortFileName = $"{DateTime.Now:yyyyMMddTHHmmss}{this.GetType().Name}.txt";
@@ -53,21 +107,11 @@ namespace Translation.Web.Queries
             stream.WriteLine(prettyResponse);
         }
 
-        protected abstract string CreateRequest(TInput input);
-
-        protected abstract TOutput ParseResult(string response);
-
-        private string Get(string uri)
-        {
-            this.queryTimer.WaitMyTurn();
-
-            HttpWebRequest request = (HttpWebRequest) WebRequest.Create(uri);
-            request.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
-
-            using HttpWebResponse response = (HttpWebResponse) request.GetResponse();
-            using Stream stream = response.GetResponseStream();
-            using StreamReader reader = new StreamReader(stream);
-            return reader.ReadToEnd();
-        }
+        /// <summary>
+        ///     Parses request response string.
+        /// </summary>
+        /// <param name="response">Request response string.</param>
+        /// <returns>Query result.</returns>
+        protected abstract TResult ParseResponse(string response);
     }
 }

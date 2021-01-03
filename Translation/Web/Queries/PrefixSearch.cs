@@ -15,14 +15,14 @@ namespace Translation.Web.Queries
         {
         }
 
-        protected override string CreateRequest(string input)
+        protected override string CreateRequest(string param)
         {
             return "https://en.wikipedia.org/w/api.php?action=query&format=json&uselang=rus&list=prefixsearch&pssearch="
-                   + HttpUtility.UrlEncode(input)
+                   + HttpUtility.UrlEncode(param)
                    + "&pslimit=500";
         }
 
-        protected override List<string> ParseResult(string response)
+        protected override List<string> ParseResponse(string response)
         {
             JObject o = JObject.Parse(response);
 

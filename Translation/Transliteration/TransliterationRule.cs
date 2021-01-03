@@ -12,11 +12,6 @@ namespace Translation.Transliteration
         public string Source;
         public string[] Target;
 
-        public override int GetHashCode()
-        {
-            return this.Source.GetHashCode();
-        }
-
         public static List<TransliterationRule> Create(GraphemeStatistic statistic)
         {
             var rules = new List<TransliterationRule>();
@@ -54,6 +49,11 @@ namespace Translation.Transliteration
             }
 
             return rules;
+        }
+
+        public override int GetHashCode()
+        {
+            return this.Source.GetHashCode();
         }
 
         public override string ToString()

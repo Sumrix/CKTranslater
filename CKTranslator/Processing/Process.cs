@@ -116,7 +116,7 @@ namespace CKTranslator.Processing
 
                 foreach (FileContext file in files)
                 {
-                    foreach (var processFile in this.FileProcessors)
+                    foreach (ProcessFile processFile in this.FileProcessors)
                     {
                         if (this.CancelRequired)
                         {

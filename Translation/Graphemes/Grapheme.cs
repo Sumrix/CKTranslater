@@ -46,13 +46,14 @@ namespace Translation.Graphemes
             0, (uint) CommonFlag.Last, (uint) VowelFlag.Stressed, (uint) ConsonantFlag.PreviousVowel
         };
 
+        public static readonly int[] FlagBitNum = Grapheme.MaxFlag
+            .Select(f => f == 0 ? 0 : Bit.OnesCount(f - 1) + 1)
+            .ToArray();
+
         public static readonly int[] FlagVariants = Grapheme.MaxFlag
             .Select(f => f == 0 ? 1 : (int) (f << 1))
             .ToArray();
 
-        public static readonly int[] FlagBitNum = Grapheme.MaxFlag
-            .Select(f => f == 0 ? 0 : Bit.OnesCount(f - 1) + 1)
-            .ToArray();
 
         public FlagSet Flags;
 
@@ -63,17 +64,35 @@ namespace Translation.Graphemes
             this.Flags = flags;
         }
 
-        public GraphemeType Type { get; private set; }
         public string Letters { get; private set; }
+
+        public GraphemeType Type { get; private set; }
+
+        public Grapheme Clone()
+        {
+            return new Grapheme(this.Type, this.Letters, this.Flags);
+        }
 
         public static Grapheme Empty()
         {
             return new Grapheme(GraphemeType.Silent, "");
         }
 
-        public Grapheme Clone()
+        private static VowelFlag MergeFlags(VowelFlag left, VowelFlag right)
         {
-            return new Grapheme(this.Type, this.Letters, this.Flags);
+            return (left & (VowelFlag.First | VowelFlag.PreviousVowel | VowelFlag.Stressed))
+                   | (right & (VowelFlag.Last | VowelFlag.OpenSyllable | VowelFlag.NextVowel | VowelFlag.Stressed));
+        }
+
+        private static ConsonantFlag MergeFlags(ConsonantFlag left, ConsonantFlag right)
+        {
+            return (left & (ConsonantFlag.First | ConsonantFlag.PreviousVowel))
+                   | (right & (ConsonantFlag.Last | ConsonantFlag.NextVowel));
+        }
+
+        private static CommonFlag MergeFlags(CommonFlag left, CommonFlag right)
+        {
+            return (CommonFlag) (((uint) left & 3) | ((uint) right & 3));
         }
 
         //public Grapheme MergeWith(Grapheme other) => this.Type switch
@@ -157,23 +176,6 @@ namespace Translation.Graphemes
             }
 
             return this;
-        }
-
-        private static VowelFlag MergeFlags(VowelFlag left, VowelFlag right)
-        {
-            return (left & (VowelFlag.First | VowelFlag.PreviousVowel | VowelFlag.Stressed))
-                   | (right & (VowelFlag.Last | VowelFlag.OpenSyllable | VowelFlag.NextVowel | VowelFlag.Stressed));
-        }
-
-        private static ConsonantFlag MergeFlags(ConsonantFlag left, ConsonantFlag right)
-        {
-            return (left & (ConsonantFlag.First | ConsonantFlag.PreviousVowel))
-                   | (right & (ConsonantFlag.Last | ConsonantFlag.NextVowel));
-        }
-
-        private static CommonFlag MergeFlags(CommonFlag left, CommonFlag right)
-        {
-            return (CommonFlag) (((uint) left & 3) | ((uint) right & 3));
         }
 
         public override string ToString()
