@@ -1,11 +1,11 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-using NameTranslation;
-using NameTranslation.Matching;
-using NameTranslation.Storages;
-using NameTranslation.Transliteration;
-using NameTranslation.Web;
+using Core;
+using Core.Matching;
+using Core.Storages;
+using Core.Transliteration;
+using Core.Web;
 
 namespace ConsoleTesting
 {

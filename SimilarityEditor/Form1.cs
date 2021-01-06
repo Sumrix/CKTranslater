@@ -3,15 +3,15 @@ using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
 using BrightIdeasSoftware;
-using NameTranslation.Matching;
-using NameTranslation.Storages;
+using Core.Matching;
+using Core.Storages;
 
 namespace SimilarityEditor
 {
     public partial class Form1 : Form
     {
-        private readonly WordsSimilarities wordsModel;
         private readonly bool initialized;
+        private readonly WordsSimilarities wordsModel;
 
         public Form1()
         {

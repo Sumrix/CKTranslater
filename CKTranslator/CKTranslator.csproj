@@ -12,9 +12,9 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{B5CC5F13-BF0B-48C5-8424-7F5F81AEE1D6}</ProjectGuid>
     <OutputType>WinExe</OutputType>
-    <RootNamespace>CKTranslator</RootNamespace>
-    <AssemblyName>CKTranslator</AssemblyName>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <RootNamespace>CKTranslatorWpf</RootNamespace>
+    <AssemblyName>CKTranslatorWpf</AssemblyName>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <WarningLevel>4</WarningLevel>
@@ -105,44 +105,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="FileName.cs" />
-    <Compile Include="Storages\BaseDB.cs" />
-    <Compile Include="ModInfo.cs" />
-    <Compile Include="Parsing\IFileParser.cs" />
-    <Compile Include="Parsing\Listeners\ModDescriptionListener.cs" />
-    <Compile Include="Parsing\Listeners\StringsListener.cs" />
-    <Compile Include="Parsing\LocalisationParser.cs" />
-    <Compile Include="Parsing\IdManager.cs" />
-    <Compile Include="Processing\StringAnalyzer.cs" />
-    <Compile Include="Processing\FileContext.cs" />
-    <Compile Include="Processing\FileRecoder.cs" />
-    <Compile Include="Processing\FileTranslator.cs" />
-    <Compile Include="Processing\LocalisationLoader.cs" />
-    <Compile Include="Parsing\ScriptKey.cs" />
-    <Compile Include="Parsing\Listeners\TranslateListener.cs" />
-    <Compile Include="Parsing\Path.cs" />
-    <Compile Include="Processing\EventLog.cs" />
-    <Compile Include="FileManager.cs" />
-    <Compile Include="ModViewData.cs" />
-    <Compile Include="Parsing\ScriptParseResult.cs" />
-    <Compile Include="Processing\Backuping.cs" />
     <Compile Include="ModManager.cs" />
-    <Compile Include="Processing\IProcess.cs" />
-    <Compile Include="Processing\Translator.cs" />
-    <Compile Include="Processing\MultiProcess.cs" />
-    <Compile Include="Processing\Progress.cs" />
-    <Compile Include="Processing\ScriptValuesLoader.cs" />
-    <Compile Include="Processing\IValuesLoader.cs" />
-    <Compile Include="Processing\ProcessManager.cs" />
     <Compile Include="Settings.cs" />
-    <Compile Include="Parsing\Listeners\ScriptListener.cs" />
-    <Compile Include="Processing\Process.cs" />
-    <Compile Include="Storages\DB.cs" />
-    <Compile Include="Storages\NotTranslatedStringsDB.cs" />
-    <Compile Include="Storages\TranslatedStringsDB.cs" />
     <Compile Include="TriggerTracing.cs" />
     <Compile Include="Utils.cs" />
-    <Compile Include="WildcardMatch.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -151,16 +117,12 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Parsing\ErrorSaver.cs" />
-    <Compile Include="EncodingDetector.cs" />
-    <Compile Include="Processing\Event.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Parsing\ScriptParser.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -178,10 +140,6 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <Antlr4 Include="CK.g4">
-      <Generator>MSBuild:Compile</Generator>
-      <CustomToolNamespace>CKTranslator.Parsing</CustomToolNamespace>
-    </Antlr4>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -219,6 +177,12 @@
     <Analyzer Include="..\packages\Microsoft.NetCore.Analyzers.2.9.6\analyzers\dotnet\cs\Microsoft.NetCore.CSharp.Analyzers.dll" />
     <Analyzer Include="..\packages\Microsoft.NetFramework.Analyzers.2.9.6\analyzers\dotnet\cs\Microsoft.NetFramework.Analyzers.dll" />
     <Analyzer Include="..\packages\Microsoft.NetFramework.Analyzers.2.9.6\analyzers\dotnet\cs\Microsoft.NetFramework.CSharp.Analyzers.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Core\Core.csproj">
+      <Project>{AF9D058B-F8A3-4343-8B93-002844EA3CD9}</Project>
+      <Name>Core</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

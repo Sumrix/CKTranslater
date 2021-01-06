@@ -60,9 +60,9 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Translation\NameTranslation.csproj">
+    <ProjectReference Include="..\Core\Core.csproj">
       <Project>{af9d058b-f8a3-4343-8b93-002844ea3cd9}</Project>
-      <Name>NameTranslation</Name>
+      <Name>Core</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -5,10 +5,10 @@ using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 using BrightIdeasSoftware;
-using NameTranslation;
-using NameTranslation.Matching;
-using NameTranslation.Storages;
-using NameTranslation.Transliteration;
+using Core;
+using Core.Matching;
+using Core.Storages;
+using Core.Transliteration;
 
 namespace SimilarityEditor
 {

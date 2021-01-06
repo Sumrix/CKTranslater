@@ -4,8 +4,8 @@ using System.Drawing;
 using System.Linq;
 using System.Reflection;
 using System.Windows.Forms;
-using NameTranslation;
-using NameTranslation.Storages;
+using Core;
+using Core.Storages;
 
 namespace SimilarityEditor
 {
