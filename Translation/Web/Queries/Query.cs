@@ -1,9 +1,9 @@
 ﻿using System;
 using System.IO;
 using System.Net;
-using Translation.Storages;
+using NameTranslation.Storages;
 
-namespace Translation.Web.Queries
+namespace NameTranslation.Web.Queries
 {
     /// <summary>
     ///     Performs HTTP request to the website
@@ -13,10 +13,13 @@ namespace Translation.Web.Queries
     public abstract class Query<TParam, TResult>
     {
         /// <summary>
+        ///     Number of logging file.
+        /// </summary>
+        private static int logRecordIndex;
+        /// <summary>
         ///     The path to the folder for logging.
         /// </summary>
         private readonly string logPath;
-
         /// <summary>
         ///     Timer for calling the request, so as not to overload the server.
         /// </summary>
@@ -25,8 +28,8 @@ namespace Translation.Web.Queries
         /// <summary>
         ///     Initializes query with <see cref="QueueTimer" /> and path to log.
         /// </summary>
-        /// <param name="queryTimer"></param>
-        /// <param name="logPath"></param>
+        /// <param name="queryTimer">Timer for calling the request, so as not to overload the server.</param>
+        /// <param name="logPath">The path to the folder for logging.</param>
         protected Query(QueueTimer queryTimer, string logPath = null)
         {
             this.queryTimer = queryTimer;
@@ -72,7 +75,7 @@ namespace Translation.Web.Queries
         /// <returns>String with request result.</returns>
         private string Get(string uri)
         {
-            this.queryTimer.WaitMyTurn();
+            this.queryTimer?.WaitMyTurn();
 
             HttpWebRequest request = (HttpWebRequest) WebRequest.Create(uri);
             request.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
@@ -90,7 +93,8 @@ namespace Translation.Web.Queries
         /// <param name="response">Query response string.</param>
         private void Log(string request, string response)
         {
-            string shortFileName = $"{DateTime.Now:yyyyMMddTHHmmss}{this.GetType().Name}.txt";
+            string shortFileName =
+                $"{DateTime.Now:yyyyMMddTHHmmss}I{Query<TParam, TResult>.logRecordIndex++:D8}{this.GetType().Name}.txt";
             string fileName = Path.Combine(this.logPath, shortFileName);
 
             if (!Directory.Exists(this.logPath))

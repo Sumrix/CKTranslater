@@ -2,7 +2,7 @@
 using System.IO;
 using System.Linq;
 
-namespace Translation.Matching
+namespace NameTranslation.Matching
 {
     public class LetterComparer
     {

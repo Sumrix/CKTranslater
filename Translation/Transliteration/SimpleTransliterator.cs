@@ -2,7 +2,7 @@
 using System.IO;
 using System.Linq;
 
-namespace Translation.Transliteration
+namespace NameTranslation.Transliteration
 {
     /// <summary>
     ///     Элементарный переводчик

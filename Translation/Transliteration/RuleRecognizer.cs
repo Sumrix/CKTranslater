@@ -1,12 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Translation.Graphemes;
-using Translation.Interpolation;
-using Translation.Matching;
-using Translation.Parsing;
-using Translation.Storages;
+using NameTranslation.Graphemes;
+using NameTranslation.Interpolation;
+using NameTranslation.Matching;
+using NameTranslation.Parsing;
+using NameTranslation.Storages;
 
-namespace Translation.Transliteration
+namespace NameTranslation.Transliteration
 {
     /// <summary>
     ///     Создаёт правила перевода по существующему словарю

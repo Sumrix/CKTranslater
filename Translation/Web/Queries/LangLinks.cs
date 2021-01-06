@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using NameTranslation.Transliteration;
 using Newtonsoft.Json.Linq;
-using Translation.Transliteration;
 
-namespace Translation.Web.Queries
+namespace NameTranslation.Web.Queries
 {
     /// <summary>
     ///     В LangLinks есть ограничение на количество заголовков в одном запросе,

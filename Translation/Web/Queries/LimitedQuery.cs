@@ -2,7 +2,7 @@
 using System.Linq;
 using MoreLinq;
 
-namespace Translation.Web.Queries
+namespace NameTranslation.Web.Queries
 {
     /// <summary>
     ///     Запрос выполняемый пачками

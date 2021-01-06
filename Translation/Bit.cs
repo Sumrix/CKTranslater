@@ -1,4 +1,4 @@
-﻿namespace Translation
+﻿namespace NameTranslation
 {
     /// <summary>
     ///     Класс реализует битовые операции

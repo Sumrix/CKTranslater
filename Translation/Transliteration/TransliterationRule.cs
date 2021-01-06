@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Translation.Graphemes;
+using NameTranslation.Graphemes;
 
-namespace Translation.Transliteration
+namespace NameTranslation.Transliteration
 {
     /// <summary>
     ///     Правило траслитерации

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using Translation.Matching;
+using NameTranslation.Matching;
 
-namespace Translation.Graphemes
+namespace NameTranslation.Graphemes
 {
     public class GraphemeTranslation
     {

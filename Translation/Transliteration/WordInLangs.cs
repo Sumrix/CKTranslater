@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace Translation.Transliteration
+namespace NameTranslation.Transliteration
 {
     public class WordInLangs
     {

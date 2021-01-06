@@ -1,4 +1,4 @@
-﻿namespace Translation.Storages
+﻿namespace NameTranslation.Storages
 {
     /// <summary>
     ///     Хранилища к которым осуществляется доступ в проекте

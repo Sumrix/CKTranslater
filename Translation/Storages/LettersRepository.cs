@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Translation.Storages
+namespace NameTranslation.Storages
 {
     public class LettersRepository : Repository, IReadOnlyCollection<char>
     {

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Translation.Storages
+namespace NameTranslation.Storages
 {
     public class EngToRusMapRepository : DictionaryRepository<(char eng, string rus), char, string>
     {

@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Translation.Graphemes;
-using Translation.Storages;
+using NameTranslation.Graphemes;
+using NameTranslation.Storages;
 
-namespace Translation
+namespace NameTranslation
 {
     /// <summary>
     ///     Класс реализует функционал связанный с языком
@@ -13,7 +13,6 @@ namespace Translation
     {
         private readonly char[] charsByIdentifier;
         private readonly Grapheme[] graphemesByChar;
-
         private readonly Grapheme[] graphemesByIdentifier;
 
         // Значение по-умолчанию -1, указывает на то что идентификатора для символа нет

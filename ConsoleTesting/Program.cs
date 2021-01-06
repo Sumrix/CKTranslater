@@ -1,87 +1,31 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Translation;
-using System.Text;
-using System.Threading.Tasks;
-using Translation.Storages;
-using Translation.Matching;
 using System.IO;
-using Translation.Transliteration;
-using Translation.Web;
-using Newtonsoft.Json;
-using MoreLinq;
+using System.Linq;
+using NameTranslation;
+using NameTranslation.Matching;
+using NameTranslation.Storages;
+using NameTranslation.Transliteration;
+using NameTranslation.Web;
 
 namespace ConsoleTesting
 {
     /// <summary>
-    /// Методы для ручного тестирования модуля перевода
+    ///     Методы для ручного тестирования модуля перевода
     /// </summary>
-    class Program
+    internal class Program
     {
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
-            //RepairSimilaritiesDB();
-            //NewMatches();
-            //RecalcSimilarities();
-            //RecalcSimilaritiesTest();
-            //PrepareToManualTranslate();
+            //Program.NewMatches();
             //DB.Save();
-            //TestTimer();
-            WikiTest();
-            //TestNewTranslator();
+            //Program.TestTimer();
+            //Program.WikiTest();
+            //Program.TestNewTranslator();
+            Program.TestNotMatchingWikiTranslations();
 
             //Console.ReadKey();
 
             DB.Save();
-        }
-
-        private static void WikiTest()
-        {
-            Language language0 = Language.Load(DB.EngLetters);
-            Language language1 = Language.Load(DB.RusLetters);
-
-            string[] toTranslateWords = File.ReadAllLines(FileName.ToTranslateWords);
-            IOrderedEnumerable<WordInLangs> translatedWords = Wiki.Translate(toTranslateWords, language0, language1)
-                .OrderBy(x => x.Lang1Word);
-            File.WriteAllLines(@"D:\Desktop\out.txt", translatedWords.Select(x => x.ToString()).ToArray());
-
-            //var v = Wiki.Translate(new[] { "aban" }, language0, language1)
-            //    .ToList();
-
-            //File.WriteAllLines(
-            //    @"D:\Desktop\Wiki.GetSimilar.txt",
-            //    Wiki.TranslateExact(Wiki.Search("Abi'l-Hadid"))
-            //        .Select(x => x.ToString())
-            //        .ToArray()
-            //);
-
-            // У prefix search результаты лучше
-            //var s1 = WikiApi.Search("abah");
-            //var s2 = WikiApi.PrefixSearch("abah");
-        }
-
-        private static void TestNewTranslator()
-        {
-            string[] toTranslateWords = File.ReadAllLines(FileName.ToTranslateWords);
-            
-            IEnumerable<WordInLangs> translatedWords = Translator.Translate(toTranslateWords);
-
-            File.WriteAllLines(
-                @"D:\Desktop\CK2Works\Translations.txt",
-                translatedWords.Select(wordInLangs => wordInLangs.ToString())
-            );
-        }
-
-        private static void TestTimer()
-        {
-            QueueTimer timer = new QueueTimer(1000);
-            timer.Tick += (s, e) => Console.WriteLine("1");
-            timer.Tick += (s, e) => Console.WriteLine("2");
-            timer.Tick += (s, e) => Console.WriteLine("3");
-            timer.Tick += (s, e) => Console.WriteLine("4");
-            timer.WaitMyTurn();
-            Console.WriteLine("5");
         }
 
         //private static void RepairSimilaritiesDB()
@@ -115,7 +59,7 @@ namespace ConsoleTesting
             Language language0 = Language.Load(DB.EngLetters);
             Language language1 = Language.Load(DB.RusLetters);
 
-            (string, string)[] paris = new[]
+            (string, string)[] paris =
             {
                 //("yffe", "иф"),
                 ("richuin", "ришьон")
@@ -146,115 +90,68 @@ namespace ConsoleTesting
             }
         }
 
-        private static void RecalcSimilarities()
+        private static void TestNewTranslator()
         {
-            Language language0 = Language.Load(DB.EngLetters);
-            Language language1 = Language.Load(DB.RusLetters);
             string[] toTranslateWords = File.ReadAllLines(FileName.ToTranslateWords);
 
-            List<WordInLangs> translatedWords = new List<WordInLangs>();
-            List<string> toTransliterateWords = new List<string>();
-            List<string> toWikiTranslate = new List<string>();
+            var translatedWords = Translator.Translate(toTranslateWords);
 
-            foreach (string word in toTranslateWords)
-            {
-                // 1. Проверить наличие слов в БД переводов.
-                string translation = DB.Translations[word];
-                if (translation != null)
-                {
-                    translatedWords.Add(new WordInLangs(word, translation));
-                }
-                else
-                {
-                    // 2.Проверить наличие слов в БД без переводов
-                    // Буквы через wiki не переводить, они не переведутся
-                    if (DB.WebTranslationMisses.Contains(word) || word.Length == 1)
-                    {
-                        toTransliterateWords.Add(word);
-                    }
-                    else
-                    {
-                        toWikiTranslate.Add(word);
-                    }
-                }
-            }
-
-            // 3. Wiki перевод
-            List<WordInLangs> wikiTranslations = Wiki.Translate(toWikiTranslate, language0, language1).ToList();
-            foreach (WordInLangs wordInLangs in wikiTranslations)
-            {
-                if (wordInLangs.Lang2Word != null)
-                {
-                    DB.Translations.Add(wordInLangs);
-                    translatedWords.Add(wordInLangs);
-                }
-                else
-                {
-                    DB.WebTranslationMisses.Add(wordInLangs.Lang1Word);
-                    toTransliterateWords.Add(wordInLangs.Lang1Word);
-                }
-            }
-
-            // 4. Производим обучение переводчика
-            IEnumerable<WordInLangs> wordsToLearn = DB.Translations
-                .Union(DB.EngToRusMap.Select(x => new WordInLangs(x.eng.ToString(), x.rus)));
-
-            List<TransliterationRule> rules = RuleRecognizer.Recognize(language0, language1, wordsToLearn);
-            TransliterationRulesRepository transliterationRules = new TransliterationRulesRepository();
-            transliterationRules.AddRange(rules);
-            transliterationRules.Save(FileName.TransliterationRules);
-
-            // 5. Производим транслитерацию списка слов отложенных для транслитерации
-            Transliterator translator = Transliterator.Create(rules, language0);
-
-            foreach (string word in toTransliterateWords)
-            {
-                translatedWords.Add(new WordInLangs(word, translator.Translate(word)));
-            }
-
-            File.Delete(@"D:\Desktop\CK2Works\Translations.txt");
             File.WriteAllLines(
                 @"D:\Desktop\CK2Works\Translations.txt",
                 translatedWords.Select(wordInLangs => wordInLangs.ToString())
             );
-
-            DB.Save();
         }
 
-        private static void RecalcSimilaritiesTest()
+        private static void TestNotMatchingWikiTranslations()
+        {
+            Language language1 = Language.Load(DB.EngLetters);
+            Language language2 = Language.Load(DB.RusLetters);
+            var rusWords = File.ReadAllLines(@"D:\Desktop\CK2Works\Dictionaries\word_rus.txt")
+                .ToHashSet();
+
+            File.WriteAllLines(@"D:\Desktop\out.txt",
+                DB.Translations
+                    .Where(w =>
+                        !WordMatch.Create(w.Lang1Word, w.Lang2Word, language1, language2).Success
+                        && !rusWords.Contains(w.Lang2Word))
+                    .Select(w => w.ToString())
+            );
+        }
+
+        private static void TestTimer()
+        {
+            QueueTimer timer = new QueueTimer(1000);
+            timer.Tick += (s, e) => Console.WriteLine("1");
+            timer.Tick += (s, e) => Console.WriteLine("2");
+            timer.Tick += (s, e) => Console.WriteLine("3");
+            timer.Tick += (s, e) => Console.WriteLine("4");
+            timer.WaitMyTurn();
+            Console.WriteLine("5");
+        }
+
+        private static void WikiTest()
         {
             Language language0 = Language.Load(DB.EngLetters);
             Language language1 = Language.Load(DB.RusLetters);
-            string[] toTranslateWords = File.ReadAllLines(FileName.ToTranslateWords);
 
-            List<(string original, string translation, string transliteration)> translatedWords = new List<(string, string, string)>();
-            List<string> toTransliterateWords = new List<string>();
-            List<string> toWikiTranslate = new List<string>();
+            //string[] toTranslateWords = File.ReadAllLines(FileName.ToTranslateWords);
+            //var translatedWords = Wiki.Translate(toTranslateWords, language0, language1)
+            //    .OrderBy(x => x.Lang1Word);
+            //File.WriteAllLines(@"D:\Desktop\out.txt", translatedWords.Select(x => x.ToString()).ToArray());
 
+            var v = Wiki.Translate(new[] { "aceto" }, language0, language1)
+                .ToList();
 
-            IEnumerable<WordInLangs> wordsToLearn = DB.Translations
-                .Union(DB.EngToRusMap.Select(x => new WordInLangs(x.eng.ToString(), x.rus)));
+            //File.WriteAllLines(
+            //    @"D:\Desktop\Wiki.GetSimilar.txt",
+            //    Wiki.TranslateExact(Wiki.Search("Abi'l-Hadid"))
+            //        .Select(x => x.ToString())
+            //        .ToArray()
+            //);
 
-            List<TransliterationRule> rules = RuleRecognizer.Recognize(language0, language1, wordsToLearn);
-
-            Transliterator translator = Transliterator.Create(rules, language0);
-            List<WordInLangs> transliteratedWords = new List<WordInLangs>();
-
-            foreach (string word in toTranslateWords)
-            {
-                // 1. Проверить наличие слов в БД переводов.
-                string translation = DB.Translations[word];
-                if (translation != null && WordMatch.Create(word, translation, language0, language1).Similarity >= 0.68)
-                {
-                    translatedWords.Add((word, translation, translator.Translate(word)));
-                }
-            }
-
-            File.Delete(@"D:\Desktop\CK2Works\Transliterated.txt");
-            File.WriteAllLines(
-                @"D:\Desktop\CK2Works\Transliterated.txt",
-                translatedWords.Select(x => $"{x.original}\t{x.translation}\t{x.transliteration}")
-            );
+            // У prefix search результаты лучше
+            //var s1 = WikiApi.Search("abah");
+            //var s2 = WikiApi.PrefixSearch("abah");
         }
 
         //private static void PrepareToManualTranslate()

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using Translation.Graphemes;
+using NameTranslation.Graphemes;
 
-namespace Translation.Transliteration
+namespace NameTranslation.Transliteration
 {
     /// <summary>
     ///     Траслитератор

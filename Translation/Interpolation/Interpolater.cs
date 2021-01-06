@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Translation.Interpolation
+namespace NameTranslation.Interpolation
 {
     public static class Interpolater
     {

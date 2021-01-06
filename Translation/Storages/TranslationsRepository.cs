@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using Translation.Transliteration;
+using NameTranslation.Transliteration;
 
-namespace Translation.Storages
+namespace NameTranslation.Storages
 {
     public class TranslationsRepository : DictionaryRepository<WordInLangs, string, string>
     {

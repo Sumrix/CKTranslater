@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Translation.Matching
+namespace NameTranslation.Matching
 {
     [Flags]
     public enum FVectorFlags : uint

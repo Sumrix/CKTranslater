@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Linq;
-using Translation.Collections;
+using NameTranslation.Collections;
 
-namespace Translation.Graphemes
+namespace NameTranslation.Graphemes
 {
     public enum GraphemeType
     {
@@ -45,16 +45,12 @@ namespace Translation.Graphemes
         {
             0, (uint) CommonFlag.Last, (uint) VowelFlag.Stressed, (uint) ConsonantFlag.PreviousVowel
         };
-
         public static readonly int[] FlagBitNum = Grapheme.MaxFlag
             .Select(f => f == 0 ? 0 : Bit.OnesCount(f - 1) + 1)
             .ToArray();
-
         public static readonly int[] FlagVariants = Grapheme.MaxFlag
             .Select(f => f == 0 ? 1 : (int) (f << 1))
             .ToArray();
-
-
         public FlagSet Flags;
 
         public Grapheme(GraphemeType type, string letters, FlagSet flags = default)
@@ -65,7 +61,6 @@ namespace Translation.Graphemes
         }
 
         public string Letters { get; private set; }
-
         public GraphemeType Type { get; private set; }
 
         public Grapheme Clone()

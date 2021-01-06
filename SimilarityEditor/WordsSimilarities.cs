@@ -1,26 +1,30 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
-
 using BrightIdeasSoftware;
-
-using Translation;
-using Translation.Matching;
-using Translation.Storages;
-using Translation.Transliteration;
+using NameTranslation;
+using NameTranslation.Matching;
+using NameTranslation.Storages;
+using NameTranslation.Transliteration;
 
 namespace SimilarityEditor
 {
     public class WordsSimilarities : IVirtualListDataSource
     {
-        private List<WordsSimilarity> words;
-        private List<WordsSimilarity> filteredWords;
         private readonly Language language0 = Language.Load(DB.EngLetters);
         private readonly Language language1 = Language.Load(DB.RusLetters);
         private readonly string[] toTranslateWords = File.ReadAllLines(@"..\..\..\Data\ToTranslateWords (Test).txt");
         private string filter;
+        private List<WordsSimilarity> filteredWords;
+        private List<WordsSimilarity> words;
+
+        public WordsSimilarities()
+        {
+            this.words = new List<WordsSimilarity>();
+        }
 
         public string Filter
         {
@@ -35,9 +39,73 @@ namespace SimilarityEditor
             }
         }
 
-        public WordsSimilarities()
+        public void AddObjects(ICollection modelObjects)
         {
-            this.words = new List<WordsSimilarity>();
+            throw new NotImplementedException();
+        }
+
+        public object GetNthObject(int n)
+        {
+            return this.filteredWords[n];
+        }
+
+        public int GetObjectCount()
+        {
+            return this.filteredWords.Count;
+        }
+
+        public int GetObjectIndex(object model)
+        {
+            return this.filteredWords.IndexOf((WordsSimilarity) model);
+        }
+
+        public void InsertObjects(int index, ICollection modelObjects)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void PrepareCache(int first, int last)
+        {
+        }
+
+        public void RemoveObjects(ICollection modelObjects)
+        {
+            throw new NotImplementedException();
+        }
+
+        public int SearchText(string value, int first, int last, OLVColumn column)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void SetObjects(IEnumerable collection)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Sort(OLVColumn column, SortOrder order)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void UpdateObject(int index, object modelObject)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void DoFilter()
+        {
+            if (string.IsNullOrEmpty(this.filter))
+            {
+                this.filteredWords = this.words;
+            }
+            else
+            {
+                this.filteredWords = this.words
+                    .Where(ws => ws.Lang1Word.EqualsWildcard(this.filter) ||
+                                 ws.Lang2Word.EqualsWildcard(this.filter))
+                    .ToList();
+            }
         }
 
         public void Rebuild()
@@ -48,9 +116,9 @@ namespace SimilarityEditor
 
         private void RecalcSimilarities()
         {
-            List<WordInLangs> translatedWords = new List<WordInLangs>();
-            List<string> toTransliterateWords = new List<string>();
-            List<string> toWikiTranslate = new List<string>();
+            var translatedWords = new List<WordInLangs>();
+            var toTransliterateWords = new List<string>();
+            var toWikiTranslate = new List<string>();
 
             foreach (string word in this.toTranslateWords)
             {
@@ -75,7 +143,7 @@ namespace SimilarityEditor
             }
 
             // 4. Производим обучение переводчика
-            IEnumerable<WordInLangs> wordsToLearn = DB.Translations
+            var wordsToLearn = DB.Translations
                 .Union(DB.EngToRusMap.Select(x => new WordInLangs(x.eng.ToString(), x.rus)));
 
             this.words = wordsToLearn
@@ -86,75 +154,6 @@ namespace SimilarityEditor
                 ))
                 .OrderBy(x => x.MatchInfo.Similarity)
                 .ToList();
-        }
-
-        private void DoFilter()
-        {
-            if (string.IsNullOrEmpty(this.filter))
-            {
-                this.filteredWords = this.words;
-            }
-            else
-            {
-                this.filteredWords = this.words
-                    .Where(ws => WildcardMatch.EqualsWildcard(ws.Lang1Word, this.filter) ||
-                                 WildcardMatch.EqualsWildcard(ws.Lang2Word, this.filter))
-                    .ToList();
-            }
-        }
-
-        public void AddObjects(ICollection modelObjects)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public object GetNthObject(int n)
-        {
-            return this.filteredWords[n];
-        }
-
-        public int GetObjectCount()
-        {
-            return this.filteredWords.Count;
-        }
-
-        public int GetObjectIndex(object model)
-        {
-            return this.filteredWords.IndexOf((WordsSimilarity)model);
-        }
-
-        public void InsertObjects(int index, ICollection modelObjects)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public void PrepareCache(int first, int last)
-        {
-        }
-
-        public void RemoveObjects(ICollection modelObjects)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public int SearchText(string value, int first, int last, OLVColumn column)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public void SetObjects(IEnumerable collection)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public void Sort(OLVColumn column, SortOrder order)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public void UpdateObject(int index, object modelObject)
-        {
-            throw new System.NotImplementedException();
         }
     }
 }

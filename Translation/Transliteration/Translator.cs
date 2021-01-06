@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using MoreLinq;
-using Translation.Storages;
-using Translation.Web;
+using NameTranslation.Storages;
+using NameTranslation.Web;
 
-namespace Translation.Transliteration
+namespace NameTranslation.Transliteration
 {
     /// <summary>
     ///     Переводчик слов
@@ -104,11 +104,11 @@ namespace Translation.Transliteration
             }
 
             // Достаём переводы из кэша
-            (var cacheMisses, var cacheHits) = Translator.GetTranslationsFromCache(englishWords);
-            (var cacheTranslated, var cacheNotTranslated) = cacheHits.Partition(w => w.IsTranslated);
+            var (cacheMisses, cacheHits) = Translator.GetTranslationsFromCache(englishWords);
+            var (cacheTranslated, cacheNotTranslated) = cacheHits.Partition(w => w.IsTranslated);
 
             // То что не перевелось, переводим через интернет
-            (var webMisses, var webHits) = Translator.GetTranslationsFromWeb(cacheMisses);
+            var (webMisses, webHits) = Translator.GetTranslationsFromWeb(cacheMisses);
 
             // Переведённое через интернет сохраняем в кэш
             Translator.CacheTranslations(webMisses, webHits);

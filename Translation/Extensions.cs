@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Translation
+namespace NameTranslation
 {
     public static class Extensions
     {

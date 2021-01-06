@@ -1,18 +1,17 @@
-﻿using BrightIdeasSoftware;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
-using Translation.Matching;
-using Translation.Storages;
+using BrightIdeasSoftware;
+using NameTranslation.Matching;
+using NameTranslation.Storages;
 
 namespace SimilarityEditor
 {
     public partial class Form1 : Form
     {
-        private bool initialized = false;
         private readonly WordsSimilarities wordsModel;
+        private readonly bool initialized;
 
         public Form1()
         {
@@ -34,11 +33,40 @@ namespace SimilarityEditor
             this.initialized = true;
         }
 
-        private void RefreshWords()
+        private void details_RowFormatter(OLVListItem olvItem)
         {
-            this.wordsModel.Rebuild();
-            this.words.Refresh();
+            LettersMatch match = (LettersMatch) olvItem.RowObject;
+            olvItem.BackColor = Program.GetColorFotSimilarity(match.Similarity);
+        }
+
+        private void details_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            LettersMatch match = (LettersMatch) this.details.SelectedObject;
+            this.similarities.RemoveHighlights();
+
+            if (match != null)
+            {
+                var pairs = from letter0 in string.IsNullOrEmpty(match.Letters0) ? "_" : match.Letters0
+                    from letter1 in string.IsNullOrEmpty(match.Letters1) ? "_" : match.Letters1
+                    select (letter0, letter1);
+                this.similarities.HighlightCells(pairs);
+            }
+        }
+
+        private void filter_TextChanged(object sender, EventArgs e)
+        {
+            this.wordsModel.Filter = this.filter.Text;
+
+            //if (!this.similarityCalculationsButton.Checked)
+            //{
+            this.words.BuildList(true);
             this.RefreshDetails();
+            //}
+        }
+
+        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            DB.Save();
         }
 
         private void RefreshDetails()
@@ -49,9 +77,16 @@ namespace SimilarityEditor
                 return;
             }
 
-            WordsSimilarity match = (WordsSimilarity)this.wordsModel.GetNthObject(this.words.SelectedIndex);
+            WordsSimilarity match = (WordsSimilarity) this.wordsModel.GetNthObject(this.words.SelectedIndex);
 
             this.details.SetObjects(match.MatchInfo.LetterMatches);
+        }
+
+        private void RefreshWords()
+        {
+            this.wordsModel.Rebuild();
+            this.words.Refresh();
+            this.RefreshDetails();
         }
 
         private void Similarities_CellValueChanged(object sender, DataGridViewCellEventArgs e)
@@ -68,47 +103,6 @@ namespace SimilarityEditor
             this.ResumeLayout();
         }
 
-        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            DB.Save();
-        }
-
-        private void words_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            this.RefreshDetails();
-        }
-
-        private void filter_TextChanged(object sender, EventArgs e)
-        {
-            this.wordsModel.Filter = this.filter.Text;
-
-            //if (!this.similarityCalculationsButton.Checked)
-            //{
-            this.words.BuildList(true);
-            this.RefreshDetails();
-            //}
-        }
-
-        private void details_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            LettersMatch match = (LettersMatch)this.details.SelectedObject;
-            this.similarities.RemoveHighlights();
-
-            if (match != null)
-            {
-                IEnumerable<(char letter0, char letter1)> pairs = from letter0 in string.IsNullOrEmpty(match.Letters0) ? "_" : match.Letters0
-                            from letter1 in string.IsNullOrEmpty(match.Letters1) ? "_" : match.Letters1
-                            select (letter0, letter1);
-                this.similarities.HighlightCells(pairs);
-            }
-        }
-
-        private void details_RowFormatter(OLVListItem olvItem)
-        {
-            LettersMatch match = (LettersMatch)olvItem.RowObject;
-            olvItem.BackColor = Program.GetColorFotSimilarity(match.Similarity);
-        }
-
         private void similarityCalculationsButton_Click(object sender, EventArgs e)
         {
             this.similarityCalculationsButton.BackColor = Color.Red;
@@ -123,6 +117,11 @@ namespace SimilarityEditor
             this.similarityCalculationsButton.BackColor = Color.Green;
 
             this.RefreshWords();
+        }
+
+        private void words_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            this.RefreshDetails();
         }
     }
 }

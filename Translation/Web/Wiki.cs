@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using MoreLinq;
-using Translation.Matching;
-using Translation.Transliteration;
+using NameTranslation.Matching;
+using NameTranslation.Transliteration;
 
-namespace Translation.Web
+namespace NameTranslation.Web
 {
     /// <summary>
     ///     Переводчик через википедию
@@ -79,7 +79,7 @@ namespace Translation.Web
             Language targetLanguage)
         {
             // То что можем, переводим точно
-            (var exactTranslasions, var notTranslatedLines) = Wiki.TranslateExact(lines)
+            var (exactTranslasions, notTranslatedLines) = Wiki.TranslateExact(lines)
                 .Partition(
                     trans => trans.Lang2Word != null &&
                              targetLanguage.Belongs(trans.Lang2Word),
@@ -90,7 +90,7 @@ namespace Translation.Web
                 );
 
             // Там где нет точных переводов, ищем примерные
-            (var foundResults, var notFoundLines) = Wiki.Search(notTranslatedLines)
+            var (foundResults, notFoundLines) = Wiki.Search(notTranslatedLines)
                 .Partition(
                     result => result.Results.Any(),
                     (True, False) => (

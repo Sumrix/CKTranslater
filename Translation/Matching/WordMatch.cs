@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using Translation.Storages;
+using NameTranslation.Storages;
 
-namespace Translation.Matching
+namespace NameTranslation.Matching
 {
     /// <summary>
     ///     Класс устанавливает соответствие между графемами слов
@@ -58,10 +58,6 @@ namespace Translation.Matching
         /// <summary>
         ///     Произвести вычисления по массивам применяя функцию
         /// </summary>
-        /// <param name="numbers0">Массив чисел 0</param>
-        /// <param name="numbers1">Массив чисел 1</param>
-        /// <param name="F01">Функция между числами массива 0 и массива 1</param>
-        /// <returns></returns>
         private static CalculationCell[,] FillCalculationArray(string word0,
             string word1,
             Language language0,

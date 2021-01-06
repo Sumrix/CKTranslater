@@ -1,4 +1,4 @@
-﻿namespace Translation.Storages
+﻿namespace NameTranslation.Storages
 {
     /// <summary>
     ///     Базовый класс для объектов хранилищ данных

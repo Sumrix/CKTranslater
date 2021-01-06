@@ -104,9 +104,9 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Translation\Translation.csproj">
+    <ProjectReference Include="..\Translation\NameTranslation.csproj">
       <Project>{af9d058b-f8a3-4343-8b93-002844ea3cd9}</Project>
-      <Name>Translation</Name>
+      <Name>NameTranslation</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

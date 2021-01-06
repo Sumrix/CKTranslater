@@ -1,4 +1,4 @@
-﻿namespace Translation.Parsing
+﻿namespace NameTranslation.Parsing
 {
     public class GraphemeVariant
     {

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using Translation.Graphemes;
+using NameTranslation.Graphemes;
 
-namespace Translation.Parsing
+namespace NameTranslation.Parsing
 {
     // Маленькие графемы собираются в большие, если уже такие есть
     public class TranslationLengthCorrector

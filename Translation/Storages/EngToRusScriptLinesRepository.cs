@@ -4,7 +4,7 @@ using System.Linq;
 using EngToRusScriptLinesData =
     System.Collections.Generic.Dictionary<string, System.Collections.Generic.Dictionary<string, string>>;
 
-namespace Translation.Storages
+namespace NameTranslation.Storages
 {
     public class EngToRusScriptLine
     {

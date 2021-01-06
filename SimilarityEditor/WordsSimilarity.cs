@@ -1,5 +1,5 @@
 ﻿using System;
-using Translation.Matching;
+using NameTranslation.Matching;
 
 namespace SimilarityEditor
 {

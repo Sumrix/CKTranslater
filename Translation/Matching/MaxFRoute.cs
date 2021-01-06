@@ -1,4 +1,4 @@
-﻿namespace Translation.Matching
+﻿namespace NameTranslation.Matching
 {
     public class MaxFRoute
     {

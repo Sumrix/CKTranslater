@@ -1,4 +1,4 @@
-﻿namespace Translation.Transliteration
+﻿namespace NameTranslation.Transliteration
 {
     /// <summary>
     ///     Узел графа по которому производится перевод

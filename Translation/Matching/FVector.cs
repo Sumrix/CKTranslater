@@ -3,7 +3,7 @@
 using System;
 using System.Linq;
 
-namespace Translation.Matching
+namespace NameTranslation.Matching
 {
     public class FVector
     {

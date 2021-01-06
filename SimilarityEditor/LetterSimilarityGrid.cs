@@ -4,17 +4,17 @@ using System.Drawing;
 using System.Linq;
 using System.Reflection;
 using System.Windows.Forms;
-using Translation;
-using Translation.Storages;
+using NameTranslation;
+using NameTranslation.Storages;
 
 namespace SimilarityEditor
 {
     public class LetterSimilarityGrid : DataGridView
     {
-        private List<Point> highlightedCells = new List<Point>();
+        private readonly List<Point> highlightedCells = new List<Point>();
+        private readonly Language language0 = Language.Load(DB.EngLetters);
+        private readonly Language language1 = Language.Load(DB.RusLetters);
         private Point selectedCell;
-        private Language language0 = Language.Load(DB.EngLetters);
-        private Language language1 = Language.Load(DB.RusLetters);
 
         public LetterSimilarityGrid()
         {
@@ -22,28 +22,9 @@ namespace SimilarityEditor
             this.SetTableDoubleBuffering();
         }
 
-        private void InitializeComponent()
+        private int DBToTableSimilarity(float value)
         {
-            this.AllowUserToAddRows = false;
-            this.AllowUserToDeleteRows = false;
-            this.AllowUserToResizeColumns = false;
-            this.AllowUserToResizeRows = false;
-            this.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
-            this.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-            this.EditMode = DataGridViewEditMode.EditOnKeystroke;
-            this.EnableHeadersVisualStyles = false;
-            this.RowHeadersWidth = 50;
-            this.RowHeadersWidthSizeMode = DataGridViewRowHeadersWidthSizeMode.DisableResizing;
-        }
-
-        private void SetTableDoubleBuffering()
-        {
-            if (!SystemInformation.TerminalServerSession)
-            {
-                Type dgvType = this.GetType();
-                PropertyInfo pi = dgvType.GetProperty("DoubleBuffered", BindingFlags.Instance | BindingFlags.NonPublic);
-                pi.SetValue(this, true, null);
-            }
+            return Convert.ToInt32(value * 10);
         }
 
         public void FillTable()
@@ -59,6 +40,7 @@ namespace SimilarityEditor
                 };
                 this.Columns.Add(column);
             }
+
             // Для пустого символа
             column = new DataGridViewTextBoxColumn
             {
@@ -75,6 +57,7 @@ namespace SimilarityEditor
                 {
                     row.HeaderCell.Value = DB.EngLetters[rowIndex].ToString();
                 }
+
                 this.Rows.Add(row);
 
                 for (int colIndex = 0; colIndex < DB.EngToRusSimilarities.RusCount; colIndex++)
@@ -93,14 +76,30 @@ namespace SimilarityEditor
             }
         }
 
-        private float TableToDBSimilarity(object value)
+        public void HighlightCells(IEnumerable<(char letter0, char letter1)> pairs)
         {
-            return Convert.ToInt32(value) / 10f;
+            this.highlightedCells.AddRange(
+                from p in pairs
+                let index0 = p.letter0 == '_' ? this.Rows.Count - 1 : this.language0.ToIdentifier(p.letter0)
+                let index1 = p.letter1 == '_' ? this.Columns.Count - 1 : this.language1.ToIdentifier(p.letter1)
+                select new Point(index1, index0)
+            );
+
+            this.Invalidate();
         }
 
-        private int DBToTableSimilarity(float value)
+        private void InitializeComponent()
         {
-            return Convert.ToInt32(value * 10);
+            this.AllowUserToAddRows = false;
+            this.AllowUserToDeleteRows = false;
+            this.AllowUserToResizeColumns = false;
+            this.AllowUserToResizeRows = false;
+            this.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
+            this.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            this.EditMode = DataGridViewEditMode.EditOnKeystroke;
+            this.EnableHeadersVisualStyles = false;
+            this.RowHeadersWidth = 50;
+            this.RowHeadersWidthSizeMode = DataGridViewRowHeadersWidthSizeMode.DisableResizing;
         }
 
         protected override void OnCellPainting(DataGridViewCellPaintingEventArgs e)
@@ -127,8 +126,8 @@ namespace SimilarityEditor
             DataGridViewCell cell = this.SelectedCells?[0];
 
             if (cell != null && (
-                    (e.RowIndex == -1 && cell.ColumnIndex == e.ColumnIndex) ||
-                    (e.ColumnIndex == -1 && cell.RowIndex == e.RowIndex)
+                    e.RowIndex == -1 && cell.ColumnIndex == e.ColumnIndex ||
+                    e.ColumnIndex == -1 && cell.RowIndex == e.RowIndex
                 )
             )
             {
@@ -158,6 +157,7 @@ namespace SimilarityEditor
                         e.Graphics.DrawLine(p, rect.Left, rect.Top, rect.Left, rect.Bottom);
                         e.Graphics.DrawLine(p, rect.Right, rect.Top, rect.Right, rect.Bottom);
                     }
+
                     if (redHorizongalBorders)
                     {
                         e.Graphics.DrawLine(p, rect.Left, rect.Top, rect.Right, rect.Top);
@@ -169,16 +169,6 @@ namespace SimilarityEditor
             e.Handled = true;
         }
 
-        protected override void OnCellValueChanged(DataGridViewCellEventArgs e)
-        {
-            this.UpdateCellColor(e.ColumnIndex, e.RowIndex);
-
-            int value = Convert.ToInt32(this.Rows[e.RowIndex].Cells[e.ColumnIndex].Value);
-            DB.EngToRusSimilarities[e.RowIndex, e.ColumnIndex] = this.TableToDBSimilarity(value);
-
-            base.OnCellValueChanged(e);
-        }
-
         protected override void OnCellValidating(DataGridViewCellValidatingEventArgs e)
         {
             object value = e.FormattedValue;
@@ -187,6 +177,16 @@ namespace SimilarityEditor
             {
                 e.Cancel = true;
             }
+        }
+
+        protected override void OnCellValueChanged(DataGridViewCellEventArgs e)
+        {
+            this.UpdateCellColor(e.ColumnIndex, e.RowIndex);
+
+            int value = Convert.ToInt32(this.Rows[e.RowIndex].Cells[e.ColumnIndex].Value);
+            DB.EngToRusSimilarities[e.RowIndex, e.ColumnIndex] = this.TableToDBSimilarity(value);
+
+            base.OnCellValueChanged(e);
         }
 
         protected override void OnSelectionChanged(EventArgs e)
@@ -205,29 +205,32 @@ namespace SimilarityEditor
             }
         }
 
+        public void RemoveHighlights()
+        {
+            this.highlightedCells.Clear();
+            this.Invalidate();
+        }
+
+        private void SetTableDoubleBuffering()
+        {
+            if (!SystemInformation.TerminalServerSession)
+            {
+                Type dgvType = this.GetType();
+                PropertyInfo pi = dgvType.GetProperty("DoubleBuffered", BindingFlags.Instance | BindingFlags.NonPublic);
+                pi.SetValue(this, true, null);
+            }
+        }
+
+        private float TableToDBSimilarity(object value)
+        {
+            return Convert.ToInt32(value) / 10f;
+        }
+
         private void UpdateCellColor(int colIndex, int rowIndex)
         {
             DataGridViewCell cell = this.Rows[rowIndex].Cells[colIndex];
             float k = Convert.ToInt32(cell.Value) / 10f;
             cell.Style.BackColor = Program.GetColorFotSimilarity(k);
-        }
-
-        public void HighlightCells(IEnumerable<(char letter0, char letter1)> pairs)
-        {
-            this.highlightedCells.AddRange(
-                from p in pairs
-                let index0 = p.letter0 == '_' ? this.Rows.Count - 1 : this.language0.ToIdentifier(p.letter0)
-                let index1 = p.letter1 == '_' ? this.Columns.Count - 1 : this.language1.ToIdentifier(p.letter1)
-                select new Point(index1, index0)
-            );
-
-            this.Invalidate();
-        }
-
-        public void RemoveHighlights()
-        {
-            this.highlightedCells.Clear();
-            this.Invalidate();
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿namespace Translation.Collections
+﻿namespace NameTranslation.Collections
 {
     /// <summary>
     ///     Множество флагов

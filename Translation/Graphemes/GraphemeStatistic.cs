@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace Translation.Graphemes
+namespace NameTranslation.Graphemes
 {
     public class GraphemeStatistic
     {

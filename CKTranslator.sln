@@ -5,7 +5,7 @@ VisualStudioVersion = 16.0.29102.190
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CKTranslator", "CKTranslator\CKTranslator.csproj", "{B5CC5F13-BF0B-48C5-8424-7F5F81AEE1D6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Translation", "Translation\Translation.csproj", "{AF9D058B-F8A3-4343-8B93-002844EA3CD9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NameTranslation", "Translation\NameTranslation.csproj", "{AF9D058B-F8A3-4343-8B93-002844EA3CD9}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimilarityEditor", "SimilarityEditor\SimilarityEditor.csproj", "{21438185-68C4-4C5F-8EBF-D9DB9A867E8F}"
 EndProject
@@ -16,6 +16,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Data", "Data", "{806A63C9-F
 		Data\LoadOrder.txt = Data\LoadOrder.txt
 		Data\StringKeys.txt = Data\StringKeys.txt
 		Data\ToTranslateWords (Test).txt = Data\ToTranslateWords (Test).txt
+		Data\ToTranslateWords.txt = Data\ToTranslateWords.txt
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DB", "DB", "{24EAD81E-0055-4862-929F-D21B87533F7C}"

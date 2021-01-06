@@ -3,7 +3,7 @@ using System.Linq;
 using System.Web;
 using Newtonsoft.Json.Linq;
 
-namespace Translation.Web.Queries
+namespace NameTranslation.Web.Queries
 {
     public class Search : Query<string, List<string>>
     {

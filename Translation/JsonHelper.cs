@@ -2,7 +2,7 @@
 using System.IO;
 using Newtonsoft.Json;
 
-namespace Translation
+namespace NameTranslation
 {
     public static class JsonHelper
     {

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Translation.Storages
+namespace NameTranslation.Storages
 {
     /// <summary>
     ///     Represents a cache-able collections of keys and values.

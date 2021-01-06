@@ -2,14 +2,12 @@
 using System.Collections.Generic;
 using MoreLinq;
 
-namespace Translation.Storages
+namespace NameTranslation.Storages
 {
     public class HashSetRepository<T> : Repository, ISet<T>, IReadOnlyCollection<T>
     {
         protected HashSet<T> hashSet = new HashSet<T>();
-
         public int Count => ((ICollection<T>) this.hashSet).Count;
-
         public bool IsReadOnly => ((ICollection<T>) this.hashSet).IsReadOnly;
 
         public bool Add(T item)
