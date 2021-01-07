@@ -1,16 +1,17 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Antlr4.Runtime;
-using Antlr4.Runtime.Misc;
 
 namespace Core
 {
     public class ErrorSaver : BaseErrorListener
     {
-        public List<string> Messages = new List<string>();
+        public List<string> Messages = new();
 
-        public override void SyntaxError([NotNull] IRecognizer recognizer, [Nullable] IToken offendingSymbol, int line,
-            int charPositionInLine, [NotNull] string msg, [Nullable] RecognitionException e)
+        public override void SyntaxError(TextWriter output, IRecognizer recognizer, IToken offendingSymbol, int line,
+            int charPositionInLine,
+            string msg, RecognitionException e)
         {
             IEnumerable<string> stack = ((Parser) recognizer).GetRuleInvocationStack();
             stack = stack.Reverse();

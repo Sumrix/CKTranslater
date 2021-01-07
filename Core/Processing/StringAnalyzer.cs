@@ -256,7 +256,7 @@ namespace Core.Processing
 
         private void LoadStrings(string fileName, Dictionary<ScriptKey, string> strings)
         {
-            Regex regex = new Regex(@"^\[(\d+)\](.+?) = (.+)$");
+            Regex regex = new(@"^\[(\d+)\](.+?) = (.+)$");
 
             strings.Clear();
 

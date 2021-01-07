@@ -13,7 +13,7 @@ namespace Core.Web
     /// </summary>
     public static class Wiki
     {
-        private static readonly Regex removePattern = new Regex("(\\(.*\\) ?)");
+        private static readonly Regex removePattern = new("(\\(.*\\) ?)");
 
         private static WordInLangs GetMostSuitableTranslation(string line, IEnumerable<WordInLangs> translations,
             Language language1, Language language2)
@@ -38,7 +38,7 @@ namespace Core.Web
 
         private static WordInLangs Normalize(WordInLangs trans)
         {
-            return new WordInLangs(
+            return new(
                 Wiki.Normalize(trans.Lang1Word),
                 trans.Lang2Word == null
                     ? null
@@ -111,7 +111,7 @@ namespace Core.Web
                     foundResult.Results.Select(result => (foundResult.Line, result))
                 )
                 .ToLookup(x => x.result, x => x.Line);
-            Dictionary<string, IGrouping<string, WordInLangs>>? resultTrans = allResultTrans
+            var resultTrans = allResultTrans
                 .SelectMany(wordInLangs =>
                     originalsByResult[wordInLangs.Lang1Word]
                         .Select(original => (original, wordInLangs))

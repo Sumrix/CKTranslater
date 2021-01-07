@@ -22,7 +22,7 @@ namespace Core.Transliteration
         {
             int variantCount = srcLanguage.MaxLetter - srcLanguage.MinLetter + 1;
 
-            Transliterator t = new Transliterator
+            Transliterator t = new()
             {
                 tree = new GraphemeVariant[variantCount],
                 srcLanguage = srcLanguage,
@@ -31,7 +31,7 @@ namespace Core.Transliteration
 
             foreach (TransliterationRule rule in rules)
             {
-                ref GraphemeVariant[]? vs = ref t.tree;
+                ref var vs = ref t.tree;
                 GraphemeVariant v = null;
 
                 foreach (char letter in rule.Source)
@@ -63,12 +63,12 @@ namespace Core.Transliteration
             int maxPos = graphemes.Count - 1;
             int savedPos = 0;
             // Узлы дерева парсинга
-            GraphemeVariant[] vs = this.tree;
+            var vs = this.tree;
             GraphemeVariant v;
             string graphemeTranslation = "";
             // Перевод
             string translation = "";
-            Grapheme grapheme = new Grapheme(GraphemeType.Silent, "");
+            Grapheme grapheme = new(GraphemeType.Silent, "");
 
             while (curPos <= maxPos)
             {

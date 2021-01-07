@@ -48,8 +48,7 @@ namespace Core.Matching
 
         public static FVector Continue(FVector p, float value, char? letter0, char? letter1)
         {
-            return new FVector
-            (
+            return new(
                 p.Previous,
                 p.Sum == 0 || value == 0 && !(letter0 == null && letter1 == null) ? 0 : p.Sum + value,
                 p.Length + (letter0 == null && letter1 == null ? 0 : 1),
@@ -103,8 +102,7 @@ namespace Core.Matching
 
         public static FVector New(FVector p, float value, char? letter0, char? letter1)
         {
-            return new FVector
-            (
+            return new(
                 p,
                 value,
                 letter0 == null && letter1 == null ? 0 : 1,
@@ -123,8 +121,7 @@ namespace Core.Matching
 
         public static FVector Start(float value, char? letter0, char? letter1)
         {
-            return new FVector
-            (
+            return new(
                 null,
                 value,
                 1,

@@ -10,7 +10,7 @@ namespace Core.Parsing
 {
     public class ScriptParser : IFileParser
     {
-        private readonly EncodingDetector decoder = new EncodingDetector();
+        private readonly EncodingDetector decoder = new();
         private readonly Encoding win1251;
         private readonly Encoding win1252;
 
@@ -22,19 +22,19 @@ namespace Core.Parsing
 
         public ScriptParseResult Parse(FileContext context)
         {
-            using StreamReader reader = new StreamReader(context.FullFileName, this.win1251);
+            using StreamReader reader = new(context.FullFileName, this.win1251);
 
-            ErrorSaver errorSaver = new ErrorSaver();
-            AntlrInputStream input = new AntlrInputStream(reader);
-            CKLexer lexer = new CKLexer(input);
-            CommonTokenStream tokens = new CommonTokenStream(lexer);
-            CKParser parser = new CKParser(tokens);
+            ErrorSaver errorSaver = new();
+            AntlrInputStream input = new(reader);
+            CKLexer lexer = new(input);
+            CommonTokenStream tokens = new(lexer);
+            CKParser parser = new(tokens);
             parser.RemoveErrorListeners();
             parser.AddErrorListener(errorSaver);
 
-            StringsListener listener = new StringsListener();
+            StringsListener listener = new();
             listener.Folder = context.ModFolder;
-            ParseTreeWalker walker = new ParseTreeWalker();
+            ParseTreeWalker walker = new();
             walker.Walk(listener, parser.script());
 
             return new ScriptParseResult
@@ -47,19 +47,19 @@ namespace Core.Parsing
 
         public ScriptParseResult Translate(string fileName, StringTranslateHandle translator)
         {
-            ErrorSaver errorSaver = new ErrorSaver();
+            ErrorSaver errorSaver = new();
             TranslateListener listener;
 
-            using (StreamReader reader = new StreamReader(fileName, this.win1251))
+            using (StreamReader reader = new(fileName, this.win1251))
             {
-                AntlrInputStream input = new AntlrInputStream(reader);
-                CKLexer lexer = new CKLexer(input);
-                CommonTokenStream tokens = new CommonTokenStream(lexer);
-                CKParser parser = new CKParser(tokens);
+                AntlrInputStream input = new(reader);
+                CKLexer lexer = new(input);
+                CommonTokenStream tokens = new(lexer);
+                CKParser parser = new(tokens);
                 parser.RemoveErrorListeners();
                 parser.AddErrorListener(errorSaver);
 
-                ParseTreeWalker walker = new ParseTreeWalker();
+                ParseTreeWalker walker = new();
                 listener = new TranslateListener(tokens, translator);
                 walker.Walk(listener, parser.script());
             }
@@ -76,18 +76,18 @@ namespace Core.Parsing
 
         public ModInfo ParseMod(string fileName)
         {
-            using StreamReader reader = new StreamReader(fileName, this.win1252);
+            using StreamReader reader = new(fileName, this.win1252);
 
-            ErrorSaver errorSaver = new ErrorSaver();
-            AntlrInputStream input = new AntlrInputStream(reader);
-            CKLexer lexer = new CKLexer(input);
-            CommonTokenStream tokens = new CommonTokenStream(lexer);
-            CKParser parser = new CKParser(tokens);
+            ErrorSaver errorSaver = new();
+            AntlrInputStream input = new(reader);
+            CKLexer lexer = new(input);
+            CommonTokenStream tokens = new(lexer);
+            CKParser parser = new(tokens);
             parser.RemoveErrorListeners();
             parser.AddErrorListener(errorSaver);
 
-            ModDescriptionListener listener = new ModDescriptionListener();
-            ParseTreeWalker walker = new ParseTreeWalker();
+            ModDescriptionListener listener = new();
+            ParseTreeWalker walker = new();
             walker.Walk(listener, parser.script());
 
             string name = listener.Strings.Find(s => s.Key.Path.LastStep == "name")?.Value;

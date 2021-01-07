@@ -14,9 +14,9 @@ namespace Core.Web
         private static readonly string logPath =
             Path.Combine(@"..\..\..\WikiLog", DateTime.Now.ToString("yyyyMMddTHHmmss"));
         private static readonly QueueTimer queueTimer = null; //new QueueTimer(0);
-        private static readonly LangLinks langLinks = new LangLinks(WikiApi.queueTimer, WikiApi.logPath);
-        private static readonly PrefixSearch prefixSearch = new PrefixSearch(WikiApi.queueTimer, WikiApi.logPath);
-        private static readonly Search search = new Search(WikiApi.queueTimer, WikiApi.logPath);
+        private static readonly LangLinks langLinks = new(WikiApi.queueTimer, WikiApi.logPath);
+        private static readonly PrefixSearch prefixSearch = new(WikiApi.queueTimer, WikiApi.logPath);
+        private static readonly Search search = new(WikiApi.queueTimer, WikiApi.logPath);
 
         public static IEnumerable<WordInLangs> GetTranslations(IEnumerable<string> words)
         {

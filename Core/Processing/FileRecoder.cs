@@ -292,7 +292,7 @@ namespace Core.Processing
                     FileRecoder.resultContent = new byte[length];
                 }
 
-                using (MemoryStream mem = new MemoryStream(FileRecoder.resultContent))
+                using (MemoryStream mem = new(FileRecoder.resultContent))
                 {
                     foreach (byte b in content)
                     {

@@ -23,7 +23,7 @@ namespace Core
 
             IEnumerable<IEnumerable<TSource>> _()
             {
-                using IEnumerator<TSource> e = source.GetEnumerator();
+                using var e = source.GetEnumerator();
 
                 foreach (int size in sizes)
                 {
@@ -48,8 +48,8 @@ namespace Core
         public static IEnumerable<(TFirst First, TSecond Second)> Zip<TFirst, TSecond>(
             this IEnumerable<TFirst> first, IEnumerable<TSecond> second)
         {
-            using IEnumerator<TFirst> enumerator1 = first.GetEnumerator();
-            using IEnumerator<TSecond> enumerator2 = second.GetEnumerator();
+            using var enumerator1 = first.GetEnumerator();
+            using var enumerator2 = second.GetEnumerator();
 
             while (enumerator1.MoveNext() && enumerator2.MoveNext())
             {

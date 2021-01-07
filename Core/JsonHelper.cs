@@ -14,16 +14,16 @@ namespace Core
             }
 
             using StreamReader file = File.OpenText(fileName);
-            JsonSerializer serializer = new JsonSerializer();
+            JsonSerializer serializer = new();
             return (T) serializer.Deserialize(file, typeof(T));
         }
 
         public static string JsonPrettify(string json)
         {
-            using StringReader stringReader = new StringReader(json);
-            using StringWriter stringWriter = new StringWriter();
-            JsonTextReader jsonReader = new JsonTextReader(stringReader);
-            JsonTextWriter jsonWriter = new JsonTextWriter(stringWriter) { Formatting = Formatting.Indented };
+            using StringReader stringReader = new(json);
+            using StringWriter stringWriter = new();
+            JsonTextReader jsonReader = new(stringReader);
+            JsonTextWriter jsonWriter = new(stringWriter) { Formatting = Formatting.Indented };
             jsonWriter.WriteToken(jsonReader);
             return stringWriter.ToString();
         }
@@ -31,14 +31,14 @@ namespace Core
         public static void Populate(string fileName, object obj)
         {
             using StreamReader file = File.OpenText(fileName);
-            JsonSerializer serializer = new JsonSerializer();
+            JsonSerializer serializer = new();
             serializer.Populate(file, obj);
         }
 
         public static void Serialize(object obj, string fileName)
         {
             using StreamWriter file = File.CreateText(fileName);
-            JsonSerializerSettings settings = new JsonSerializerSettings
+            JsonSerializerSettings settings = new()
             {
                 Formatting = Formatting.Indented
             };

@@ -32,7 +32,7 @@ namespace Core.Web.Queries
             JObject o = JObject.Parse(response);
 
             JToken? query = o["query"];
-            Dictionary<string, IGrouping<string, string>>? redirects = (query["redirects"] ?? new JObject())
+            var redirects = (query["redirects"] ?? new JObject())
                 .Select(r => new
                 {
                     To = (string) r["to"],

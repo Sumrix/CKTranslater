@@ -65,12 +65,12 @@ namespace Core.Graphemes
 
         public Grapheme Clone()
         {
-            return new Grapheme(this.Type, this.Letters, this.Flags);
+            return new(this.Type, this.Letters, this.Flags);
         }
 
         public static Grapheme Empty()
         {
-            return new Grapheme(GraphemeType.Silent, "");
+            return new(GraphemeType.Silent, "");
         }
 
         private static VowelFlag MergeFlags(VowelFlag left, VowelFlag right)

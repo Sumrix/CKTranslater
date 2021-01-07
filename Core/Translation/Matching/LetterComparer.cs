@@ -27,7 +27,7 @@ namespace Core.Matching
             int sourceCount = similarities.Length;
             int targetCount = similarities[0].Length;
 
-            LetterComparer comparer = new LetterComparer(sourceCount, targetCount);
+            LetterComparer comparer = new(sourceCount, targetCount);
 
             for (int sourceIndex = 0; sourceIndex < sourceCount; sourceIndex++)
             for (int targetIndex = 0; targetIndex < targetCount; targetIndex++)

@@ -21,7 +21,7 @@ namespace Core.Parsing
             // Берём графемы и пробуем с ними пройти по дереву букв/графем.
             // Возвращяем наидлиннейший путь который смогли пройти.
             GraphemeVariant variant = this.root;
-            GraphemeTranslation mergedTranslation = new GraphemeTranslation();
+            GraphemeTranslation mergedTranslation = new();
             int savedTranslationNum = 0;
             GraphemeTranslation savedMergedTranslation = null;
             bool savedButNotReturned = false;
@@ -93,7 +93,7 @@ namespace Core.Parsing
         {
             int variantCount = srcLanguage.MaxLetter - srcLanguage.MinLetter + 1;
 
-            TranslationLengthCorrector t = new TranslationLengthCorrector
+            TranslationLengthCorrector t = new()
             {
                 root = new GraphemeVariant { Variants = new GraphemeVariant[variantCount] },
                 offset = srcLanguage.MinLetter
@@ -106,7 +106,7 @@ namespace Core.Parsing
                     continue;
                 }
 
-                ref GraphemeVariant[]? vs = ref t.root.Variants;
+                ref var vs = ref t.root.Variants;
                 GraphemeVariant v = null;
 
                 foreach (char letter in translation.Original.Letters)

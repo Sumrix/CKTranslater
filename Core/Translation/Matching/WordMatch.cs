@@ -49,7 +49,7 @@ namespace Core.Matching
 
         public static WordMatch Create(string word0, string word1, Language language0, Language language1)
         {
-            CalculationCell[,] steps =
+            var steps =
                 WordMatch.FillCalculationArray(word0, word1, language0, language1, WordMatch.SimilarityF);
 
             return new WordMatch(steps);
@@ -68,7 +68,7 @@ namespace Core.Matching
             int[] numbers0 = language0.ToIdentifiers(word0);
             int[] numbers1 = language1.ToIdentifiers(word1);
 
-            CalculationCell[,] calcs01 = new CalculationCell[numbers0.Length + 1, numbers1.Length + 1];
+            var calcs01 = new CalculationCell[numbers0.Length + 1, numbers1.Length + 1];
 
             for (int index0 = 0; index0 <= numbers0.Length; index0++)
             for (int index1 = 0; index1 <= numbers1.Length; index1++)
@@ -171,7 +171,7 @@ namespace Core.Matching
 
         private IReadOnlyCollection<LettersMatch> GetMatches()
         {
-            Stack<LettersMatch> matches = new Stack<LettersMatch>();
+            var matches = new Stack<LettersMatch>();
 
             int index0 = this.calcCells.GetLength(0) - 1;
             int index1 = this.calcCells.GetLength(1) - 1;

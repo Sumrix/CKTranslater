@@ -80,7 +80,7 @@ namespace Core
 
         public static ICollection<ModInfo> LoadMods()
         {
-            ScriptParser parser = new ScriptParser();
+            ScriptParser parser = new();
             string[] fileNames = Directory.GetFiles(FileName.ModsPath, "*.mod");
 
             var mods = fileNames

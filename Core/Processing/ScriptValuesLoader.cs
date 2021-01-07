@@ -7,9 +7,9 @@ namespace Core.Processing
 {
     public class ScriptValuesLoader : IValuesLoader
     {
-        public static HashSet<string> IdKeys = new HashSet<string>();
-        public static HashSet<string> OtherKeys = new HashSet<string>();
-        public static HashSet<string> StringKeys = new HashSet<string>();
+        public static HashSet<string> IdKeys = new();
+        public static HashSet<string> OtherKeys = new();
+        public static HashSet<string> StringKeys = new();
 
         public ScriptValuesLoader()
         {
@@ -23,7 +23,7 @@ namespace Core.Processing
 
         public Event Load(FileContext context)
         {
-            ScriptParser parser = new ScriptParser();
+            ScriptParser parser = new();
             ScriptParseResult result = parser.Parse(context);
 
             if (result.Errors.Count > 0)
@@ -36,7 +36,7 @@ namespace Core.Processing
                 };
             }
 
-            StringBuilder desctiption = new StringBuilder();
+            StringBuilder desctiption = new();
 
             foreach (ScriptString @string in result.Strings)
             {

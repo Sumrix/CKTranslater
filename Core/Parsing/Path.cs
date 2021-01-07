@@ -45,7 +45,7 @@ namespace Core.Parsing
 
         public static Path Parse(string text)
         {
-            return new Path(
+            return new(
                 text.Split('.')
                     .ToList()
             );

@@ -97,7 +97,7 @@ namespace Core.Processing
 
         public Event Translate(string fileName)
         {
-            TParser parser = new TParser();
+            TParser parser = new();
             ScriptParseResult result = parser.Translate(fileName, this.TranslateString);
             return this.ProcessParseResult(result, fileName);
         }

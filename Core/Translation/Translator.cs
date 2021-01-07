@@ -27,8 +27,8 @@ namespace Core.Transliteration
         private static (IEnumerable<string> misses, IEnumerable<WordInLangs> hits) GetTranslationsFromCache(
             IEnumerable<string> words)
         {
-            List<WordInLangs> hits = new List<WordInLangs>();
-            List<string> misses = new List<string>();
+            var hits = new List<WordInLangs>();
+            var misses = new List<string>();
 
             foreach (string word in words)
             {
@@ -68,14 +68,14 @@ namespace Core.Transliteration
                 return (Enumerable.Empty<string>(), Enumerable.Empty<WordInLangs>());
             }
 
-            List<WordInLangs> hits = new List<WordInLangs>();
-            List<string> misses = new List<string>();
+            var hits = new List<WordInLangs>();
+            var misses = new List<string>();
 
             Language language0 = Language.Load(DB.EngLetters);
             Language language1 = Language.Load(DB.RusLetters);
 
             // Wiki перевод
-            List<WordInLangs> wikiTranslations = Wiki.Translate(words, language0, language1).ToList();
+            var wikiTranslations = Wiki.Translate(words, language0, language1).ToList();
             foreach (WordInLangs wordInLangs in wikiTranslations)
             {
                 if (wordInLangs.Lang2Word != null)
@@ -127,10 +127,10 @@ namespace Core.Transliteration
             Language language1 = Language.Load(DB.RusLetters);
 
             // Производим обучение переводчика
-            IEnumerable<WordInLangs> wordsToLearn = DB.Translations
+            var wordsToLearn = DB.Translations
                 .Where(w => !w.Lang1Word.Contains(" ") && !w.Lang2Word.Contains(" "));
 
-            List<TransliterationRule> rules = RuleRecognizer.Recognize(language0, language1, wordsToLearn);
+            var rules = RuleRecognizer.Recognize(language0, language1, wordsToLearn);
             DB.TransliterationRules.AddRange(rules);
             DB.TransliterationRules.Save();
 

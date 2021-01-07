@@ -8,13 +8,13 @@ namespace Core.Parsing.Listeners
     public class ScriptListener : CKBaseListener
     {
         private static readonly string[] allowedArrays = { "female_names", "male_names", "dependencies" };
-        protected readonly LinkedList<string> pathList = new LinkedList<string>();
-        private readonly Dictionary<Path, int> repetitions = new Dictionary<Path, int>();
-        public List<ScriptArray> Arrays = new List<ScriptArray>();
-        protected Path curPath = new Path(new List<string>());
+        protected readonly LinkedList<string> pathList = new();
+        private readonly Dictionary<Path, int> repetitions = new();
+        public List<ScriptArray> Arrays = new();
+        protected Path curPath = new(new List<string>());
         public string Folder;
         private int repetitionIndex;
-        public List<ScriptString> Strings = new List<ScriptString>();
+        public List<ScriptString> Strings = new();
 
         protected virtual string CustomType(string text)
         {

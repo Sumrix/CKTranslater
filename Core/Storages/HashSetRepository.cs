@@ -6,7 +6,7 @@ namespace Core.Storages
 {
     public class HashSetRepository<T> : Repository, ISet<T>, IReadOnlyCollection<T>
     {
-        protected HashSet<T> hashSet = new HashSet<T>();
+        protected HashSet<T> hashSet = new();
         public int Count => ((ICollection<T>) this.hashSet).Count;
         public bool IsReadOnly => ((ICollection<T>) this.hashSet).IsReadOnly;
 
@@ -108,6 +108,11 @@ namespace Core.Storages
         protected override object GetDataToSave()
         {
             return this.hashSet.OrderBy(x => x, OrderByDirection.Ascending);
+        }
+
+        protected override void LoadData(string fileName)
+        {
+            JsonHelper.Populate(fileName, this);
         }
     }
 }

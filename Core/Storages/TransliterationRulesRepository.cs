@@ -7,12 +7,12 @@ namespace Core.Storages
     {
         protected override KeyValuePair<string, string[]> Item2KeyValuePair(TransliterationRule item)
         {
-            return new KeyValuePair<string, string[]>(item.Source, item.Target);
+            return new(item.Source, item.Target);
         }
 
         protected override TransliterationRule KeyValuePair2Item(KeyValuePair<string, string[]> keyValuePair)
         {
-            return new TransliterationRule { Source = keyValuePair.Key, Target = keyValuePair.Value };
+            return new() { Source = keyValuePair.Key, Target = keyValuePair.Value };
         }
     }
 }

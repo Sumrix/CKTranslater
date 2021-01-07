@@ -15,7 +15,7 @@
         public static TRepository Load<TRepository>(string fileName)
             where TRepository : Repository, new()
         {
-            TRepository db = new TRepository();
+            TRepository db = new();
             db.Load(fileName);
             return db;
         }
@@ -26,10 +26,7 @@
             this.LoadData(fileName);
         }
 
-        protected virtual void LoadData(string fileName)
-        {
-            JsonHelper.Populate(fileName, this);
-        }
+        protected abstract void LoadData(string fileName);
 
         public void Save(string fileName = null)
         {

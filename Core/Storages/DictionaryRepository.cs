@@ -14,7 +14,7 @@ namespace Core.Storages
         /// <summary>
         ///     Inner data collection
         /// </summary>
-        protected Dictionary<TKey, TValue> dictionary = new Dictionary<TKey, TValue>();
+        protected Dictionary<TKey, TValue> dictionary = new();
 
         /// <summary>
         ///     Gets the number of items contained in the <see cref="DictionaryRepository{TItem, TKey, TValue}" />
@@ -137,7 +137,7 @@ namespace Core.Storages
         /// <param name="item">The item to add.</param>
         public void Add(TItem item)
         {
-            KeyValuePair<TKey, TValue> keyValuePair = this.Item2KeyValuePair(item);
+            var keyValuePair = this.Item2KeyValuePair(item);
             this.dictionary[keyValuePair.Key] = keyValuePair.Value;
         }
 

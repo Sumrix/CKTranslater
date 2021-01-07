@@ -51,7 +51,7 @@ namespace Core
                     (min: (int) char.MaxValue, max: (int) char.MinValue),
                     (a, l) => (Math.Min(a.min, l), Math.Max(a.max, l)));
 
-            Language language = new Language(minLetter, maxLetter);
+            Language language = new(minLetter, maxLetter);
             GraphemeType[] types = { GraphemeType.Vowel, GraphemeType.Consonant, GraphemeType.Silent };
             int identifier = 0;
 
@@ -64,7 +64,7 @@ namespace Core
             foreach ((IEnumerable<char> letters, GraphemeType type) in groups.Zip(types))
             foreach (char letter in letters)
             {
-                Grapheme g = new Grapheme(type, letter.ToString());
+                Grapheme g = new(type, letter.ToString());
                 language.graphemesByIdentifier[identifier] = g;
                 language.charsByIdentifier[identifier] = letter;
                 language.graphemesByChar[letter - minLetter] = g;
@@ -99,8 +99,8 @@ namespace Core
 
         public List<Grapheme> ToGraphemes(string word)
         {
-            List<Grapheme> vowels = new List<Grapheme>(word.Length);
-            List<Grapheme> graphemes = new List<Grapheme>(word.Length);
+            var vowels = new List<Grapheme>(word.Length);
+            var graphemes = new List<Grapheme>(word.Length);
             Grapheme lasVowel = null;
             Grapheme lastNotSilent = null;
             int consonantsInRow = 0;

@@ -120,7 +120,7 @@ namespace ConsoleTesting
 
         private static void TestTimer()
         {
-            QueueTimer timer = new QueueTimer(1000);
+            QueueTimer timer = new(1000);
             timer.Tick += (s, e) => Console.WriteLine("1");
             timer.Tick += (s, e) => Console.WriteLine("2");
             timer.Tick += (s, e) => Console.WriteLine("3");

@@ -82,7 +82,7 @@ namespace Core.Web.Queries
 
             using HttpWebResponse response = (HttpWebResponse) request.GetResponse();
             using Stream stream = response.GetResponseStream();
-            using StreamReader reader = new StreamReader(stream);
+            using StreamReader reader = new(stream);
             return reader.ReadToEnd();
         }
 
@@ -102,7 +102,7 @@ namespace Core.Web.Queries
                 Directory.CreateDirectory(this.logPath);
             }
 
-            using StreamWriter stream = new StreamWriter(fileName);
+            using StreamWriter stream = new(fileName);
             stream.WriteLine("REQUEST:");
             stream.WriteLine(request);
             stream.WriteLine();

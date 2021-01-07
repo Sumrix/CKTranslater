@@ -6,7 +6,7 @@ namespace Core.Storages
     {
         protected override KeyValuePair<char, string> Item2KeyValuePair((char eng, string rus) item)
         {
-            return new KeyValuePair<char, string>(item.eng, item.rus);
+            return new(item.eng, item.rus);
         }
 
         protected override (char eng, string rus) KeyValuePair2Item(KeyValuePair<char, string> keyValuePair)

@@ -16,7 +16,7 @@ namespace SimilarityEditor
     {
         private readonly Language language0 = Language.Load(DB.EngLetters);
         private readonly Language language1 = Language.Load(DB.RusLetters);
-        private readonly string[] toTranslateWords = File.ReadAllLines(@"..\..\..\Data\ToTranslateWords (Test).txt");
+        private readonly string[] toTranslateWords = File.ReadAllLines(FileName.ToTranslateWords);
         private string filter;
         private List<WordsSimilarity> filteredWords;
         private List<WordsSimilarity> words;
@@ -116,33 +116,6 @@ namespace SimilarityEditor
 
         private void RecalcSimilarities()
         {
-            var translatedWords = new List<WordInLangs>();
-            var toTransliterateWords = new List<string>();
-            var toWikiTranslate = new List<string>();
-
-            foreach (string word in this.toTranslateWords)
-            {
-                // 1. Проверить наличие слов в БД переводов.
-                string translation = DB.Translations[word];
-                if (translation != null)
-                {
-                    translatedWords.Add(new WordInLangs(word, translation));
-                }
-                else
-                {
-                    // 2. Проверить наличие слов в БД без переводов
-                    if (DB.WebTranslationMisses.Contains(word))
-                    {
-                        toTransliterateWords.Add(word);
-                    }
-                    else
-                    {
-                        toWikiTranslate.Add(word);
-                    }
-                }
-            }
-
-            // 4. Производим обучение переводчика
             var wordsToLearn = DB.Translations
                 .Union(DB.EngToRusMap.Select(x => new WordInLangs(x.eng.ToString(), x.rus)));
 

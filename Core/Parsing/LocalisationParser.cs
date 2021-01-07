@@ -24,7 +24,7 @@ namespace Core.Parsing
         {
             var strings = new List<ScriptString>();
 
-            using (StreamReader reader = new StreamReader(context.FullFileName, this.win1251))
+            using (StreamReader reader = new(context.FullFileName, this.win1251))
             {
                 while (!reader.EndOfStream)
                 {
@@ -50,15 +50,15 @@ namespace Core.Parsing
 
         public ScriptParseResult Translate(string fileName, StringTranslateHandle translator)
         {
-            ScriptParseResult result = new ScriptParseResult
+            ScriptParseResult result = new()
             {
                 Strings = new List<ScriptString>()
             };
 
-            using (MemoryStream memory = new MemoryStream())
-            using (StreamWriter writer = new StreamWriter(memory, this.win1251))
+            using (MemoryStream memory = new())
+            using (StreamWriter writer = new(memory, this.win1251))
             {
-                using (StreamReader reader = new StreamReader(fileName, this.win1251))
+                using (StreamReader reader = new(fileName, this.win1251))
                 {
                     while (!reader.EndOfStream)
                     {

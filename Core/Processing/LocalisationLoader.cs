@@ -6,7 +6,7 @@ namespace Core.Processing
 {
     public class LocalisationLoader : IValuesLoader
     {
-        public static HashSet<string> Keys = new HashSet<string>();
+        public static HashSet<string> Keys = new();
         private readonly LocalisationParser parser;
 
         public LocalisationLoader()
@@ -23,7 +23,7 @@ namespace Core.Processing
         {
             ScriptParseResult result = this.parser.Parse(context);
 
-            StringBuilder desctiption = new StringBuilder();
+            StringBuilder desctiption = new();
 
             foreach (ScriptString @string in result.Strings)
             {

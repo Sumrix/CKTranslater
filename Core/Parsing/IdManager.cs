@@ -10,9 +10,9 @@ namespace Core.Parsing
         public static HashSet<string> Cultures;
         public static readonly Regex IgnoreValueRegex;
         public static HashSet<string> IgnoreValues;
-        public static LinkedList<string> NotTransleated = new LinkedList<string>();
+        public static LinkedList<string> NotTransleated = new();
         public static string[] StringKeys;
-        public static LinkedList<string> Transleated = new LinkedList<string>();
+        public static LinkedList<string> Transleated = new();
 
         static IdManager()
         {

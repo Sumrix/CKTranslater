@@ -10,7 +10,7 @@ namespace Core.Interpolation
 
         private static List<uint> GetTerms(string[] vector, params string[] values)
         {
-            List<uint> positions = new List<uint>();
+            var positions = new List<uint>();
             for (uint p = 0; p < vector.Length; p++)
             {
                 if (values.Contains(vector[p]))
@@ -25,7 +25,7 @@ namespace Core.Interpolation
         public static void Interpolate(string[] vector, int numBits)
         {
             string[] types = vector.Distinct().Where(c => !string.IsNullOrEmpty(c)).ToArray();
-            DontCare[] dcs = new DontCare[1 << numBits];
+            var dcs = new DontCare[1 << numBits];
 
             foreach (string type in types)
             {

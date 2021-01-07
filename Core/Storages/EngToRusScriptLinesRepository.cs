@@ -19,7 +19,7 @@ namespace Core.Storages
     /// </summary>
     public class EngToRusScriptLinesRepository : Repository, IEnumerable<EngToRusScriptLine>
     {
-        private EngToRusScriptLinesData data = new EngToRusScriptLinesData();
+        private EngToRusScriptLinesData data = new();
 
         public IEnumerator<EngToRusScriptLine> GetEnumerator()
         {
@@ -41,7 +41,7 @@ namespace Core.Storages
 
         public void Add(string engLine, string rusLine, string rusLinePath)
         {
-            if (this.data.TryGetValue(engLine, out Dictionary<string, string> rusScriptLines))
+            if (this.data.TryGetValue(engLine, out var rusScriptLines))
             {
                 if (!rusScriptLines.ContainsKey(rusLinePath) &&
                     (rusScriptLines.Count > 1 || rusScriptLines.Values.First() != rusLine))
@@ -78,7 +78,7 @@ namespace Core.Storages
         {
             string rusLine = null;
 
-            if (!this.data.TryGetValue(engLine, out Dictionary<string, string> rusScriptLines))
+            if (!this.data.TryGetValue(engLine, out var rusScriptLines))
             {
                 return rusLine;
             }

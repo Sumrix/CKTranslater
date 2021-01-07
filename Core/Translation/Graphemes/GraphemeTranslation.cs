@@ -21,19 +21,19 @@ namespace Core.Graphemes
 
         public GraphemeTranslation Clone()
         {
-            return new GraphemeTranslation(this.Original.Clone(), this.Translation);
+            return new(this.Original.Clone(), this.Translation);
         }
 
         public static List<GraphemeTranslation> Create(IReadOnlyCollection<LettersMatch> matches,
             IEnumerable<Grapheme> graphemes)
         {
-            List<GraphemeTranslation> translations = new List<GraphemeTranslation>(matches.Count);
-            IEnumerator<Grapheme> ge = graphemes.GetEnumerator();
+            var translations = new List<GraphemeTranslation>(matches.Count);
+            var ge = graphemes.GetEnumerator();
             ge.MoveNext();
 
             foreach (LettersMatch match in matches)
             {
-                Grapheme g = new Grapheme(GraphemeType.Silent, "");
+                Grapheme g = new(GraphemeType.Silent, "");
 
                 for (int i = 0; i < match.Letters0.Length; i++)
                 {

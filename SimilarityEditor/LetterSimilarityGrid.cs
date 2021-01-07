@@ -11,7 +11,7 @@ namespace SimilarityEditor
 {
     public class LetterSimilarityGrid : DataGridView
     {
-        private readonly List<Point> highlightedCells = new List<Point>();
+        private readonly List<Point> highlightedCells = new();
         private readonly Language language0 = Language.Load(DB.EngLetters);
         private readonly Language language1 = Language.Load(DB.RusLetters);
         private Point selectedCell;
@@ -52,7 +52,7 @@ namespace SimilarityEditor
 
             for (int rowIndex = 0; rowIndex < DB.EngToRusSimilarities.EngCount; rowIndex++)
             {
-                DataGridViewRow row = new DataGridViewRow();
+                DataGridViewRow row = new();
                 if (rowIndex < DB.EngLetters.Count)
                 {
                     row.HeaderCell.Value = DB.EngLetters[rowIndex].ToString();
@@ -136,13 +136,13 @@ namespace SimilarityEditor
                     e.Graphics.FillRectangle(backColorBrush, rect);
                 }
 
-                StringFormat sf = new StringFormat
+                StringFormat sf = new()
                 {
                     Alignment = StringAlignment.Center,
                     LineAlignment = StringAlignment.Center
                 };
 
-                using (SolidBrush bred = new SolidBrush(this.DefaultCellStyle.SelectionForeColor))
+                using (SolidBrush bred = new(this.DefaultCellStyle.SelectionForeColor))
                 {
                     e.Graphics.DrawString(e.Value?.ToString(), e.CellStyle.Font, bred, e.CellBounds, sf);
                 }
@@ -150,7 +150,7 @@ namespace SimilarityEditor
 
             if (redHorizongalBorders || redVerticalBorders)
             {
-                using (Pen p = new Pen(Color.Red, 1))
+                using (Pen p = new(Color.Red, 1))
                 {
                     if (redVerticalBorders)
                     {

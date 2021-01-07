@@ -2,8 +2,8 @@
 {
     public class CalculationCell
     {
-        public MaxFRoute Route0 = new MaxFRoute();
-        public MaxFRoute Route1 = new MaxFRoute();
+        public MaxFRoute Route0 = new();
+        public MaxFRoute Route1 = new();
 
         public override string ToString()
         {
