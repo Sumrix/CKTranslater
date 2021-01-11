@@ -2,17 +2,17 @@
 using System.IO;
 using System.Linq;
 using Core;
-using Core.Matching;
 using Core.Storages;
-using Core.Transliteration;
+using Core.Translation;
+using Core.Translation.Matching;
 using Core.Web;
 
-namespace ConsoleTesting
+namespace ConsoleTest
 {
     /// <summary>
     ///     Методы для ручного тестирования модуля перевода
     /// </summary>
-    internal class Program
+    internal static class Program
     {
         private static void Main(string[] args)
         {
@@ -25,7 +25,7 @@ namespace ConsoleTesting
 
             //Console.ReadKey();
 
-            DB.Save();
+            Db.Save();
         }
 
         //private static void RepairSimilaritiesDB()
@@ -56,8 +56,8 @@ namespace ConsoleTesting
 
         private static void NewMatches()
         {
-            Language language0 = Language.Load(DB.EngLetters);
-            Language language1 = Language.Load(DB.RusLetters);
+            Language language0 = Language.Load(Db.EngLetters);
+            Language language1 = Language.Load(Db.RusLetters);
 
             (string, string)[] paris =
             {
@@ -104,13 +104,13 @@ namespace ConsoleTesting
 
         private static void TestNotMatchingWikiTranslations()
         {
-            Language language1 = Language.Load(DB.EngLetters);
-            Language language2 = Language.Load(DB.RusLetters);
+            Language language1 = Language.Load(Db.EngLetters);
+            Language language2 = Language.Load(Db.RusLetters);
             var rusWords = File.ReadAllLines(@"D:\Desktop\CK2Works\Dictionaries\word_rus.txt")
                 .ToHashSet();
 
             File.WriteAllLines(@"D:\Desktop\out.txt",
-                DB.Translations
+                Db.Translations
                     .Where(w =>
                         !WordMatch.Create(w.Lang1Word, w.Lang2Word, language1, language2).Success
                         && !rusWords.Contains(w.Lang2Word))
@@ -131,8 +131,8 @@ namespace ConsoleTesting
 
         private static void WikiTest()
         {
-            Language language0 = Language.Load(DB.EngLetters);
-            Language language1 = Language.Load(DB.RusLetters);
+            Language language0 = Language.Load(Db.EngLetters);
+            Language language1 = Language.Load(Db.RusLetters);
 
             //string[] toTranslateWords = File.ReadAllLines(FileName.ToTranslateWords);
             //var translatedWords = Wiki.Translate(toTranslateWords, language0, language1)

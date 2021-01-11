@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Core.Graphemes;
 using Core.Storages;
+using Core.Translation.Graphemes;
 
-namespace Core
+namespace Core.Translation
 {
     /// <summary>
     ///     Класс реализует функционал связанный с языком
@@ -41,9 +41,9 @@ namespace Core
             return word.All(letter => this.Belongs(letter));
         }
 
-        public static Language Load(LettersRepository lettersDB)
+        public static Language Load(LettersRepository lettersDb)
         {
-            List<char>[]? groups = { lettersDB.Vowels, lettersDB.Consonants, lettersDB.Silents };
+            List<char>[] groups = { lettersDb.Vowels, lettersDb.Consonants, lettersDb.Silents };
 
             (int minLetter, int maxLetter) = groups
                 .SelectMany(group => group)
@@ -101,8 +101,8 @@ namespace Core
         {
             var vowels = new List<Grapheme>(word.Length);
             var graphemes = new List<Grapheme>(word.Length);
-            Grapheme lasVowel = null;
-            Grapheme lastNotSilent = null;
+            Grapheme? lasVowel = null;
+            Grapheme? lastNotSilent = null;
             int consonantsInRow = 0;
 
             foreach (char letter in word)
@@ -110,45 +110,45 @@ namespace Core
                 Grapheme current = this.ToGrapheme(letter);
                 graphemes.Add(current);
 
-                if (current.Type == GraphemeType.Silent)
+                switch (current.Type)
                 {
-                    continue;
-                }
-
-                if (current.Type == GraphemeType.Vowel)
-                {
-                    vowels.Add(current);
-
-                    if (lasVowel != null)
+                    case GraphemeType.Silent:
+                        continue;
+                    case GraphemeType.Vowel:
                     {
-                        if (consonantsInRow < 2)
-                        {
-                            lasVowel.Flags.Set((uint) VowelFlag.OpenSyllable);
-                        }
-                    }
+                        vowels.Add(current);
 
-                    lasVowel = current;
-                    consonantsInRow = 0;
-                }
-                else
-                {
-                    consonantsInRow++;
+                        if (lasVowel != null)
+                        {
+                            if (consonantsInRow < 2)
+                            {
+                                lasVowel.Flags |= (uint) VowelFlag.OpenSyllable;
+                            }
+                        }
+
+                        lasVowel = current;
+                        consonantsInRow = 0;
+                        break;
+                    }
+                    default:
+                        consonantsInRow++;
+                        break;
                 }
 
                 if (lastNotSilent != null)
                 {
                     if (lastNotSilent.Type == GraphemeType.Vowel)
                     {
-                        current.Flags.Set(current.Type == GraphemeType.Vowel
+                        current.Flags |= current.Type == GraphemeType.Vowel
                             ? (uint) VowelFlag.PreviousVowel
-                            : (uint) ConsonantFlag.PreviousVowel);
+                            : (uint) ConsonantFlag.PreviousVowel;
                     }
 
                     if (current.Type == GraphemeType.Vowel)
                     {
-                        lastNotSilent.Flags.Set(lastNotSilent.Type == GraphemeType.Vowel
+                        lastNotSilent.Flags |= lastNotSilent.Type == GraphemeType.Vowel
                             ? (uint) VowelFlag.NextVowel
-                            : (uint) ConsonantFlag.NextVowel);
+                            : (uint) ConsonantFlag.NextVowel;
                     }
                 }
 
@@ -159,24 +159,24 @@ namespace Core
             {
                 if (vowels.Count <= 2)
                 {
-                    vowels[0].Flags.Set((uint) VowelFlag.Stressed);
+                    vowels[0].Flags |= (uint) VowelFlag.Stressed;
                 }
                 else
                 {
-                    vowels[vowels.Count - 3].Flags.Set((uint) VowelFlag.Stressed);
+                    vowels[^3].Flags |= (uint) VowelFlag.Stressed;
                 }
             }
 
             Grapheme first = graphemes[0];
             if (first.Type == GraphemeType.Vowel || first.Type == GraphemeType.Consonant)
             {
-                first.Flags.Set((uint) CommonFlag.First);
+                first.Flags |= (uint) CommonFlag.First;
             }
 
-            Grapheme last = graphemes[graphemes.Count - 1];
+            Grapheme last = graphemes[^1];
             if (last.Type == GraphemeType.Vowel || last.Type == GraphemeType.Consonant)
             {
-                last.Flags.Set((uint) CommonFlag.Last);
+                last.Flags |= (uint) CommonFlag.Last;
             }
 
             return graphemes;

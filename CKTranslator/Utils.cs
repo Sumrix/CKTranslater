@@ -1,59 +1,66 @@
 ﻿using System;
 using System.Collections.Generic;
+using Core.Processing;
 
 namespace CKTranslator
 {
     public static class Utils
     {
-        public static void Add<T>(this List<T> list, IEnumerable<T> ie)
+        /// <summary>
+        ///     Adds the elements of the specified collection to the end of the <see cref="List{T}" />.
+        ///     <para>Used in ModManager to initialize <see cref="MultiProcess" /> with both elements and collections.</para>
+        /// </summary>
+        /// <param name="list"><see cref="List{T}" /> at the end of which new items will be added.</param>
+        /// <param name="collection">
+        ///     The collection whose elements should be added to the end of the <see cref="List{T}" />
+        /// </param>
+        public static void Add<T>(this List<T> list, IEnumerable<T> collection)
         {
-            foreach (T item in ie)
-            {
-                list.Add(item);
-            }
+            list.AddRange(collection);
         }
 
         /// <summary>
-        ///     Сортировка по ссылкам
+        ///     Sorts the elements of a sequence in a particular direction according to dependencies.
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="source"></param>
-        /// <param name="dependencies"></param>
-        /// <param name="throwOnCycle"></param>
-        /// <returns></returns>
-        public static IEnumerable<T> TSort<T>(this IEnumerable<T> source, Func<T, IEnumerable<T>> dependencies,
+        /// <typeparam name="TSource">The type of the elements of source.</typeparam>
+        /// <param name="source">A sequence of values to order.</param>
+        /// <param name="dependenciesSelector">Dependencies selector function.</param>
+        /// <param name="throwOnCycle">
+        ///     Determines whether an exception should be thrown if a circular dependency
+        ///     is encountered.
+        /// </param>
+        /// <returns>An <see cref="IEnumerable{T}" /> whose elements are sorted according to dependencies.</returns>
+        public static IEnumerable<TSource> OrderByTopology<TSource>(this IEnumerable<TSource> source,
+            Func<TSource, IEnumerable<TSource>> dependenciesSelector,
             bool throwOnCycle = false)
         {
-            var sorted = new List<T>();
-            var visited = new HashSet<T>();
+            var sorted = new List<TSource>();
+            var visited = new HashSet<TSource>();
 
-            foreach (T item in source)
+            foreach (TSource item in source)
             {
-                Utils.Visit(item, visited, sorted, dependencies, throwOnCycle);
+                Visit(item, visited, sorted, dependenciesSelector, throwOnCycle);
             }
 
             return sorted;
-        }
 
-        private static void Visit<T>(T item, HashSet<T> visited, List<T> sorted, Func<T, IEnumerable<T>> dependencies,
-            bool throwOnCycle)
-        {
-            if (!visited.Contains(item))
+            static void Visit<T>(T item, ISet<T> visited, ICollection<T> sorted,
+                Func<T, IEnumerable<T>> dependenciesSelector, bool throwOnCycle)
             {
-                visited.Add(item);
-
-                foreach (T dep in dependencies(item))
+                if (!visited.Contains(item))
                 {
-                    Utils.Visit(dep, visited, sorted, dependencies, throwOnCycle);
+                    visited.Add(item);
+
+                    foreach (T dep in dependenciesSelector(item))
+                    {
+                        Visit(dep, visited, sorted, dependenciesSelector, throwOnCycle);
+                    }
+
+                    sorted.Add(item);
                 }
-
-                sorted.Add(item);
-            }
-            else
-            {
-                if (throwOnCycle && !sorted.Contains(item))
+                else if (throwOnCycle && !sorted.Contains(item))
                 {
-                    throw new Exception("Cyclic dependency found");
+                    throw new InvalidOperationException("Cyclic dependency found");
                 }
             }
         }

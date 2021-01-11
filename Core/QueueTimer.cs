@@ -50,7 +50,7 @@ namespace Core
 
         private void Timer_Elapsed(object sender, ElapsedEventArgs e)
         {
-            EventHandler eventHandler = null;
+            EventHandler? eventHandler = null;
             //Console.WriteLine("Tick");
 
             lock (this.eventHandlers)
@@ -75,7 +75,7 @@ namespace Core
         public void WaitMyTurn()
         {
             EventWaitHandle handle = new AutoResetEvent(false);
-            this.Tick += (s, e) => handle.Set();
+            this.Tick += (_, _) => handle.Set();
             handle.WaitOne();
         }
     }

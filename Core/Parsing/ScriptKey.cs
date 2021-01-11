@@ -4,17 +4,18 @@ namespace Core.Parsing
 {
     public class ScriptKey : IEquatable<ScriptKey>
     {
-        public Path Path { get; set; }
-        public int RepetitionIndex { get; set; }
+        public Path Path { get; init; }
+        public int RepetitionIndex { get; init; }
 
-        public bool Equals(ScriptKey other)
+        public bool Equals(ScriptKey? other)
         {
-            return this.Path.Equals(other.Path); // && this.RepetitionIndex.Equals(other.RepetitionIndex);
+            return
+                other != null && this.Path.Equals(other.Path); // && this.RepetitionIndex.Equals(other.RepetitionIndex);
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
-            return base.Equals(obj);
+            return obj is ScriptArray other && this.Equals(other);
         }
 
         public override int GetHashCode()
@@ -24,7 +25,7 @@ namespace Core.Parsing
 
         public override string ToString()
         {
-            return string.Format("[{0}]{1}", this.RepetitionIndex, this.Path);
+            return $"[{this.RepetitionIndex}]{this.Path}";
         }
     }
 }

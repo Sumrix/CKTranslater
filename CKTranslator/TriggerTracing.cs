@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics;
+using System.Linq;
 using System.Windows;
-using System.Windows.Markup;
 using System.Windows.Media.Animation;
 
 // Code from http://www.wpfmentor.com/2009/01/how-to-debug-triggers-using-trigger.html
@@ -39,43 +39,38 @@ namespace CKTranslator
         }
 
         /// <summary>
-        ///     A custom tracelistener.
+        ///     A custom trace-listener.
         /// </summary>
         private class TriggerTraceListener : TraceListener
         {
-            public override void TraceEvent(TraceEventCache eventCache, string source, TraceEventType eventType, int id,
-                string format, params object[] args)
+            public override void TraceEvent(TraceEventCache? eventCache, string source, TraceEventType eventType,
+                int id, string format, params object?[]? args)
             {
                 base.TraceEvent(eventCache, source, eventType, id, format, args);
 
-                if (format.StartsWith("Storyboard has begun;"))
+                if (!format.StartsWith("Storyboard has begun;") || args?[1] is not TriggerTraceStoryboard storyboard)
                 {
-                    TriggerTraceStoryboard storyboard = args[1] as TriggerTraceStoryboard;
-                    if (storyboard != null)
-                    {
-                        // add a breakpoint here to see when your trigger has been
-                        // entered or exited
-
-                        // the element being acted upon
-                        object targetElement = args[5];
-
-                        // the namescope of the element being acted upon
-                        INameScope namescope = (INameScope) args[7];
-
-                        TriggerBase triggerBase = storyboard.TriggerBase;
-                        string triggerName = TriggerTracing.GetTriggerName(storyboard.TriggerBase);
-
-                        Debug.WriteLine("Element: {0}, {1}: {2}: {3}", targetElement, triggerBase.GetType().Name,
-                            triggerName, storyboard.StoryboardType);
-                    }
+                    return;
                 }
+
+                // add a breakpoint here to see when your trigger has been
+                // entered or exited
+
+                // the element being acted upon
+                object? targetElement = args[5];
+
+                TriggerBase triggerBase = storyboard.TriggerBase;
+                string triggerName = TriggerTracing.GetTriggerName(storyboard.TriggerBase);
+
+                Debug.WriteLine("Element: {0}, {1}: {2}: {3}", targetElement, triggerBase.GetType().Name,
+                    triggerName, storyboard.StoryboardType);
             }
 
-            public override void Write(string message)
+            public override void Write(string? message)
             {
             }
 
-            public override void WriteLine(string message)
+            public override void WriteLine(string? message)
             {
             }
         }
@@ -119,6 +114,7 @@ namespace CKTranslator
         ///     to identify the trigger in the debug output.
         /// </summary>
         /// <param name="trigger">The trigger.</param>
+        /// <param name="value"></param>
         /// <returns></returns>
         public static void SetTriggerName(TriggerBase trigger, string value)
         {
@@ -165,14 +161,7 @@ namespace CKTranslator
 
         private static void OnTraceEnabledChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            TriggerBase triggerBase = d as TriggerBase;
-
-            if (triggerBase == null)
-            {
-                return;
-            }
-
-            if (!(e.NewValue is bool))
+            if (d is not TriggerBase triggerBase || e.NewValue is not bool)
             {
                 return;
             }
@@ -191,18 +180,14 @@ namespace CKTranslator
             {
                 // remove the dummy storyboards
 
-                foreach (TriggerActionCollection actionCollection in new[]
-                    { triggerBase.EnterActions, triggerBase.ExitActions })
+                foreach (var actionCollection in new[] { triggerBase.EnterActions, triggerBase.ExitActions })
                 {
-                    foreach (TriggerAction triggerAction in actionCollection)
-                    {
-                        BeginStoryboard bsb = triggerAction as BeginStoryboard;
+                    TriggerAction? bsb = actionCollection
+                        .FirstOrDefault(x => x is BeginStoryboard { Storyboard: TriggerTraceStoryboard });
 
-                        if (bsb != null && bsb.Storyboard != null && bsb.Storyboard is TriggerTraceStoryboard)
-                        {
-                            actionCollection.Remove(bsb);
-                            break;
-                        }
+                    if (bsb != null)
+                    {
+                        actionCollection.Remove(bsb);
                     }
                 }
             }

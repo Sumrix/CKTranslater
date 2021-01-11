@@ -45,7 +45,7 @@ namespace Core.Processing
                 : this.scriptTranslator.LoadRus(context);
         }
 
-        public Event TranslateScript(FileContext context)
+        public Event? TranslateScript(FileContext context)
         {
             return context.ModFolder == "localisation"
                 ? this.localisationTranslator.Translate(context.FullFileName)

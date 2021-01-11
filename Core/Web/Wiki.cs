@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
-using Core.Matching;
-using Core.Transliteration;
+using Core.Translation;
+using Core.Translation.Matching;
+using Core.Translation.Transliteration;
 using MoreLinq;
 
 namespace Core.Web
@@ -139,7 +140,7 @@ namespace Core.Web
         /// <returns>Точные переводы</returns>
         public static IEnumerable<WordInLangs> TranslateExact(IEnumerable<string> lines)
         {
-            return lines?.Any() != true
+            return lines.Any() != true
                 ? Array.Empty<WordInLangs>()
                 : WikiApi.GetTranslations(lines)
                     .Select(Wiki.Normalize);

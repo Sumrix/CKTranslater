@@ -11,9 +11,10 @@ namespace Core.Processing
 
     public interface IValuesLoader
     {
-        Dictionary<ScriptKey, string[]> Arrays { get; }
+        // TODO: поменять на IReadonlyDictionary
+        IDictionary<ScriptKey, string[]> Arrays { get; }
         Language Language { set; }
-        Dictionary<ScriptKey, string> Strings { get; set; }
-        Event Load(FileContext context);
+        IDictionary<ScriptKey, string> Strings { get; set; }
+        Event? Load(FileContext context);
     }
 }

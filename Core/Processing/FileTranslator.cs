@@ -42,7 +42,7 @@ namespace Core.Processing
                     continue;
                 }
 
-                if (this.rusLoader.Strings.TryGetValue(eng.Key, out string rusValue) &&
+                if (this.rusLoader.Strings.TryGetValue(eng.Key, out string? rusValue) &&
                     rusValue != eng.Value && rusValue.Any(FileTranslator<TLoader, TParser>.IsRusLetter))
                 {
                     //DB.EngToRusScriptLines.Add(eng.Value, rusValue, eng.Key.Path);
@@ -70,41 +70,41 @@ namespace Core.Processing
             return this.rusLoader.Load(context);
         }
 
-        private Event ProcessParseResult(ScriptParseResult result, string fileName)
+        private static Event? ProcessParseResult(ScriptParseResult result, string fileName)
         {
-            if (result.Errors?.Count > 0)
+            if (result.Errors.Count > 0)
             {
                 return new Event
                 {
                     FileName = fileName,
                     Type = EventType.Error,
-                    Desctiption = string.Join("\n", result.Errors)
+                    Description = string.Join("\n", result.Errors)
                 };
             }
 
-            if (result.Strings?.Count > 0)
+            if (result.Strings.Count > 0)
             {
                 return new Event
                 {
                     FileName = fileName,
                     Type = EventType.Info,
-                    Desctiption = string.Join("\n", result.Strings)
+                    Description = string.Join("\n", result.Strings)
                 };
             }
 
             return null;
         }
 
-        public Event Translate(string fileName)
+        public Event? Translate(string fileName)
         {
             TParser parser = new();
-            ScriptParseResult result = parser.Translate(fileName, this.TranslateString);
-            return this.ProcessParseResult(result, fileName);
+            ScriptParseResult result = parser.Translate(fileName, FileTranslator<TLoader, TParser>.TranslateString);
+            return FileTranslator<TLoader, TParser>.ProcessParseResult(result, fileName);
         }
 
-        private string TranslateString(ScriptString @string)
+        private static string? TranslateString(ScriptString @string)
         {
-            string translation = null; //DB.TranslatedStrings.Get(@string.Value, @string.Key.Path);
+            string? translation = null; //DB.TranslatedStrings.Get(@string.Value, @string.Key.Path);
 
             if (translation != null)
             {

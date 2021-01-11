@@ -3,8 +3,8 @@ using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
 using BrightIdeasSoftware;
-using Core.Matching;
 using Core.Storages;
+using Core.Translation.Matching;
 
 namespace SimilarityEditor
 {
@@ -21,7 +21,7 @@ namespace SimilarityEditor
 
             this.similarities.FillTable();
 
-            this.details.RowFormatter = this.details_RowFormatter;
+            this.details.RowFormatter = Form1.details_RowFormatter;
 
             this.wordsModel = new WordsSimilarities();
             this.wordsModel.Rebuild();
@@ -33,7 +33,7 @@ namespace SimilarityEditor
             this.initialized = true;
         }
 
-        private void details_RowFormatter(OLVListItem olvItem)
+        private static void details_RowFormatter(OLVListItem olvItem)
         {
             LettersMatch match = (LettersMatch) olvItem.RowObject;
             olvItem.BackColor = Program.GetColorFotSimilarity(match.Similarity);
@@ -41,16 +41,19 @@ namespace SimilarityEditor
 
         private void details_SelectedIndexChanged(object sender, EventArgs e)
         {
-            LettersMatch match = (LettersMatch) this.details.SelectedObject;
+            LettersMatch? match = (LettersMatch?) this.details.SelectedObject;
             this.similarities.RemoveHighlights();
 
-            if (match != null)
+            if (match == null)
             {
-                var pairs = from letter0 in string.IsNullOrEmpty(match.Letters0) ? "_" : match.Letters0
-                    from letter1 in string.IsNullOrEmpty(match.Letters1) ? "_" : match.Letters1
-                    select (letter0, letter1);
-                this.similarities.HighlightCells(pairs);
+                return;
             }
+
+            var pairs =
+                from letter0 in string.IsNullOrEmpty(match.Letters0) ? "_" : match.Letters0
+                from letter1 in string.IsNullOrEmpty(match.Letters1) ? "_" : match.Letters1
+                select (letter0, letter1);
+            this.similarities.HighlightCells(pairs);
         }
 
         private void filter_TextChanged(object sender, EventArgs e)
@@ -66,7 +69,7 @@ namespace SimilarityEditor
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
-            DB.Save();
+            Db.Save();
         }
 
         private void RefreshDetails()
@@ -110,7 +113,7 @@ namespace SimilarityEditor
 
             GC.Collect();
 
-            DB.Save();
+            Db.Save();
             this.words.BuildList(true);
             this.RefreshDetails();
 

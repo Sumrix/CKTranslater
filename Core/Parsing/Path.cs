@@ -6,7 +6,7 @@ namespace Core.Parsing
 {
     public class Path : IEquatable<Path>
     {
-        public List<string> Steps;
+        public readonly List<string> Steps;
 
         public Path(List<string> steps)
         {
@@ -14,15 +14,15 @@ namespace Core.Parsing
         }
 
         public string FirstStep => this.Steps.First();
-        public string LastStep => this.Steps[this.Steps.Count - 1];
+        public string LastStep => this.Steps[^1];
 
         public string LastTwoSteps =>
-            (this.Steps.Count > 1 ? this.Steps[this.Steps.Count - 2] + '.' : "") +
-            this.Steps[this.Steps.Count - 1];
+            (this.Steps.Count > 1 ? this.Steps[^2] + '.' : "") +
+            this.Steps[^1];
 
-        public bool Equals(Path other)
+        public bool Equals(Path? other)
         {
-            return this.Steps.Count == other.Steps.Count && this.Steps.SequenceEqual(other.Steps);
+            return other != null && this.Steps.Count == other.Steps.Count && this.Steps.SequenceEqual(other.Steps);
         }
 
         public void AddForward(string step)
@@ -30,9 +30,9 @@ namespace Core.Parsing
             this.Steps.Insert(0, step);
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
-            return base.Equals(obj);
+            return obj is Path path && this.Equals(path);
         }
 
         public override int GetHashCode()

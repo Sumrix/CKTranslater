@@ -74,9 +74,9 @@ namespace Core.Storages
             return sortedData;
         }
 
-        public string GetRusLine(string engLine, string rusLinePath)
+        public string? GetRusLine(string engLine, string rusLinePath)
         {
-            string rusLine = null;
+            string? rusLine = null;
 
             if (!this.data.TryGetValue(engLine, out var rusScriptLines))
             {

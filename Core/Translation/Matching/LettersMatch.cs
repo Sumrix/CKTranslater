@@ -1,4 +1,4 @@
-﻿namespace Core.Matching
+﻿namespace Core.Translation.Matching
 {
     public class LettersMatch
     {

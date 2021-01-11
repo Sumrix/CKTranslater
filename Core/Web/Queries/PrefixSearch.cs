@@ -10,7 +10,7 @@ namespace Core.Web.Queries
     /// </summary>
     public class PrefixSearch : Query<string, List<string>>
     {
-        public PrefixSearch(QueueTimer queryTimer, string logPath)
+        public PrefixSearch(QueueTimer? queryTimer, string logPath)
             : base(queryTimer, logPath)
         {
         }

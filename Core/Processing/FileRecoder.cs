@@ -279,42 +279,42 @@ namespace Core.Processing
             FileRecoder.win1252 = Encoding.GetEncoding("windows-1252");
         }
 
-        public static Event Recode(FileContext context)
+        public static Event? Recode(FileContext context)
         {
             byte[] content = File.ReadAllBytes(context.FullFileName);
             Encoding encoding = EncodingDetector.Detect(content);
 
-            if (encoding == FileRecoder.win1252)
+            if (encoding != FileRecoder.win1252)
             {
-                int length = (int) (content.Length * 1.5);
-                if (FileRecoder.resultContent.Length < length)
-                {
-                    FileRecoder.resultContent = new byte[length];
-                }
-
-                using (MemoryStream mem = new(FileRecoder.resultContent))
-                {
-                    foreach (byte b in content)
-                    {
-                        if (b >= 0x80)
-                        {
-                            byte[] buffer = FileRecoder.charmap1[b - 0x80];
-                            mem.Write(buffer, 0, buffer.Length);
-                        }
-                        else
-                        {
-                            mem.WriteByte(b);
-                        }
-                    }
-
-                    length = (int) mem.Position;
-                }
-
-                using (FileStream stream = File.OpenWrite(context.FullFileName))
-                {
-                    stream.Write(FileRecoder.resultContent, 0, length);
-                }
+                return null;
             }
+
+            int length = (int) (content.Length * 1.5);
+            if (FileRecoder.resultContent.Length < length)
+            {
+                FileRecoder.resultContent = new byte[length];
+            }
+
+            using (MemoryStream mem = new(FileRecoder.resultContent))
+            {
+                foreach (byte b in content)
+                {
+                    if (b >= 0x80)
+                    {
+                        byte[] buffer = FileRecoder.charmap1[b - 0x80];
+                        mem.Write(buffer, 0, buffer.Length);
+                    }
+                    else
+                    {
+                        mem.WriteByte(b);
+                    }
+                }
+
+                length = (int) mem.Position;
+            }
+
+            using FileStream stream = File.OpenWrite(context.FullFileName);
+            stream.Write(FileRecoder.resultContent, 0, length);
 
             return null;
         }

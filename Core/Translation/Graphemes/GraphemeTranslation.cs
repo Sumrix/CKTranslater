@@ -1,16 +1,17 @@
 ﻿using System.Collections.Generic;
-using Core.Matching;
+using Core.Translation.Matching;
 
-namespace Core.Graphemes
+namespace Core.Translation.Graphemes
 {
     public class GraphemeTranslation
     {
-        public Grapheme Original;
+        public readonly Grapheme Original;
         public string Translation;
 
         public GraphemeTranslation()
         {
             this.Original = new Grapheme(GraphemeType.Silent, "");
+            this.Translation = "";
         }
 
         public GraphemeTranslation(Grapheme original, string translation)
@@ -28,7 +29,7 @@ namespace Core.Graphemes
             IEnumerable<Grapheme> graphemes)
         {
             var translations = new List<GraphemeTranslation>(matches.Count);
-            var ge = graphemes.GetEnumerator();
+            using var ge = graphemes.GetEnumerator();
             ge.MoveNext();
 
             foreach (LettersMatch match in matches)

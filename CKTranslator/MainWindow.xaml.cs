@@ -19,7 +19,7 @@ namespace CKTranslator
     /// <summary>
     ///     Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MainWindow
     {
         public MainWindow()
         {
@@ -35,15 +35,8 @@ namespace CKTranslator
                 this.WindowState = WindowState.Maximized;
             }
 
-            if (Settings.Default.RusMods == null)
-            {
-                Settings.Default.RusMods = new StringCollection();
-            }
-
-            if (Settings.Default.EngMods == null)
-            {
-                Settings.Default.EngMods = new StringCollection();
-            }
+            Settings.Default.RusMods ??= new StringCollection();
+            Settings.Default.EngMods ??= new StringCollection();
 
             this.RusMods = new ObservableCollection<ModViewData>();
             this.EngMods = new ObservableCollection<ModViewData>();
@@ -52,10 +45,7 @@ namespace CKTranslator
 
             DependencyPropertyDescriptor dpd =
                 DependencyPropertyDescriptor.FromProperty(ItemsControl.ItemsSourceProperty, typeof(ListView));
-            if (dpd != null)
-            {
-                dpd.AddValueChanged(this.EventsView, this.EventsView_ItemsSourceChanged);
-            }
+            dpd.AddValueChanged(this.EventsView, this.EventsView_ItemsSourceChanged);
 
             this.CheckRusMods.IsSelected = Settings.Default.CheckRusMods;
             this.CheckEngMods.IsSelected = Settings.Default.CheckEngMods;
@@ -70,7 +60,7 @@ namespace CKTranslator
             this.EngModsView.Items.SortDescriptions.Add(
                 new SortDescription("ModInfo.Name", ListSortDirection.Ascending));
 
-            this.ModManager.Load(this.RusMods, this.EngMods);
+            ModManager.Load(this.RusMods, this.EngMods);
 
             this.FilteredRusMods = CollectionViewSource.GetDefaultView(this.RusMods);
             this.FilteredRusMods.Filter = this.FilterRusMods;
@@ -90,22 +80,22 @@ namespace CKTranslator
         /// <summary>
         ///     Английские моды отсортированные для вывода на интерфейс
         /// </summary>
-        public ICollectionView FilteredEngMods { get; }
+        private ICollectionView FilteredEngMods { get; }
 
         /// <summary>
         ///     События отсортированные для вывода на интерфейс
         /// </summary>
-        public ICollectionView FilteredEvents { get; private set; }
+        private ICollectionView? FilteredEvents { get; set; }
 
         /// <summary>
         ///     Русские моды отсортированные для вывода на интерфейс
         /// </summary>
-        public ICollectionView FilteredRusMods { get; }
+        private ICollectionView FilteredRusMods { get; }
 
         /// <summary>
         ///     Функционал по работе с модами
         /// </summary>
-        public ModManager ModManager { get; set; }
+        public ModManager ModManager { get; }
 
         /// <summary>
         ///     Русские моды в порядке загрузки
@@ -117,7 +107,7 @@ namespace CKTranslator
             this.StartProcess(() => this.ModManager.AnalizeStrings());
         }
 
-        private void Bakup_Click(object sender, RoutedEventArgs e)
+        private void Backup_Click(object sender, RoutedEventArgs e)
         {
             this.StartProcess(() => this.ModManager.Backup(this.EngMods));
         }
@@ -157,10 +147,10 @@ namespace CKTranslator
 
         private void EngShowAll_Selected(object sender, RoutedEventArgs e)
         {
-            this.FilteredEngMods?.Refresh();
+            this.FilteredEngMods.Refresh();
         }
 
-        private void EventsView_ItemsSourceChanged(object sender, EventArgs e)
+        private void EventsView_ItemsSourceChanged(object? sender, EventArgs e)
         {
             this.FilteredEvents = CollectionViewSource.GetDefaultView(this.EventsView.ItemsSource);
             if (this.FilteredEvents != null)
@@ -240,14 +230,14 @@ namespace CKTranslator
             }
         }
 
-        private void RestoreBakup_Click(object sender, RoutedEventArgs e)
+        private void RestoreBackup_Click(object sender, RoutedEventArgs e)
         {
             this.StartProcess(() => this.ModManager.Restore(this.EngMods));
         }
 
         private void RusShowAll_Selected(object sender, RoutedEventArgs e)
         {
-            this.FilteredRusMods?.Refresh();
+            this.FilteredRusMods.Refresh();
         }
 
         /// <summary>

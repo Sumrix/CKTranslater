@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Linq;
-using Core.Collections;
 
-namespace Core.Graphemes
+namespace Core.Translation.Graphemes
 {
     public enum GraphemeType
     {
@@ -41,7 +40,7 @@ namespace Core.Graphemes
 
     public class Grapheme
     {
-        public static readonly uint[] MaxFlag = new uint[4]
+        public static readonly uint[] MaxFlag =
         {
             0, (uint) CommonFlag.Last, (uint) VowelFlag.Stressed, (uint) ConsonantFlag.PreviousVowel
         };
@@ -51,9 +50,9 @@ namespace Core.Graphemes
         public static readonly int[] FlagVariants = Grapheme.MaxFlag
             .Select(f => f == 0 ? 1 : (int) (f << 1))
             .ToArray();
-        public FlagSet Flags;
+        public uint Flags;
 
-        public Grapheme(GraphemeType type, string letters, FlagSet flags = default)
+        public Grapheme(GraphemeType type, string letters, uint flags = default)
         {
             this.Type = type;
             this.Letters = letters;
@@ -130,16 +129,16 @@ namespace Core.Graphemes
                     {
                         case GraphemeType.Mixed:
                             this.Type = GraphemeType.Mixed;
-                            this.Flags = new FlagSet((uint) Grapheme.MergeFlags((CommonFlag) this.Flags.Value,
-                                (CommonFlag) other.Flags.Value));
+                            this.Flags = (uint) Grapheme.MergeFlags((CommonFlag) this.Flags,
+                                (CommonFlag) other.Flags);
                             break;
                         case GraphemeType.Vowel:
-                            this.Flags = new FlagSet((uint) Grapheme.MergeFlags((VowelFlag) this.Flags.Value,
-                                (VowelFlag) other.Flags.Value));
+                            this.Flags = (uint) Grapheme.MergeFlags((VowelFlag) this.Flags,
+                                (VowelFlag) other.Flags);
                             break;
                         case GraphemeType.Consonant:
                             this.Type = GraphemeType.Mixed;
-                            this.Flags = new FlagSet(0);
+                            this.Flags = 0;
                             break;
                     }
 
@@ -149,24 +148,21 @@ namespace Core.Graphemes
                     {
                         case GraphemeType.Mixed:
                             this.Type = GraphemeType.Mixed;
-                            this.Flags = new FlagSet((uint) Grapheme.MergeFlags((CommonFlag) this.Flags.Value,
-                                (CommonFlag) other.Flags.Value));
+                            this.Flags = (uint) Grapheme.MergeFlags((CommonFlag) this.Flags, (CommonFlag) other.Flags);
                             break;
                         case GraphemeType.Vowel:
                             this.Type = GraphemeType.Mixed;
-                            this.Flags = new FlagSet(0);
+                            this.Flags = 0;
                             break;
                         case GraphemeType.Consonant:
-                            this.Flags = new FlagSet((uint) Grapheme.MergeFlags((ConsonantFlag) this.Flags.Value,
-                                (ConsonantFlag) other.Flags.Value));
+                            this.Flags = (uint) Grapheme.MergeFlags((ConsonantFlag) this.Flags,
+                                (ConsonantFlag) other.Flags);
                             break;
                     }
 
                     break;
                 case GraphemeType.Mixed:
-                    this.Flags =
-                        new FlagSet((uint) Grapheme.MergeFlags((CommonFlag) this.Flags.Value,
-                            (CommonFlag) other.Flags.Value));
+                    this.Flags = (uint) Grapheme.MergeFlags((CommonFlag) this.Flags, (CommonFlag) other.Flags);
                     break;
             }
 
@@ -176,7 +172,7 @@ namespace Core.Graphemes
         public override string ToString()
         {
             return
-                $"{this.Type} \"{this.Letters}\" [{Bit.ToString(this.Flags.Value, Grapheme.FlagBitNum[(int) this.Type])}]";
+                $"{this.Type} \"{this.Letters}\" [{Bit.ToString(this.Flags, Grapheme.FlagBitNum[(int) this.Type])}]";
         }
     }
 }

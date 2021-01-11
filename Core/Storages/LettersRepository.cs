@@ -6,7 +6,7 @@ namespace Core.Storages
 {
     public class LettersRepository : Repository, IReadOnlyCollection<char>
     {
-        private Letters data;
+        private Letters? data;
 
         public List<char> Consonants
         {

@@ -4,17 +4,17 @@ namespace Core.Processing
 {
     public static class ProcessManager
     {
-        public static IProcess Bakup(IList<ModViewData> mods)
+        public static IProcess Backup(IList<ModViewData> mods)
         {
             return new Process
             {
                 StartStatus = "Резервное копирование файлов...",
                 EndStatus = "Резервные копии успешно созданы",
                 FileNameGetter = FileManager.GetModFiles,
-                FileProcessors = { Backuping.Backup },
+                FileProcessors = { Backupping.Backup },
                 Mods = mods,
-                ModProcessedInitializer = (o, e) => e.Mod.ModInfo.IsBackuped = true,
-                Condition = mod => !mod.ModInfo.IsBackuped
+                ModProcessedInitializer = (_, e) => e.Mod.ModInfo.IsBackupped = true,
+                Condition = mod => !mod.ModInfo.IsBackupped
             };
         }
 
@@ -33,7 +33,7 @@ namespace Core.Processing
                 },
                 new Process
                 {
-                    StartStatus = "Сканирование русскийх модов...",
+                    StartStatus = "Сканирование русских модов...",
                     EndStatus = "Сканирование завершено",
                     FileNameGetter = FileManager.GetModFiles,
                     FileProcessors = { translator.LoadRusFiles },
@@ -51,7 +51,7 @@ namespace Core.Processing
                 FileNameGetter = FileManager.GetModFiles,
                 FileProcessors = { FileRecoder.Recode },
                 Mods = mods,
-                ModProcessedInitializer = (o, e) => e.Mod.ModInfo.IsRecoded = true,
+                ModProcessedInitializer = (_, e) => e.Mod.ModInfo.IsRecoded = true,
                 Condition = mod => !mod.ModInfo.IsRecoded
             };
         }
@@ -63,9 +63,9 @@ namespace Core.Processing
                 StartStatus = "Восстановление файлов...",
                 EndStatus = "Файлы успешно восстановлены",
                 FileNameGetter = FileManager.GetBackupFiles,
-                FileProcessors = { Backuping.Restore },
+                FileProcessors = { Backupping.Restore },
                 Mods = mods,
-                ModProcessedInitializer = (o, e) =>
+                ModProcessedInitializer = (_, e) =>
                 {
                     e.Mod.ModInfo.IsTranslated = false;
                     e.Mod.ModInfo.IsRecoded = false;
@@ -82,7 +82,7 @@ namespace Core.Processing
                 FileNameGetter = FileManager.GetModFiles,
                 FileProcessors = { translator.TranslateScript },
                 Mods = mods,
-                ModProcessedInitializer = (o, e) => e.Mod.ModInfo.IsTranslated = true
+                ModProcessedInitializer = (_, e) => e.Mod.ModInfo.IsTranslated = true
             };
         }
     }

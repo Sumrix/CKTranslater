@@ -21,7 +21,7 @@ namespace Core.Processing
         EventHandler<ModEventArgs> ModProcessedInitializer { set; }
         Progress Progress { get; }
         string StartStatus { set; }
-        string Status { get; }
+        string? Status { get; }
         void Cancel();
         event EventHandler<ModEventArgs> ModProcessed;
         void Prepare();

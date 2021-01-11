@@ -1,20 +1,18 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Core.Graphemes;
-using Core.Interpolation;
-using Core.Matching;
-using Core.Parsing;
 using Core.Storages;
+using Core.Translation.Graphemes;
+using Core.Translation.Interpolation;
+using Core.Translation.Matching;
+using Core.Translation.Parsing;
 
-namespace Core.Transliteration
+namespace Core.Translation.Transliteration
 {
     /// <summary>
     ///     Создаёт правила перевода по существующему словарю
     /// </summary>
     public static class RuleRecognizer
     {
-        private const float MinimumSimilarity = 0.68f;
-
         private static List<GraphemeTranslation> CorrectGraphemeLengths(
             Language srcLanguage,
             IReadOnlyCollection<IReadOnlyList<GraphemeTranslation>> wordGraphemeTranslations)
@@ -58,7 +56,7 @@ namespace Core.Transliteration
             var correctedGraphemeTranslations =
                 RuleRecognizer.CorrectGraphemeLengths(sourceLanguage, wordGraphemeTranslations);
 
-            var allGraphemeTranslations = DB.EngToRusMap
+            var allGraphemeTranslations = Db.EngToRusMap
                 .Select(x => new GraphemeTranslation(sourceLanguage.ToGrapheme(x.eng.ToString()), x.rus))
                 .Union(correctedGraphemeTranslations);
 

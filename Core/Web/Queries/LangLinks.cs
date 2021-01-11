@@ -1,22 +1,22 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Web;
-using Core.Transliteration;
+using Core.Translation.Transliteration;
 using Newtonsoft.Json.Linq;
 
 namespace Core.Web.Queries
 {
     /// <summary>
     ///     В LangLinks есть ограничение на количество заголовков в одном запросе,
-    ///     по этому наследуем функционал от LimitedQuery, которы разделит входящие
+    ///     по этому наследуем функционал от LimitedQuery, который разделит входящие
     ///     данные на куски по 50 и выполнит отдельно.
     /// </summary>
     public class LangLinks : LimitedQuery<string, WordInLangs>
     {
-        private const int maxNumOfTitles = 50;
+        private const int MaxNumOfTitles = 50;
 
-        public LangLinks(QueueTimer queryTimer, string logPath)
-            : base(queryTimer, LangLinks.maxNumOfTitles, logPath)
+        public LangLinks(QueueTimer? queryTimer, string logPath)
+            : base(queryTimer, LangLinks.MaxNumOfTitles, logPath)
         {
         }
 
@@ -32,16 +32,17 @@ namespace Core.Web.Queries
             JObject o = JObject.Parse(response);
 
             JToken? query = o["query"];
-            var redirects = (query["redirects"] ?? new JObject())
+            var redirects = (query?["redirects"] ?? new JObject())
                 .Select(r => new
                 {
-                    To = (string) r["to"],
-                    From = (string) r["from"]
+                    To = (string?) r["to"],
+                    From = (string?) r["from"]
                 })
                 .GroupBy(r => r.To, r => r.From)
                 .ToDictionary(g => g.Key, g => g);
 
-            return query["pages"].Children()
+            return query?["pages"]
+                ?.Children()
                 .SelectMany(ch =>
                 {
                     JToken p = ((JProperty) ch).Value;
@@ -56,10 +57,10 @@ namespace Core.Web.Queries
                     {
                         new WordInLangs(
                             engWord,
-                            (string) p.SelectToken(@"langlinks[0].['*']")
+                            (string?) p.SelectToken(@"langlinks[0].['*']")
                         )
                     };
-                });
+                }) ?? Enumerable.Empty<WordInLangs>();
         }
     }
 }

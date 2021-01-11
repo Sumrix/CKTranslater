@@ -3,11 +3,11 @@ using System.IO;
 using System.Linq;
 using Antlr4.Runtime;
 
-namespace Core
+namespace Core.Parsing
 {
     public class ErrorSaver : BaseErrorListener
     {
-        public List<string> Messages = new();
+        public readonly List<string> Messages = new();
 
         public override void SyntaxError(TextWriter output, IRecognizer recognizer, IToken offendingSymbol, int line,
             int charPositionInLine,
@@ -16,8 +16,7 @@ namespace Core
             IEnumerable<string> stack = ((Parser) recognizer).GetRuleInvocationStack();
             stack = stack.Reverse();
             string stackString = string.Join(" ", stack);
-            string info = string.Format("stack: [{0}]\n line {1}: {2} at {3}: {4}",
-                stackString, line, charPositionInLine, offendingSymbol, msg);
+            string info = $"stack: [{stackString}]\n line {line}: {charPositionInLine} at {offendingSymbol}: {msg}";
             this.Messages.Add(info);
         }
     }

@@ -10,16 +10,17 @@ namespace Core.Storages
     /// <typeparam name="TKey">The type of the keys in the dictionary.</typeparam>
     /// <typeparam name="TValue">The type of the values in the dictionary.</typeparam>
     public abstract class DictionaryRepository<TKey, TValue> : Repository
+        where TKey : notnull
     {
         /// <summary>
         ///     Inner data collection
         /// </summary>
-        protected Dictionary<TKey, TValue> dictionary = new();
+        protected Dictionary<TKey, TValue> Dictionary = new();
 
         /// <summary>
         ///     Gets the number of items contained in the <see cref="DictionaryRepository{TItem, TKey, TValue}" />
         /// </summary>
-        public int Count => this.dictionary.Count;
+        public int Count => this.Dictionary.Count;
 
         /// <summary>
         ///     Gets or sets the value associated with the specified key
@@ -28,8 +29,8 @@ namespace Core.Storages
         /// <returns>The value associated with the specified key</returns>
         public TValue this[TKey key]
         {
-            get => this.dictionary[key];
-            set => this.dictionary[key] = value;
+            get => this.Dictionary[key];
+            set => this.Dictionary[key] = value;
         }
 
         /// <summary>
@@ -40,7 +41,7 @@ namespace Core.Storages
         /// <param name="value">The value of the element to add.</param>
         public void Add(TKey key, TValue value)
         {
-            this.dictionary.Add(key, value);
+            this.Dictionary.Add(key, value);
         }
 
         /// <summary>
@@ -48,7 +49,7 @@ namespace Core.Storages
         /// </summary>
         public void Clear()
         {
-            this.dictionary.Clear();
+            this.Dictionary.Clear();
         }
 
         /// <summary>
@@ -61,7 +62,7 @@ namespace Core.Storages
         /// </returns>
         public bool Contains(TKey key)
         {
-            return this.dictionary.ContainsKey(key);
+            return this.Dictionary.ContainsKey(key);
         }
 
         /// <summary>
@@ -70,7 +71,7 @@ namespace Core.Storages
         /// <returns>Data to save.</returns>
         protected override object GetDataToSave()
         {
-            return new SortedDictionary<TKey, TValue>(this.dictionary);
+            return new SortedDictionary<TKey, TValue>(this.Dictionary);
         }
 
         /// <summary>
@@ -79,7 +80,7 @@ namespace Core.Storages
         /// <param name="fileName">The name of the file from which the data will be loaded.</param>
         protected override void LoadData(string fileName)
         {
-            this.dictionary = JsonHelper.Deserialize<Dictionary<TKey, TValue>>(fileName);
+            this.Dictionary = JsonHelper.Deserialize<Dictionary<TKey, TValue>>(fileName);
         }
 
         /// <summary>
@@ -90,7 +91,7 @@ namespace Core.Storages
         /// <returns><c>true</c> if the element is successfully found and removed; otherwise <c>false</c>.</returns>
         public bool Remove(TKey key)
         {
-            return this.dictionary.Remove(key);
+            return this.Dictionary.Remove(key);
         }
 
         /// <summary>
@@ -105,21 +106,22 @@ namespace Core.Storages
         ///     <c>true</c> if the <see cref="DictionaryRepository{TItem, TKey, TValue}" /> contains
         ///     an element with the specified <paramref name="key" />; otherwise <c>false</c>.
         /// </returns>
-        public bool TryGetValue(TKey key, out TValue value)
+        public bool TryGetValue(TKey key, out TValue? value)
         {
-            return this.dictionary.TryGetValue(key, out value);
+            return this.Dictionary.TryGetValue(key, out value);
         }
     }
 
     public abstract class DictionaryRepository<TItem, TKey, TValue> : DictionaryRepository<TKey, TValue>,
         IEnumerable<TItem>
+        where TKey : notnull
     {
         /// <summary>
         ///     Return an enumerator that iterates through the <see cref="DictionaryRepository{TItem, TKey, TValue}" />.
         /// </summary>
         public IEnumerator<TItem> GetEnumerator()
         {
-            return this.dictionary.Select(keyValuePair => this.KeyValuePair2Item(keyValuePair))
+            return this.Dictionary.Select(this.KeyValuePair2Item)
                 .GetEnumerator();
         }
 
@@ -138,7 +140,7 @@ namespace Core.Storages
         public void Add(TItem item)
         {
             var keyValuePair = this.Item2KeyValuePair(item);
-            this.dictionary[keyValuePair.Key] = keyValuePair.Value;
+            this.Dictionary[keyValuePair.Key] = keyValuePair.Value;
         }
 
         /// <summary>

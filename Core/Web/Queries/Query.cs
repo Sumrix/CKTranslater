@@ -19,18 +19,18 @@ namespace Core.Web.Queries
         /// <summary>
         ///     The path to the folder for logging.
         /// </summary>
-        private readonly string logPath;
+        private readonly string? logPath;
         /// <summary>
         ///     Timer for calling the request, so as not to overload the server.
         /// </summary>
-        private readonly QueueTimer queryTimer;
+        private readonly QueueTimer? queryTimer;
 
         /// <summary>
         ///     Initializes query with <see cref="QueueTimer" /> and path to log.
         /// </summary>
         /// <param name="queryTimer">Timer for calling the request, so as not to overload the server.</param>
         /// <param name="logPath">The path to the folder for logging.</param>
-        protected Query(QueueTimer queryTimer, string logPath = null)
+        protected Query(QueueTimer? queryTimer, string? logPath = null)
         {
             this.queryTimer = queryTimer;
             this.logPath = logPath;
@@ -53,18 +53,14 @@ namespace Core.Web.Queries
             string request = this.CreateRequest(param);
 
             // Cache response
-            if (!DB.QueryCache.TryGetValue(request, out string response))
+            if (Db.QueryCache.TryGetValue(request, out string? response))
             {
-                response = this.Get(request);
-                DB.QueryCache[request] = response;
+                throw new InvalidOperationException("No respond");
             }
 
-            // Log query if it's necessary
-            if (this.logPath != null)
-            {
-                this.Log(request, response);
-            }
-
+            response = this.Get(request);
+            Db.QueryCache[request] = response;
+            this.Log(request, response);
             return this.ParseResponse(response);
         }
 
@@ -91,8 +87,13 @@ namespace Core.Web.Queries
         /// </summary>
         /// <param name="request">Request string.</param>
         /// <param name="response">Query response string.</param>
-        private void Log(string request, string response)
+        private void Log(string request, string? response)
         {
+            if (this.logPath == null)
+            {
+                return;
+            }
+
             string shortFileName =
                 $"{DateTime.Now:yyyyMMddTHHmmss}I{Query<TParam, TResult>.logRecordIndex++:D8}{this.GetType().Name}.txt";
             string fileName = Path.Combine(this.logPath, shortFileName);
@@ -107,7 +108,7 @@ namespace Core.Web.Queries
             stream.WriteLine(request);
             stream.WriteLine();
             stream.WriteLine("RESPONSE:");
-            string prettyResponse = JsonHelper.JsonPrettify(response);
+            string prettyResponse = response == null ? "" : JsonHelper.JsonPrettify(response);
             stream.WriteLine(prettyResponse);
         }
 

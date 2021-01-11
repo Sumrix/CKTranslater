@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using Core.Transliteration;
+using Core.Translation.Transliteration;
 using Core.Web.Queries;
 
 namespace Core.Web
@@ -13,7 +13,7 @@ namespace Core.Web
     {
         private static readonly string logPath =
             Path.Combine(@"..\..\..\WikiLog", DateTime.Now.ToString("yyyyMMddTHHmmss"));
-        private static readonly QueueTimer queueTimer = null; //new QueueTimer(0);
+        private static readonly QueueTimer? queueTimer = null; //new QueueTimer(0);
         private static readonly LangLinks langLinks = new(WikiApi.queueTimer, WikiApi.logPath);
         private static readonly PrefixSearch prefixSearch = new(WikiApi.queueTimer, WikiApi.logPath);
         private static readonly Search search = new(WikiApi.queueTimer, WikiApi.logPath);

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace Core.Graphemes
+namespace Core.Translation.Graphemes
 {
     public class GraphemeStatistic
     {
@@ -16,29 +16,25 @@ namespace Core.Graphemes
         {
             var statistic = new Dictionary<string, Dictionary<string, int[]>>();
 
-            var z = graphemeTranslations
-                .Where(x => x.Original.Flags.Value == 2)
-                .ToList();
-
             foreach (GraphemeTranslation match in graphemeTranslations)
             {
                 if (statistic.TryGetValue(match.Original.Letters, out var translationStatistic))
                 {
                     if (translationStatistic.TryGetValue(match.Translation, out int[]? flagsStatistic))
                     {
-                        flagsStatistic[match.Original.Flags.Value]++;
+                        flagsStatistic[match.Original.Flags]++;
                     }
                     else
                     {
                         flagsStatistic = new int[Grapheme.FlagVariants[(int) match.Original.Type]];
-                        flagsStatistic[match.Original.Flags.Value] = 1;
+                        flagsStatistic[match.Original.Flags] = 1;
                         translationStatistic[match.Translation] = flagsStatistic;
                     }
                 }
                 else
                 {
                     int[] flagsStatistic = new int[Grapheme.FlagVariants[(int) match.Original.Type]];
-                    flagsStatistic[match.Original.Flags.Value] = 1;
+                    flagsStatistic[match.Original.Flags] = 1;
 
                     statistic[match.Original.Letters] = new Dictionary<string, int[]>
                     {

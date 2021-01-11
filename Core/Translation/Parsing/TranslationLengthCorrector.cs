@@ -1,15 +1,21 @@
 ﻿using System.Collections.Generic;
-using Core.Graphemes;
+using Core.Translation.Graphemes;
 
-namespace Core.Parsing
+namespace Core.Translation.Parsing
 {
     // Маленькие графемы собираются в большие, если уже такие есть
     public class TranslationLengthCorrector
     {
-        private int offset;
+        private readonly int offset;
 
         // Дерево существующих графем
-        private GraphemeVariant root;
+        private readonly GraphemeVariant root;
+
+        private TranslationLengthCorrector(int offset, GraphemeVariant root)
+        {
+            this.offset = offset;
+            this.root = root;
+        }
 
         /// <summary>
         ///     Объединить графемы, если есть такая возможность
@@ -20,10 +26,10 @@ namespace Core.Parsing
         {
             // Берём графемы и пробуем с ними пройти по дереву букв/графем.
             // Возвращяем наидлиннейший путь который смогли пройти.
-            GraphemeVariant variant = this.root;
+            GraphemeVariant? variant = this.root;
             GraphemeTranslation mergedTranslation = new();
             int savedTranslationNum = 0;
-            GraphemeTranslation savedMergedTranslation = null;
+            GraphemeTranslation? savedMergedTranslation = null;
             bool savedButNotReturned = false;
 
             for (int translationNum = 0; translationNum < translations.Count; translationNum++)
@@ -36,10 +42,14 @@ namespace Core.Parsing
                 for (int letterNum = 0; letterNum < letters.Length; letterNum++)
                 {
                     // Если дальше проходить по дереву графем нельзя - возвращяем последнее успешное
-                    if (variant.Variants == null)
+                    if (variant?.Variants == null)
                     {
                         Load();
-                        yield return savedMergedTranslation;
+                        if (savedMergedTranslation != null)
+                        {
+                            yield return savedMergedTranslation;
+                        }
+
                         savedButNotReturned = false;
                         break;
                     }
@@ -52,7 +62,11 @@ namespace Core.Parsing
                     if (variant == null)
                     {
                         Load();
-                        yield return savedMergedTranslation;
+                        if (savedMergedTranslation != null)
+                        {
+                            yield return savedMergedTranslation;
+                        }
+
                         savedButNotReturned = false;
                         break;
                     }
@@ -82,7 +96,7 @@ namespace Core.Parsing
             }
 
             // Если есть успешное объединение графем которое не вернули - возвращяем
-            if (savedButNotReturned)
+            if (savedButNotReturned && savedMergedTranslation != null)
             {
                 yield return savedMergedTranslation;
             }
@@ -93,11 +107,10 @@ namespace Core.Parsing
         {
             int variantCount = srcLanguage.MaxLetter - srcLanguage.MinLetter + 1;
 
-            TranslationLengthCorrector t = new()
-            {
-                root = new GraphemeVariant { Variants = new GraphemeVariant[variantCount] },
-                offset = srcLanguage.MinLetter
-            };
+            TranslationLengthCorrector t = new(
+                srcLanguage.MinLetter,
+                new GraphemeVariant { Variants = new GraphemeVariant?[variantCount] }
+            );
 
             foreach (GraphemeTranslation translation in translations)
             {
@@ -107,7 +120,7 @@ namespace Core.Parsing
                 }
 
                 ref var vs = ref t.root.Variants;
-                GraphemeVariant v = null;
+                GraphemeVariant? v = null;
 
                 foreach (char letter in translation.Original.Letters)
                 {
@@ -122,7 +135,10 @@ namespace Core.Parsing
                     vs = ref v.Variants;
                 }
 
-                v.ExistGrapheme = true;
+                if (v != null)
+                {
+                    v.ExistGrapheme = true;
+                }
             }
 
             return t;

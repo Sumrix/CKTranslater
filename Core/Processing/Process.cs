@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.ComponentModel;
 
 namespace Core.Processing
@@ -8,12 +9,13 @@ namespace Core.Processing
     {
         public delegate ICollection<FileContext> GetFileNames(ModInfo mod);
 
-        public delegate Event ProcessFile(FileContext fileName);
+        public delegate Event? ProcessFile(FileContext fileName);
 
-        private Dictionary<int, ICollection<FileContext>> modFiles;
-        public IList<ModViewData> Mods;
+        private IDictionary<int, ICollection<FileContext>> modFiles =
+            ImmutableDictionary<int, ICollection<FileContext>>.Empty;
+        public IList<ModViewData> Mods = ImmutableList<ModViewData>.Empty;
         private Progress progress;
-        private string status;
+        private string? status;
 
         public Process()
         {
@@ -23,10 +25,10 @@ namespace Core.Processing
         }
 
         public bool CancelRequired { get; private set; }
-        public GetFileNames FileNameGetter { get; set; }
+        public GetFileNames? FileNameGetter { get; set; }
         public List<ProcessFile> FileProcessors { get; set; }
 
-        public string Status
+        public string? Status
         {
             get => this.status;
             set
@@ -52,11 +54,11 @@ namespace Core.Processing
         }
 
         public EventLog EventLog { get; }
-        public string StartStatus { get; set; }
-        public string EndStatus { get; set; }
-        public Func<ModViewData, bool> Condition { private get; set; }
-        public event PropertyChangedEventHandler PropertyChanged;
-        public event EventHandler<ModEventArgs> ModProcessed;
+        public string? StartStatus { get; set; }
+        public string? EndStatus { get; set; }
+        public Func<ModViewData, bool>? Condition { private get; set; }
+        public event PropertyChangedEventHandler? PropertyChanged;
+        public event EventHandler<ModEventArgs>? ModProcessed;
 
         public void Prepare()
         {
@@ -74,12 +76,12 @@ namespace Core.Processing
 
                 if (mod.ModInfo.IsArchive ||
                     !mod.IsChecked ||
-                    this.Condition != null && !this.Condition.Invoke(mod))
+                    this.Condition != null && !this.Condition(mod))
                 {
                     continue;
                 }
 
-                var fileNames = this.FileNameGetter(mod.ModInfo);
+                var fileNames = this.FileNameGetter?.Invoke(mod.ModInfo);
 
                 if (fileNames != null && fileNames.Count > 0)
                 {
@@ -116,7 +118,7 @@ namespace Core.Processing
                             return;
                         }
 
-                        Event @event = processFile(file);
+                        Event? @event = processFile(file);
                         if (@event != null)
                         {
                             @event.ModName = mod.ModInfo.Name;

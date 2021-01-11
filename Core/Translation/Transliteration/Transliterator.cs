@@ -1,42 +1,44 @@
 ﻿using System.Collections.Generic;
-using Core.Graphemes;
+using Core.Translation.Graphemes;
 
-namespace Core.Transliteration
+namespace Core.Translation.Transliteration
 {
     /// <summary>
     ///     Траслитератор
     /// </summary>
     public class Transliterator
     {
-        private int offset;
-        private Language srcLanguage;
-        private GraphemeVariant[] tree;
+        private readonly int offset;
+        private readonly Language srcLanguage;
+        private GraphemeVariant?[] tree;
+
+        private Transliterator(int offset, Language srcLanguage, GraphemeVariant[] tree)
+        {
+            this.offset = offset;
+            this.srcLanguage = srcLanguage;
+            this.tree = tree;
+        }
 
         /// <summary>
         ///     Создать новый транслитератор на основе правил транслитерации
         /// </summary>
-        /// <param name="rules">Правила траслитерации</param>
-        /// <param name="srcLanguage">Язык траслитерируемых слов</param>
+        /// <param name="rules">Правила транслитерации</param>
+        /// <param name="srcLanguage">Язык транслитерируемых слов</param>
         /// <returns></returns>
         public static Transliterator Create(IEnumerable<TransliterationRule> rules, Language srcLanguage)
         {
             int variantCount = srcLanguage.MaxLetter - srcLanguage.MinLetter + 1;
 
-            Transliterator t = new()
-            {
-                tree = new GraphemeVariant[variantCount],
-                srcLanguage = srcLanguage,
-                offset = srcLanguage.MinLetter
-            };
+            Transliterator t = new(srcLanguage.MinLetter, srcLanguage, new GraphemeVariant[variantCount]);
 
             foreach (TransliterationRule rule in rules)
             {
                 ref var vs = ref t.tree;
-                GraphemeVariant v = null;
+                GraphemeVariant? v = null;
 
                 foreach (char letter in rule.Source)
                 {
-                    vs ??= new GraphemeVariant[variantCount];
+                    //vs ??= new GraphemeVariant[variantCount];
                     v = vs[letter - t.offset];
                     if (v == null)
                     {
@@ -47,7 +49,10 @@ namespace Core.Transliteration
                     vs = ref v.Variants;
                 }
 
-                v.Options = rule.Target;
+                if (v != null)
+                {
+                    v.Options = rule.Target;
+                }
             }
 
             return t;
@@ -64,8 +69,7 @@ namespace Core.Transliteration
             int savedPos = 0;
             // Узлы дерева парсинга
             var vs = this.tree;
-            GraphemeVariant v;
-            string graphemeTranslation = "";
+            string? graphemeTranslation = "";
             // Перевод
             string translation = "";
             Grapheme grapheme = new(GraphemeType.Silent, "");
@@ -74,17 +78,17 @@ namespace Core.Transliteration
             {
                 grapheme.MergeWith(graphemes[curPos]);
                 char letter = word[curPos];
-                v = vs[letter - this.offset];
+                GraphemeVariant? v = vs[letter - this.offset];
 
                 if (v != null)
                 {
-                    if (v.Options != null)
+                    if (v.Options.Length > 0)
                     {
                         savedPos = curPos;
-                        graphemeTranslation = v.Options[grapheme.Flags.Value];
+                        graphemeTranslation = v.Options[grapheme.Flags];
                     }
 
-                    if (v.Variants != null && curPos < maxPos)
+                    if (v.Variants.Length > 0 && curPos < maxPos)
                     {
                         curPos++;
                         vs = v.Variants;

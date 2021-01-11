@@ -4,9 +4,9 @@ namespace Core.Parsing
 {
     public class ScriptParseResult
     {
-        public List<ScriptArray> Arrays;
-        public List<string> Errors;
-        public List<ScriptString> Strings;
+        public List<ScriptArray> Arrays { get; init; } = new();
+        public List<string> Errors { get; init; } = new();
+        public List<ScriptString> Strings { get; init; } = new();
     }
 
     public class ScriptString
@@ -14,6 +14,7 @@ namespace Core.Parsing
         public ScriptString()
         {
             this.Key = new ScriptKey();
+            this.Value = string.Empty;
         }
 
         public ScriptString(string key, string value)
@@ -26,23 +27,23 @@ namespace Core.Parsing
             this.Value = value;
         }
 
-        public ScriptKey Key { get; set; }
-        public string Value { get; set; }
+        public ScriptKey Key { get; init; }
+        public string Value { get; init; }
 
         public override string ToString()
         {
-            return string.Format("{0} = \"{1}\"", this.Key, this.Value);
+            return $"{this.Key} = \"{this.Value}\"";
         }
     }
 
     public class ScriptArray
     {
-        public ScriptKey Key { get; set; }
-        public string[] Value { get; set; }
+        public ScriptKey Key { get; init; }
+        public string[] Value { get; init; }
 
         public override string ToString()
         {
-            return string.Format("{0} = {{{1}}}", this.Key, string.Join(" ", this.Value));
+            return $"{this.Key} = {{{string.Join(" ", this.Value)}}}";
         }
     }
 }

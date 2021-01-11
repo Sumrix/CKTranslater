@@ -1,11 +1,13 @@
-﻿namespace Core.Storages
+﻿using System;
+
+namespace Core.Storages
 {
     /// <summary>
     ///     Базовый класс для объектов хранилищ данных
     /// </summary>
     public abstract class Repository
     {
-        protected string fileName;
+        private string? fileName;
 
         protected virtual object GetDataToSave()
         {
@@ -28,9 +30,10 @@
 
         protected abstract void LoadData(string fileName);
 
-        public void Save(string fileName = null)
+        public void Save(string? fileName = null)
         {
-            JsonHelper.Serialize(this.GetDataToSave(), fileName ?? this.fileName);
+            string fileNameToSave = fileName ?? this.fileName ?? throw new ArgumentNullException(nameof(fileName));
+            JsonHelper.Serialize(this.GetDataToSave(), fileNameToSave);
         }
     }
 }

@@ -1,25 +1,17 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace Core.Interpolation
+namespace Core.Translation.Interpolation
 {
     public static class Simplifier
     {
         public static IEnumerable<uint> GetEssentialImplicants(List<uint> essentialTerms, IEnumerable<uint> implicants,
             int numBits)
         {
-            foreach (uint implicant in implicants)
-            {
-                uint mask = ~(implicant >> numBits) & Bit.Ones(numBits);
-                foreach (uint term in essentialTerms)
-                {
-                    if ((term & mask) == (implicant & mask))
-                    {
-                        yield return implicant;
-                        break;
-                    }
-                }
-            }
+            return from implicant in implicants
+                let mask = ~(implicant >> numBits) & Bit.Ones(numBits)
+                where essentialTerms.Any(term => (term & mask) == (implicant & mask))
+                select implicant;
         }
 
         // Метод Куайна-МакКласки
@@ -48,10 +40,10 @@ namespace Core.Interpolation
 
                 foreach (int key in groups.Keys)
                 {
-                    int key_next = key + 1;
-                    if (groups.ContainsKey(key_next))
+                    int keyNext = key + 1;
+                    if (groups.ContainsKey(keyNext))
                     {
-                        var group_next = groups[key_next];
+                        var groupNext = groups[keyNext];
                         foreach (uint t1 in groups[key])
                         {
                             uint one = 1;
@@ -63,7 +55,7 @@ namespace Core.Interpolation
                                 {
                                     uint t2 = t1 | one;
 
-                                    if (group_next.Contains(t2))
+                                    if (groupNext.Contains(t2))
                                     {
                                         uint t12 = t1 | maskOne;
 
@@ -111,18 +103,18 @@ namespace Core.Interpolation
                 uint variantOne = 1;
                 uint lastVariantOne = 1u << variantLength;
                 uint maskOne = 1;
-                uint premutation = baseTerm;
+                uint permutation = baseTerm;
                 do
                 {
                     if ((mask & maskOne) != 0)
                     {
                         if ((variant & variantOne) == 0)
                         {
-                            premutation &= ~maskOne;
+                            permutation &= ~maskOne;
                         }
                         else
                         {
-                            premutation |= maskOne;
+                            permutation |= maskOne;
                         }
 
                         variantOne <<= 1;
@@ -131,15 +123,15 @@ namespace Core.Interpolation
                     maskOne <<= 1;
                 } while (variantOne < lastVariantOne);
 
-                yield return premutation;
+                yield return permutation;
             }
         }
 
         // Метод Петрика
         public static IEnumerable<uint> ReduceImplicants(uint[] impls, List<uint> terms, int numBits)
         {
-            uint[]? implCoverages = new uint[impls.Length];
-            uint[]? sortedImpls = impls
+            uint[] implCoverages = new uint[impls.Length];
+            uint[] sortedImpls = impls
                 .OrderByDescending(impl => ((uint) Bit.OnesCount(impl >> numBits) << numBits) + (impl >> numBits))
                 .ToArray();
             uint coverage;

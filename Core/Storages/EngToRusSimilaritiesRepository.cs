@@ -3,7 +3,7 @@
     public class EngToRusSimilaritiesRepository : Repository
     {
         // +1 для пустого символа
-        private float[,] data = new float[DB.EngLetters.Count + 1, DB.RusLetters.Count + 1];
+        private float[,] data = new float[Db.EngLetters.Count + 1, Db.RusLetters.Count + 1];
         public int EngCount => this.data.GetLength(0);
 
         public float this[int engletterIndex, int rusletterIndex]

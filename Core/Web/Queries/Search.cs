@@ -7,7 +7,7 @@ namespace Core.Web.Queries
 {
     public class Search : Query<string, List<string>>
     {
-        public Search(QueueTimer queryTimer, string logPath)
+        public Search(QueueTimer? queryTimer, string logPath)
             : base(queryTimer, logPath)
         {
         }

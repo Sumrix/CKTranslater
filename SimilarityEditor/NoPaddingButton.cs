@@ -5,9 +5,9 @@ namespace SimilarityEditor
 {
     public class NoPaddingButton : Button
     {
-        private string ownerDrawText;
+        private string? ownerDrawText;
 
-        public string OwnerDrawText
+        public string? OwnerDrawText
         {
             get => this.ownerDrawText;
             set
@@ -21,15 +21,19 @@ namespace SimilarityEditor
         {
             base.OnPaint(e);
 
-            if (string.IsNullOrEmpty(this.Text) && !string.IsNullOrEmpty(this.ownerDrawText))
+            if (!string.IsNullOrEmpty(this.Text) || string.IsNullOrEmpty(this.ownerDrawText))
             {
-                StringFormat stringFormat = new();
-                stringFormat.Alignment = StringAlignment.Center;
-                stringFormat.LineAlignment = StringAlignment.Center;
-
-                e.Graphics.DrawString(this.ownerDrawText, this.Font, new SolidBrush(this.ForeColor),
-                    this.ClientRectangle, stringFormat);
+                return;
             }
+
+            StringFormat stringFormat = new()
+            {
+                Alignment = StringAlignment.Center,
+                LineAlignment = StringAlignment.Center
+            };
+
+            e.Graphics.DrawString(this.ownerDrawText, this.Font, new SolidBrush(this.ForeColor),
+                this.ClientRectangle, stringFormat);
         }
     }
 }

@@ -15,7 +15,11 @@ namespace Core
 
             using StreamReader file = File.OpenText(fileName);
             JsonSerializer serializer = new();
-            return (T) serializer.Deserialize(file, typeof(T));
+            object? obj = serializer.Deserialize(file, typeof(T));
+
+            return obj is T tObj
+                ? tObj
+                : Activator.CreateInstance<T>();
         }
 
         public static string JsonPrettify(string json)

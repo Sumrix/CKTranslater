@@ -48,14 +48,7 @@ namespace Core.Parsing.Listeners
                 string str = @string.GetText();
                 string begin;
 
-                if (str[0] == '\'')
-                {
-                    begin = "\'";
-                }
-                else
-                {
-                    begin = "\"";
-                }
+                begin = str[0] == '\'' ? "\'" : "\"";
 
                 string end = "";
 

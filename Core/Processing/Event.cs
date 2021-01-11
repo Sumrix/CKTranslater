@@ -9,9 +9,9 @@
 
     public class Event
     {
-        public string Desctiption { get; set; }
-        public string FileName { get; set; }
-        public string ModName { get; set; }
-        public EventType Type { get; set; }
+        public string Description { get; init; } = "";
+        public string FileName { get; init; } = "";
+        public string ModName { get; set; } = "";
+        public EventType Type { get; init; }
     }
 }

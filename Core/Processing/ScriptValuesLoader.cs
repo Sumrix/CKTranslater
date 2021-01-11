@@ -17,11 +17,11 @@ namespace Core.Processing
             this.Arrays = new Dictionary<ScriptKey, string[]>();
         }
 
-        public Dictionary<ScriptKey, string> Strings { get; set; }
-        public Dictionary<ScriptKey, string[]> Arrays { get; }
+        public IDictionary<ScriptKey, string> Strings { get; set; }
+        public IDictionary<ScriptKey, string[]> Arrays { get; }
         public Language Language { get; set; }
 
-        public Event Load(FileContext context)
+        public Event? Load(FileContext context)
         {
             ScriptParser parser = new();
             ScriptParseResult result = parser.Parse(context);
@@ -32,11 +32,11 @@ namespace Core.Processing
                 {
                     FileName = context.FullFileName,
                     Type = EventType.Error,
-                    Desctiption = string.Join("\n", result.Errors)
+                    Description = string.Join("\n", result.Errors)
                 };
             }
 
-            StringBuilder desctiption = new();
+            StringBuilder description = new();
 
             foreach (ScriptString @string in result.Strings)
             {
@@ -44,7 +44,7 @@ namespace Core.Processing
                 {
                     @string.Key.Path.AddForward(context.ModFolder);
                     this.Strings[@string.Key] = @string.Value;
-                    desctiption.AppendLine(@string.ToString());
+                    description.AppendLine(@string.ToString());
                 }
             }
 
@@ -58,13 +58,13 @@ namespace Core.Processing
             //    }
             //}
 
-            if (desctiption.Length > 0)
+            if (description.Length > 0)
             {
                 return new Event
                 {
                     FileName = context.FullFileName,
                     Type = EventType.Info,
-                    Desctiption = desctiption.ToString()
+                    Description = description.ToString()
                 };
             }
 

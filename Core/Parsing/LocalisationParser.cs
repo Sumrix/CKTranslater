@@ -24,22 +24,22 @@ namespace Core.Parsing
         {
             var strings = new List<ScriptString>();
 
-            using (StreamReader reader = new(context.FullFileName, this.win1251))
+            using StreamReader reader = new(context.FullFileName, this.win1251);
+
+            string? line;
+            while ((line = reader.ReadLine()) != null)
             {
-                while (!reader.EndOfStream)
+                Match match = this.regex.Match(line);
+                if (!match.Success)
                 {
-                    string line = reader.ReadLine();
-
-                    Match match = this.regex.Match(line);
-                    if (match.Success)
-                    {
-                        string key = match.Groups[1].Value;
-                        string value = match.Groups[2].Value;
-
-                        strings.Add(new ScriptString(key, value));
-                        IdManager.AddValueToIgnore(key);
-                    }
+                    continue;
                 }
+
+                string key = match.Groups[1].Value;
+                string value = match.Groups[2].Value;
+
+                strings.Add(new ScriptString(key, value));
+                IdManager.AddValueToIgnore(key);
             }
 
             return new ScriptParseResult
@@ -55,40 +55,38 @@ namespace Core.Parsing
                 Strings = new List<ScriptString>()
             };
 
-            using (MemoryStream memory = new())
-            using (StreamWriter writer = new(memory, this.win1251))
+            using MemoryStream memory = new();
+            using StreamWriter writer = new(memory, this.win1251);
+            using (StreamReader reader = new(fileName, this.win1251))
             {
-                using (StreamReader reader = new(fileName, this.win1251))
+                string? line;
+                while ((line = reader.ReadLine()) != null)
                 {
-                    while (!reader.EndOfStream)
+                    Match match = this.regex.Match(line);
+                    if (match.Success)
                     {
-                        string line = reader.ReadLine();
-                        Match match = this.regex.Match(line);
-                        if (match.Success)
+                        string key = match.Groups[1].Value;
+                        string engValue = match.Groups[2].Value;
+
+                        string? rusValue = translator(new ScriptString(key, engValue));
+                        if (rusValue != null)
                         {
-                            string key = match.Groups[1].Value;
-                            string engValue = match.Groups[2].Value;
-
-                            string rusValue = translator(new ScriptString(key, engValue));
-                            if (rusValue != null)
-                            {
-                                writer.WriteLine($"{key};{rusValue};x");
-                                result.Strings.Add(new ScriptString(key, rusValue));
-                                continue;
-                            }
+                            writer.WriteLine($"{key};{rusValue};x");
+                            result.Strings.Add(new ScriptString(key, rusValue));
+                            continue;
                         }
-
-                        writer.WriteLine(line);
                     }
-                }
 
-                writer.Flush();
-
-                using (FileStream fileStream = File.Create(fileName))
-                {
-                    memory.Seek(0, SeekOrigin.Begin);
-                    memory.CopyTo(fileStream);
+                    writer.WriteLine(line);
                 }
+            }
+
+            writer.Flush();
+
+            using (FileStream fileStream = File.Create(fileName))
+            {
+                memory.Seek(0, SeekOrigin.Begin);
+                memory.CopyTo(fileStream);
             }
 
             return result;

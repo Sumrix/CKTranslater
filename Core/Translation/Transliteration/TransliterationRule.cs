@@ -1,29 +1,36 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
-using Core.Graphemes;
+using Core.Translation.Graphemes;
 
-namespace Core.Transliteration
+namespace Core.Translation.Transliteration
 {
     /// <summary>
-    ///     Правило траслитерации
+    ///     Правило транслитерации
     /// </summary>
     public class TransliterationRule
     {
-        public string Source;
-        public string[] Target;
+        public readonly string Source;
+        public string?[] Target;
+
+        public TransliterationRule(string source, string?[] target)
+        {
+            this.Source = source;
+            this.Target = target;
+        }
 
         public static List<TransliterationRule> Create(GraphemeStatistic statistic)
         {
             var rules = new List<TransliterationRule>();
             foreach (var srcLetter in statistic.Values)
             {
-                TranslationOccurrences[] occurrences = null;
+                TranslationOccurrences?[]? occurrences = null;
                 foreach (var trgLetter in srcLetter.Value)
                 {
                     occurrences ??= new TranslationOccurrences[trgLetter.Value.Length];
                     for (int flags = 0; flags < trgLetter.Value.Length; flags++)
                     {
-                        TranslationOccurrences o = occurrences[flags];
+                        TranslationOccurrences? o = occurrences[flags];
                         if (o == null)
                         {
                             o = new TranslationOccurrences();
@@ -39,13 +46,11 @@ namespace Core.Transliteration
                     }
                 }
 
-                rules.Add(new TransliterationRule
-                {
-                    Source = srcLetter.Key,
-                    Target = occurrences
-                        .Select(o => o?.Translation)
-                        .ToArray()
-                });
+                string source = srcLetter.Key;
+                string?[] target = (occurrences ?? Array.Empty<TranslationOccurrences?>())
+                    .Select(o => o?.Translation)
+                    .ToArray();
+                rules.Add(new TransliterationRule(source, target));
             }
 
             return rules;
@@ -64,7 +69,7 @@ namespace Core.Transliteration
         private class TranslationOccurrences
         {
             public int Occurrences;
-            public string Translation;
+            public string? Translation;
         }
     }
 }

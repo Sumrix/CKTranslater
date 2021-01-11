@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Linq;
 using System.Text;
 using Antlr4.Runtime;
@@ -74,7 +75,7 @@ namespace Core.Parsing
             };
         }
 
-        public ModInfo ParseMod(string fileName)
+        public ModInfo? ParseMod(string fileName)
         {
             using StreamReader reader = new(fileName, this.win1252);
 
@@ -90,10 +91,11 @@ namespace Core.Parsing
             ParseTreeWalker walker = new();
             walker.Walk(listener, parser.script());
 
-            string name = listener.Strings.Find(s => s.Key.Path.LastStep == "name")?.Value;
-            string path = listener.Strings.Find(s => s.Key.Path.LastStep == "path")?.Value;
-            string archive = listener.Strings.Find(s => s.Key.Path.LastStep == "archive")?.Value;
-            string[] dependences = listener.Arrays.Find(a => a.Key.Path.LastStep == "dependencies")?.Value;
+            string? name = listener.Strings.Find(s => s.Key.Path.LastStep == "name")?.Value;
+            string? path = listener.Strings.Find(s => s.Key.Path.LastStep == "path")?.Value;
+            string? archive = listener.Strings.Find(s => s.Key.Path.LastStep == "archive")?.Value;
+            string[] dependencies = listener.Arrays.Find(a => a.Key.Path.LastStep == "dependencies")?.Value
+                                    ?? Array.Empty<string>();
 
             if (name == null || path == null && archive == null)
             {
@@ -105,10 +107,10 @@ namespace Core.Parsing
                 Name = name,
                 Path = path ?? archive,
                 IsArchive = archive != null,
-                Dependencies = dependences
+                Dependencies = dependencies
                                    ?.Select(name => new ModInfo { Name = name })
                                    .ToArray()
-                               ?? new ModInfo[0]
+                               ?? Array.Empty<ModInfo>()
             };
         }
     }

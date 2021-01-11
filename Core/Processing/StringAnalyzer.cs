@@ -82,7 +82,8 @@ namespace Core.Processing
                             !x.Value.Any(StringAnalyzer.IsRusLetter) &&
                             !name2.Contains(x.Key.Path.LastTwoSteps) &&
                             !(x.Value.Length > 1 && char.IsUpper(x.Value.First()) &&
-                              x.Value.Skip(1).All(c => char.IsLower(c))));
+                              x.Value.Skip(1).All(c => char.IsLower(c))))
+                .ToList();
 
             // Идентификаторы которым присваиваются строковые значения
             var stringIdentifiers = strs
@@ -227,10 +228,10 @@ namespace Core.Processing
 
         public void Load()
         {
-            this.LoadStrings("RusStrings.txt", this.rusScripts.Strings);
-            this.LoadStrings("RusLocals.txt", this.rusLocals.Strings);
-            this.LoadStrings("EngStrings.txt", this.engScripts.Strings);
-            this.LoadStrings("EngLocals.txt", this.engLocals.Strings);
+            StringAnalyzer.LoadStrings("RusStrings.txt", this.rusScripts.Strings);
+            StringAnalyzer.LoadStrings("RusLocals.txt", this.rusLocals.Strings);
+            StringAnalyzer.LoadStrings("EngStrings.txt", this.engScripts.Strings);
+            StringAnalyzer.LoadStrings("EngLocals.txt", this.engLocals.Strings);
 
             IdManager.IgnoreValues =
                 File.ReadAllLines(@"..\..\..\Data\Strings\Identifiers.txt")
@@ -240,21 +241,21 @@ namespace Core.Processing
                     .ToHashSet();
         }
 
-        public Event LoadEngFiles(FileContext context)
+        public Event? LoadEngFiles(FileContext context)
         {
             return context.ModFolder == "localisation"
                 ? this.engLocals.Load(context)
                 : this.engScripts.Load(context);
         }
 
-        public Event LoadRusFiles(FileContext context)
+        public Event? LoadRusFiles(FileContext context)
         {
             return context.ModFolder == "localisation"
                 ? this.rusLocals.Load(context)
                 : this.rusScripts.Load(context);
         }
 
-        private void LoadStrings(string fileName, Dictionary<ScriptKey, string> strings)
+        private static void LoadStrings(string fileName, IDictionary<ScriptKey, string> strings)
         {
             Regex regex = new(@"^\[(\d+)\](.+?) = (.+)$");
 
@@ -265,7 +266,7 @@ namespace Core.Processing
                 Match match = regex.Match(line);
                 if (!match.Success)
                 {
-                    throw new Exception();
+                    throw new Exception(); // TODO: поставить более конкретное исключение.
                 }
 
                 int repetitionIndex = int.Parse(match.Groups[1].Value);
@@ -284,10 +285,10 @@ namespace Core.Processing
 
         public void Save()
         {
-            this.SaveStrings("RusStrings.txt", this.rusScripts.Strings);
-            this.SaveStrings("RusLocals.txt", this.rusLocals.Strings);
-            this.SaveStrings("EngStrings.txt", this.engScripts.Strings);
-            this.SaveStrings("EngLocals.txt", this.engLocals.Strings);
+            StringAnalyzer.SaveStrings("RusStrings.txt", this.rusScripts.Strings);
+            StringAnalyzer.SaveStrings("RusLocals.txt", this.rusLocals.Strings);
+            StringAnalyzer.SaveStrings("EngStrings.txt", this.engScripts.Strings);
+            StringAnalyzer.SaveStrings("EngLocals.txt", this.engLocals.Strings);
 
             File.WriteAllLines(@"..\..\..\Data\Strings\Identifiers.txt",
                 IdManager.IgnoreValues.OrderBy(x => x)
@@ -297,13 +298,13 @@ namespace Core.Processing
             );
         }
 
-        private void SaveStrings(string fileName, Dictionary<ScriptKey, string> strings)
+        private static void SaveStrings(string fileName, IDictionary<ScriptKey, string> strings)
         {
             StringAnalyzer.SaveToFile(
                 @"..\..\..\Data\Strings\" + fileName,
                 strings
                     .Where(x => !string.IsNullOrEmpty(x.Value))
-                    .Select(x => string.Format("{0} = {1}", x.Key, x.Value))
+                    .Select(x => $"{x.Key} = {x.Value}")
                     .OrderBy(x => x)
             );
         }

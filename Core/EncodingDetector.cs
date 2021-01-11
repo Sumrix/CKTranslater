@@ -1,12 +1,18 @@
-﻿using System.Text;
+﻿using System.Collections.Generic;
+using System.ComponentModel;
+using System.Text;
 
 namespace Core
 {
     /// <summary>
-    ///     Определение кодировки файлов.
-    ///     2 эвристики:
-    ///     1. Русские буквы не могут быть рядом с английскими.
-    ///     2. Русские буквы должны стоять кучками.
+    ///     File encoding detection.
+    ///     <para>
+    ///         2 heuristics are used:
+    ///         <list type="number">
+    ///             <item>Russian letters cannot be next to English ones.</item>
+    ///             <item>Russian letters should be in groups.</item>
+    ///         </list>
+    ///     </para>
     /// </summary>
     public class EncodingDetector
     {
@@ -20,7 +26,7 @@ namespace Core
             EncodingDetector.win1252 = Encoding.GetEncoding("windows-1252");
         }
 
-        public static Encoding Detect(byte[] content)
+        public static Encoding Detect(IEnumerable<byte> content)
         {
             SymbolType lastSymbolType = SymbolType.NotLetter;
 
@@ -63,6 +69,9 @@ namespace Core
                         case SymbolType.NotLetter:
                             rusLetterNum = 1;
                             break;
+                        default:
+                            throw new InvalidEnumArgumentException(nameof(lastSymbolType), (int) lastSymbolType,
+                                typeof(SymbolType));
                     }
 
                     lastSymbolType = SymbolType.RussianLetter;
@@ -73,12 +82,9 @@ namespace Core
                 }
             }
 
-            if (win1252Score * 2 < win1251Score)
-            {
-                return EncodingDetector.win1251;
-            }
-
-            return EncodingDetector.win1252;
+            return win1252Score * 2 < win1251Score
+                ? EncodingDetector.win1251
+                : EncodingDetector.win1252;
         }
 
         private static bool IsEnglishLetter(byte symbol)

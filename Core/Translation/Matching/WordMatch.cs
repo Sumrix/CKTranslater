@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Core.Storages;
 
-namespace Core.Matching
+namespace Core.Translation.Matching
 {
     /// <summary>
     ///     Класс устанавливает соответствие между графемами слов
@@ -10,55 +10,62 @@ namespace Core.Matching
     public class WordMatch
     {
         private const float MinimumSimilarityToMatch = 0.68f;
-        private readonly CalculationCell[,] calcCells;
-        private IReadOnlyCollection<LettersMatch> matches;
-        private float similarity = -1;
+        public readonly IReadOnlyCollection<LettersMatch> LetterMatches;
+        public readonly float Similarity;
 
-        private WordMatch(CalculationCell[,] steps)
+        private WordMatch(IReadOnlyCollection<LettersMatch> letterMatches, float similarity)
         {
-            this.calcCells = steps;
-        }
-
-        public IReadOnlyCollection<LettersMatch> LetterMatches
-        {
-            get
-            {
-                if (this.matches == null)
-                {
-                    this.matches = this.GetMatches();
-                }
-
-                return this.matches;
-            }
-        }
-
-        public float Similarity
-        {
-            get
-            {
-                if (this.similarity == -1)
-                {
-                    this.GetMatches();
-                }
-
-                return this.similarity;
-            }
+            this.LetterMatches = letterMatches;
+            this.Similarity = similarity;
         }
 
         public bool Success => this.Similarity > WordMatch.MinimumSimilarityToMatch;
+
+        private static WordMatch CalcWordMatch(CalculationCell?[,] calcCells)
+        {
+            var matches = new Stack<LettersMatch>();
+
+            int index0 = calcCells.GetLength(0) - 1;
+            int index1 = calcCells.GetLength(1) - 1;
+
+            CalculationCell? lastCell = calcCells[index0, index1];
+            CalculationCell? lastValueCell = calcCells[index0 - 1, index1 - 1];
+            FVector? vector = FVector.Max(
+                lastCell?.Route0.Null,
+                lastCell?.Route1.Null,
+                //lastValueCell?.Route0?.Null,
+                lastValueCell?.Route0.Value,
+                //lastValueCell?.Route1?.Null,
+                lastValueCell?.Route1.Value
+            );
+
+            if (vector == null)
+            {
+                throw new InvalidOperationException("No match could be found.");
+            }
+
+            float similarity = vector.PathAverage;
+
+            for (; vector != null; vector = vector.Previous)
+            {
+                matches.Push(new LettersMatch(vector.Letters0 ?? "", vector.Letters1 ?? "", vector.Average));
+            }
+
+            return new WordMatch(matches, similarity);
+        }
 
         public static WordMatch Create(string word0, string word1, Language language0, Language language1)
         {
             var steps =
                 WordMatch.FillCalculationArray(word0, word1, language0, language1, WordMatch.SimilarityF);
 
-            return new WordMatch(steps);
+            return WordMatch.CalcWordMatch(steps);
         }
 
         /// <summary>
         ///     Произвести вычисления по массивам применяя функцию
         /// </summary>
-        private static CalculationCell[,] FillCalculationArray(string word0,
+        private static CalculationCell?[,] FillCalculationArray(string word0,
             string word1,
             Language language0,
             Language language1,
@@ -68,7 +75,7 @@ namespace Core.Matching
             int[] numbers0 = language0.ToIdentifiers(word0);
             int[] numbers1 = language1.ToIdentifiers(word1);
 
-            var calcs01 = new CalculationCell[numbers0.Length + 1, numbers1.Length + 1];
+            var calcs01 = new CalculationCell?[numbers0.Length + 1, numbers1.Length + 1];
 
             for (int index0 = 0; index0 <= numbers0.Length; index0++)
             for (int index1 = 0; index1 <= numbers1.Length; index1++)
@@ -108,18 +115,18 @@ namespace Core.Matching
                 }
 
                 // Получение предыдущих вычислений
-                CalculationCell last0Cell = index0 > 0 ? calcs01[index0 - 1, index1] : null;
-                CalculationCell last1Cell = index1 > 0 ? calcs01[index0, index1 - 1] : null;
-                CalculationCell last01Cell = index0 > 0 && index1 > 0 ? calcs01[index0 - 1, index1 - 1] : null;
+                CalculationCell? last0Cell = index0 > 0 ? calcs01[index0 - 1, index1] : null;
+                CalculationCell? last1Cell = index1 > 0 ? calcs01[index0, index1 - 1] : null;
+                CalculationCell? last01Cell = index0 > 0 && index1 > 0 ? calcs01[index0 - 1, index1 - 1] : null;
 
                 // Подготовка
-                FVector last01FVector = FVector.Max(
-                    last01Cell?.Route0?.Value,
-                    last01Cell?.Route1?.Value
+                FVector? last01FVector = FVector.Max(
+                    last01Cell?.Route0.Value,
+                    last01Cell?.Route1.Value
                 );
-                FVector last01ValueVector = last01FVector?.New(f01, letter0, letter1);
-                MaxFRoute last1Route = last1Cell?.Route1;
-                MaxFRoute last0Route = last0Cell?.Route0;
+                FVector? last01ValueVector = last01FVector?.New(f01, letter0, letter1);
+                MaxFRoute? last1Route = last1Cell?.Route1;
+                MaxFRoute? last0Route = last0Cell?.Route0;
 
                 // Производим новые вычислений для текущих индексов
                 calcs01[index0, index1] = new CalculationCell
@@ -154,55 +161,12 @@ namespace Core.Matching
             return calcs01;
         }
 
-        //private float GetSimilarity()
-        //{
-        //    int index0 = this.word0.Length - 1;
-        //    int index1 = this.word1.Length - 1;
-
-        //    CalculationCell step = this.calcCells[index0, index1];
-
-        //    return FVector.Max(
-        //        step.Route0.Null,
-        //        step.Route0.Value,
-        //        step.Route1.Null,
-        //        step.Route1.Value
-        //    ).PathAverage;
-        //}
-
-        private IReadOnlyCollection<LettersMatch> GetMatches()
-        {
-            var matches = new Stack<LettersMatch>();
-
-            int index0 = this.calcCells.GetLength(0) - 1;
-            int index1 = this.calcCells.GetLength(1) - 1;
-
-            CalculationCell lastCell = this.calcCells[index0, index1];
-            CalculationCell lastValueCell = this.calcCells[index0 - 1, index1 - 1];
-            FVector vector = FVector.Max(
-                lastCell?.Route0?.Null,
-                lastCell?.Route1?.Null,
-                //lastValueCell?.Route0?.Null,
-                lastValueCell?.Route0?.Value,
-                //lastValueCell?.Route1?.Null,
-                lastValueCell?.Route1?.Value
-            );
-
-            this.similarity = vector.PathAverage;
-
-            for (; vector != null; vector = vector.Previous)
-            {
-                matches.Push(new LettersMatch(vector.Letters0 ?? "", vector.Letters1 ?? "", vector.Average));
-            }
-
-            return matches;
-        }
-
         private static float SimilarityF(int? eng, int? rus)
         {
             return eng == null && rus == null ? 0 :
-                eng == null ? DB.EngToRusSimilarities.EmptyEngToRus(rus.Value) :
-                rus == null ? DB.EngToRusSimilarities.EmptyRusToEng(eng.Value) :
-                DB.EngToRusSimilarities[eng.Value, rus.Value];
+                eng == null ? Db.EngToRusSimilarities.EmptyEngToRus(rus.Value) :
+                rus == null ? Db.EngToRusSimilarities.EmptyRusToEng(eng.Value) :
+                Db.EngToRusSimilarities[eng.Value, rus.Value];
         }
     }
 }

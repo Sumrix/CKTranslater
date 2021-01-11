@@ -8,13 +8,13 @@ namespace Core.Parsing.Listeners
     public class ScriptListener : CKBaseListener
     {
         private static readonly string[] allowedArrays = { "female_names", "male_names", "dependencies" };
-        protected readonly LinkedList<string> pathList = new();
+        public readonly List<ScriptArray> Arrays = new();
+        protected readonly LinkedList<string> PathList = new();
         private readonly Dictionary<Path, int> repetitions = new();
-        public List<ScriptArray> Arrays = new();
-        protected Path curPath = new(new List<string>());
-        public string Folder;
+        public readonly List<ScriptString> Strings = new();
+        protected Path CurPath = new(new List<string>());
+        public string Folder = string.Empty;
         private int repetitionIndex;
-        public List<ScriptString> Strings = new();
 
         protected virtual string CustomType(string text)
         {
@@ -35,12 +35,12 @@ namespace Core.Parsing.Listeners
             //    _ => "cdbek".Contains(text[0]) && text.Length > 1 && text[1] == '_' ? "TITLE" : this.CustomType(text)
             //};
 
-            this.pathList.AddLast(this.CustomType(text));
+            this.PathList.AddLast(this.CustomType(text));
         }
 
         public override void ExitRecord([NotNull] CKParser.RecordContext context)
         {
-            this.curPath = new Path(this.pathList.ToList());
+            this.CurPath = new Path(this.PathList.ToList());
 
             CKParser.RvalueContext rvalue = context.rvalue();
             if (rvalue != null)
@@ -48,7 +48,7 @@ namespace Core.Parsing.Listeners
                 this.ProcessRValue(rvalue);
             }
 
-            this.pathList.RemoveLast();
+            this.PathList.RemoveLast();
         }
 
         protected virtual void ProcessArray(ITerminalNode[] stringArray)
@@ -58,7 +58,7 @@ namespace Core.Parsing.Listeners
                 {
                     Key = new ScriptKey
                     {
-                        Path = this.curPath,
+                        Path = this.CurPath,
                         RepetitionIndex = this.repetitionIndex
                     },
                     Value = stringArray.Select(x => x.GetText().Trim().Trim('"')).ToArray()
@@ -77,7 +77,7 @@ namespace Core.Parsing.Listeners
             }
 
             var stringArray = rvalue.block()?.array()?.STRING();
-            if (stringArray != null && ScriptListener.allowedArrays.Contains(this.pathList.Last.Value))
+            if (stringArray != null && ScriptListener.allowedArrays.Contains(this.PathList.Last?.Value))
             {
                 this.UpdateRepetitionIndex();
                 this.ProcessArray(stringArray);
@@ -93,7 +93,7 @@ namespace Core.Parsing.Listeners
                 {
                     Key = new ScriptKey
                     {
-                        Path = this.curPath,
+                        Path = this.CurPath,
                         RepetitionIndex = this.repetitionIndex
                     },
                     Value = text
@@ -103,7 +103,7 @@ namespace Core.Parsing.Listeners
 
         private void UpdateRepetitionIndex()
         {
-            if (this.repetitions.TryGetValue(this.curPath, out this.repetitionIndex))
+            if (this.repetitions.TryGetValue(this.CurPath, out this.repetitionIndex))
             {
                 this.repetitionIndex++;
             }
@@ -112,7 +112,7 @@ namespace Core.Parsing.Listeners
                 this.repetitionIndex = 0;
             }
 
-            this.repetitions[this.curPath] = this.repetitionIndex;
+            this.repetitions[this.CurPath] = this.repetitionIndex;
         }
     }
 }

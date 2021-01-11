@@ -2,7 +2,7 @@
 
 namespace Core.Parsing
 {
-    public delegate string StringTranslateHandle(ScriptString @string);
+    public delegate string? StringTranslateHandle(ScriptString @string);
 
     public interface IFileParser
     {

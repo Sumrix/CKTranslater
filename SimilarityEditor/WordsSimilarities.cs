@@ -1,24 +1,24 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 using BrightIdeasSoftware;
 using Core;
-using Core.Matching;
 using Core.Storages;
-using Core.Transliteration;
+using Core.Translation;
+using Core.Translation.Matching;
+using Core.Translation.Transliteration;
 
 namespace SimilarityEditor
 {
     public class WordsSimilarities : IVirtualListDataSource
     {
-        private readonly Language language0 = Language.Load(DB.EngLetters);
-        private readonly Language language1 = Language.Load(DB.RusLetters);
-        private readonly string[] toTranslateWords = File.ReadAllLines(FileName.ToTranslateWords);
-        private string filter;
-        private List<WordsSimilarity> filteredWords;
+        private readonly Language language0 = Language.Load(Db.EngLetters);
+        private readonly Language language1 = Language.Load(Db.RusLetters);
+        //private readonly string[] toTranslateWords = File.ReadAllLines(FileName.ToTranslateWords);
+        private string? filter;
+        private List<WordsSimilarity>? filteredWords;
         private List<WordsSimilarity> words;
 
         public WordsSimilarities()
@@ -26,7 +26,7 @@ namespace SimilarityEditor
             this.words = new List<WordsSimilarity>();
         }
 
-        public string Filter
+        public string? Filter
         {
             get => this.filter;
             set
@@ -44,19 +44,19 @@ namespace SimilarityEditor
             throw new NotImplementedException();
         }
 
-        public object GetNthObject(int n)
+        public object? GetNthObject(int n)
         {
-            return this.filteredWords[n];
+            return this.filteredWords?[n];
         }
 
         public int GetObjectCount()
         {
-            return this.filteredWords.Count;
+            return this.filteredWords?.Count ?? 0;
         }
 
         public int GetObjectIndex(object model)
         {
-            return this.filteredWords.IndexOf((WordsSimilarity) model);
+            return this.filteredWords?.IndexOf((WordsSimilarity) model) ?? -1;
         }
 
         public void InsertObjects(int index, ICollection modelObjects)
@@ -102,8 +102,9 @@ namespace SimilarityEditor
             else
             {
                 this.filteredWords = this.words
-                    .Where(ws => ws.Lang1Word.EqualsWildcard(this.filter) ||
-                                 ws.Lang2Word.EqualsWildcard(this.filter))
+                    .Where(ws => ws.Lang2Word != null &&
+                                 (ws.Lang1Word.EqualsWildcard(this.filter) ||
+                                  ws.Lang2Word.EqualsWildcard(this.filter)))
                     .ToList();
             }
         }
@@ -116,8 +117,8 @@ namespace SimilarityEditor
 
         private void RecalcSimilarities()
         {
-            var wordsToLearn = DB.Translations
-                .Union(DB.EngToRusMap.Select(x => new WordInLangs(x.eng.ToString(), x.rus)));
+            var wordsToLearn = Db.Translations
+                .Union(Db.EngToRusMap.Select(x => new WordInLangs(x.eng.ToString(), x.rus)));
 
             this.words = wordsToLearn
                 .Select(w => new WordsSimilarity(

@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 
 namespace Core
 {
@@ -10,7 +11,7 @@ namespace Core
         /// <summary>
         ///     Создан ли бэкап мода
         /// </summary>
-        private bool isBackuped;
+        private bool isBackupped;
         /// <summary>
         ///     Перекодирован ли мод
         /// </summary>
@@ -27,7 +28,7 @@ namespace Core
         /// <summary>
         ///     Зависимости мода
         /// </summary>
-        public ModInfo[] Dependencies { get; set; }
+        public ModInfo[] Dependencies { get; set; } = Array.Empty<ModInfo>();
 
         /// <summary>
         ///     Есть ли в моде скрипты
@@ -42,13 +43,13 @@ namespace Core
         /// <summary>
         ///     Создан ли бэкап мода
         /// </summary>
-        public bool IsBackuped
+        public bool IsBackupped
         {
-            get => this.isBackuped;
+            get => this.isBackupped;
             set
             {
-                this.isBackuped = value;
-                this.NotifyPropertyChanged(nameof(this.IsBackuped));
+                this.isBackupped = value;
+                this.NotifyPropertyChanged(nameof(this.IsBackupped));
             }
         }
 
@@ -99,9 +100,9 @@ namespace Core
         /// <summary>
         ///     Путь к файлам мода
         /// </summary>
-        public string Path { get; set; }
+        public string Path { get; set; } = "";
 
-        public event PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangedEventHandler? PropertyChanged;
 
         private void NotifyPropertyChanged(string propertyName = "")
         {

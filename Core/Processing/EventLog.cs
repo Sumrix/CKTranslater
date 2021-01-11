@@ -24,7 +24,7 @@ namespace Core.Processing
             }
         }
 
-        public ObservableCollection<Event> Events { get; set; }
+        public ObservableCollection<Event> Events { get; }
 
         public int InfoCount
         {
@@ -46,7 +46,7 @@ namespace Core.Processing
             }
         }
 
-        public event PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangedEventHandler? PropertyChanged;
 
         public void Add(Event @event)
         {
@@ -61,6 +61,8 @@ namespace Core.Processing
                 case EventType.Info:
                     this.InfoCount++;
                     break;
+                default:
+                    throw new InvalidEnumArgumentException(nameof(@event.Type), (int) @event.Type, typeof(EventType));
             }
 
             /*Action action = () =>*/

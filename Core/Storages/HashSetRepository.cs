@@ -6,7 +6,7 @@ namespace Core.Storages
 {
     public class HashSetRepository<T> : Repository, ISet<T>, IReadOnlyCollection<T>
     {
-        protected HashSet<T> hashSet = new();
+        private readonly HashSet<T> hashSet = new();
         public int Count => ((ICollection<T>) this.hashSet).Count;
         public bool IsReadOnly => ((ICollection<T>) this.hashSet).IsReadOnly;
 

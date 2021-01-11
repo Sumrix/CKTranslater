@@ -1,13 +1,13 @@
 ﻿using Newtonsoft.Json;
 
-namespace Core.Transliteration
+namespace Core.Translation.Transliteration
 {
     public class WordInLangs
     {
-        public string Lang1Word;
-        public string Lang2Word;
+        public readonly string Lang1Word;
+        public readonly string? Lang2Word;
 
-        public WordInLangs(string source, string target)
+        public WordInLangs(string source, string? target)
         {
             this.Lang1Word = source;
             this.Lang2Word = target;

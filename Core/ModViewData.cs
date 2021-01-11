@@ -11,8 +11,9 @@ namespace Core
         private int progress;
         private int progressMax;
 
-        public ModViewData()
+        public ModViewData(ModInfo modInfo)
         {
+            this.ModInfo = modInfo;
             this.progressMax = 100;
             this.progress = 0;
         }
@@ -27,7 +28,7 @@ namespace Core
             }
         }
 
-        public ModInfo ModInfo { get; set; }
+        public ModInfo ModInfo { get; }
 
         public int Progress
         {
@@ -49,7 +50,7 @@ namespace Core
             }
         }
 
-        public event PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangedEventHandler? PropertyChanged;
 
         private void NotifyPropertyChanged(string propertyName = "")
         {

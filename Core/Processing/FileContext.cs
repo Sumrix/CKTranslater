@@ -2,8 +2,8 @@
 {
     public class FileContext
     {
-        public string FullFileName { get; set; }
-        public string ModFolder { get; set; }
-        public ModInfo ModInfo { get; set; }
+        public string FullFileName { get; init; } = "";
+        public string ModFolder { get; init; } = "";
+        public ModInfo? ModInfo { get; init; }
     }
 }

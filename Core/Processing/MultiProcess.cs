@@ -7,8 +7,8 @@ namespace Core.Processing
     public class MultiProcess : IEnumerable<IProcess>, INotifyPropertyChanged
     {
         private Progress progress;
-        private IProcess runningProcess;
-        private string status;
+        private IProcess? runningProcess;
+        private string status = "";
 
         public MultiProcess()
         {
@@ -17,7 +17,7 @@ namespace Core.Processing
         }
 
         public bool CancelRequired { get; private set; }
-        public string EndStatus { get; set; } = "Общий прогресс окончен";
+        public string EndStatus { get; init; } = "Общий прогресс окончен";
         public List<IProcess> Processes { get; }
 
         public Progress Progress
@@ -30,7 +30,7 @@ namespace Core.Processing
             }
         }
 
-        public string StartStatus { get; set; } = "Общий прогресс...";
+        public string StartStatus { get; init; } = "Общий прогресс...";
 
         public string Status
         {
@@ -42,8 +42,8 @@ namespace Core.Processing
             }
         }
 
-        public EventLog SubEventLog => this.runningProcess?.EventLog;
-        public Progress SubProgress => this.runningProcess?.Progress;
+        public EventLog? SubEventLog => this.runningProcess?.EventLog;
+        public Progress? SubProgress => this.runningProcess?.Progress;
         public string SubStatus => this.runningProcess?.Status ?? this.EndStatus;
 
         public IEnumerator<IProcess> GetEnumerator()
@@ -56,7 +56,7 @@ namespace Core.Processing
             return this.GetEnumerator();
         }
 
-        public event PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangedEventHandler? PropertyChanged;
 
         public void Add(IProcess process)
         {
@@ -77,17 +77,17 @@ namespace Core.Processing
             this.runningProcess?.Cancel();
         }
 
-        private void NotifyPropertyChanged(string propertyName = "")
+        private void NotifyPropertyChanged(string? propertyName = "")
         {
             this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        private void Process_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        private void Process_PropertyChanged(object? sender, PropertyChangedEventArgs e)
         {
             this.NotifyPropertyChanged(e.PropertyName);
         }
 
-        private void Progress_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        private void Progress_PropertyChanged(object? sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName == "Value")
             {

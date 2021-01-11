@@ -15,40 +15,40 @@ namespace Core
     {
         public const string BackupPath = @"..\..\..\Data\Backups\";
         private static readonly string[] allowedExtensions = { ".txt", ".csv" };
-        public static string[] ForbiddenFolders;
-        public static string[] LoadOrder;
+        private static readonly string[] forbiddenFolders;
+        private static readonly string[] loadOrder;
 
         static FileManager()
         {
-            FileManager.LoadOrder = File.ReadAllLines(FileName.LoadOrder)
+            FileManager.loadOrder = File.ReadAllLines(FileName.LoadOrder)
                 .Select(x => x.Trim())
                 .Where(x => !string.IsNullOrEmpty(x) &&
                             !x.StartsWith("#") &&
                             !x.StartsWith("-"))
                 .ToArray();
 
-            FileManager.ForbiddenFolders = File.ReadAllLines(FileName.LoadOrder)
+            FileManager.forbiddenFolders = File.ReadAllLines(FileName.LoadOrder)
                 .Select(x => x.TrimStart())
                 .Where(x => x.StartsWith("-"))
-                .Select(x => x.Substring(1).TrimStart())
+                .Select(x => x[1..].TrimStart())
                 .ToArray();
         }
 
         public static ICollection<FileContext> GetBackupFiles(ModInfo mod)
         {
             string dirName = Path.GetFileName(mod.Path);
-            string bakupDirPath = Path.Combine(FileManager.BackupPath, dirName);
+            string backupDirPath = Path.Combine(FileManager.BackupPath, dirName);
 
-            if (!Directory.Exists(bakupDirPath))
+            if (!Directory.Exists(backupDirPath))
             {
-                return null;
+                return Array.Empty<FileContext>();
             }
 
-            return Directory.GetFiles(bakupDirPath, "*", SearchOption.AllDirectories)
+            return Directory.GetFiles(backupDirPath, "*", SearchOption.AllDirectories)
                 .Select(file => new FileContext
                 {
                     ModInfo = mod,
-                    ModFolder = Path.GetDirectoryName(file.Substring(mod.Path.Length + 1)),
+                    ModFolder = Path.GetDirectoryName(file.Substring(mod.Path.Length + 1)) ?? "",
                     FullFileName = file
                 })
                 .ToArray();
@@ -58,12 +58,13 @@ namespace Core
         {
             return Directory
                 .EnumerateFiles(mod.Path, "*", SearchOption.AllDirectories)
-                .Where(file => FileManager.allowedExtensions.Contains(Path.GetExtension(file)) &&
-                               !FileManager.ForbiddenFolders.Any(folder =>
-                                   string.Compare(file, mod.Path.Length + 1, folder, 0, folder.Length) == 0))
+                .Where(file =>
+                    FileManager.allowedExtensions.Contains(Path.GetExtension(file)) &&
+                    FileManager.forbiddenFolders.All(folder =>
+                        string.Compare(file, mod.Path.Length + 1, folder, 0, folder.Length) != 0))
                 .Select(file => new
                 {
-                    OrderNum = Array.FindIndex(FileManager.LoadOrder,
+                    OrderNum = Array.FindIndex(FileManager.loadOrder,
                         folder => string.Compare(file, mod.Path.Length + 1, folder, 0, folder.Length) == 0),
                     FullFileName = file
                 })
@@ -72,7 +73,7 @@ namespace Core
                 .Select(x => new FileContext
                 {
                     ModInfo = mod,
-                    ModFolder = Path.GetDirectoryName(x.FullFileName.Substring(mod.Path.Length + 1)),
+                    ModFolder = Path.GetDirectoryName(x.FullFileName.Substring(mod.Path.Length + 1)) ?? "",
                     FullFileName = x.FullFileName
                 })
                 .ToArray();
@@ -93,7 +94,7 @@ namespace Core
                         int? modFilesCount = FileManager.GetModFiles(mod)?.Count;
                         int? backupFilesCount = FileManager.GetBackupFiles(mod)?.Count;
                         mod.HasScripts = modFilesCount > 0;
-                        mod.IsBackuped = backupFilesCount >= modFilesCount;
+                        mod.IsBackupped = backupFilesCount >= modFilesCount;
                     }
 
                     return mod;
@@ -103,10 +104,9 @@ namespace Core
             foreach (ModInfo mod in mods.Values)
             {
                 mod.Dependencies =
-                    mod.Dependencies
-                        ?.Select(dependence =>
+                    mod.Dependencies.Select(dependence =>
                         {
-                            mods.TryGetValue(dependence.Name, out ModInfo result);
+                            mods.TryGetValue(dependence.Name, out ModInfo? result);
                             return result;
                         })
                         .OfType<ModInfo>()
