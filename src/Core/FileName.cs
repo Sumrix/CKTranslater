@@ -12,6 +12,7 @@
         public const string GamePath = @"C:\Games\Crusader Kings II";
         public const string IgnoreValues = @"..\..\..\..\..\data\IgnoreValues.txt";
         public const string LoadOrder = @"..\..\..\..\..\data\LoadOrder.txt";
+        public const string LogFolder = @"..\..\..\..\log";
         public const string ModsPath = @"C:\Games\CK2_UserData\mod";
         public const string QueryCache = @"..\..\..\..\..\data\DB\QueryCache.json";
         public const string RusLetters = @"..\..\..\..\..\data\Languages\Rus.json";
