@@ -5,32 +5,32 @@ VisualStudioVersion = 16.0.29102.190
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "data", "data", "{806A63C9-F883-4B0A-83CC-54F8005882FF}"
 	ProjectSection(SolutionItems) = preProject
-		data\EngToRusMap.json = data\EngToRusMap.json
-		data\IgnoreValues.txt = data\IgnoreValues.txt
-		data\LoadOrder.txt = data\LoadOrder.txt
-		data\StringKeys.txt = data\StringKeys.txt
-		data\ToTranslateWords (Test).txt = data\ToTranslateWords (Test).txt
-		data\ToTranslateWords.txt = data\ToTranslateWords.txt
+		..\data\EngToRusMap.json = ..\data\EngToRusMap.json
+		..\data\IgnoreValues.txt = ..\data\IgnoreValues.txt
+		..\data\LoadOrder.txt = ..\data\LoadOrder.txt
+		..\data\StringKeys.txt = ..\data\StringKeys.txt
+		..\data\ToTranslateWords (Test).txt = ..\data\ToTranslateWords (Test).txt
+		..\data\ToTranslateWords.txt = ..\data\ToTranslateWords.txt
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DB", "DB", "{24EAD81E-0055-4862-929F-D21B87533F7C}"
 	ProjectSection(SolutionItems) = preProject
-		data\DB\EngToRusScriptLines.json = data\DB\EngToRusScriptLines.json
-		data\DB\QueryCache.json = data\DB\QueryCache.json
-		data\DB\Translations.json = data\DB\Translations.json
-		data\DB\TransliterationRules.json = data\DB\TransliterationRules.json
-		data\DB\WebTranslationMisses.json = data\DB\WebTranslationMisses.json
+		..\data\DB\EngToRusScriptLines.json = ..\data\DB\EngToRusScriptLines.json
+		..\data\DB\QueryCache.json = ..\data\DB\QueryCache.json
+		..\data\DB\Translations.json = ..\data\DB\Translations.json
+		..\data\DB\TransliterationRules.json = ..\data\DB\TransliterationRules.json
+		..\data\DB\WebTranslationMisses.json = ..\data\DB\WebTranslationMisses.json
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Languages", "Languages", "{4261C616-63D6-4916-93FC-8D496CD56289}"
 	ProjectSection(SolutionItems) = preProject
-		data\Languages\Eng.json = data\Languages\Eng.json
-		data\Languages\Rus.json = data\Languages\Rus.json
+		..\data\Languages\Eng.json = ..\data\Languages\Eng.json
+		..\data\Languages\Rus.json = ..\data\Languages\Rus.json
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "LettersSimilarity", "LettersSimilarity", "{E6C6DF2F-361A-470E-81B9-7A08AB284F55}"
 	ProjectSection(SolutionItems) = preProject
-		data\LettersSimilarity\EngToRus.json = data\LettersSimilarity\EngToRus.json
+		..\data\LettersSimilarity\EngToRus.json = ..\data\LettersSimilarity\EngToRus.json
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Strings", "Strings", "{3EFC0CDE-445D-4732-ADBF-079AFF69FA7E}"
@@ -41,7 +41,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConsoleTest", "ConsoleTest\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CKTranslator", "CKTranslator\CKTranslator.csproj", "{211DC78F-9763-43F8-8CC4-AB69C16770BA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimilarityEditor", "SimilarityEditor\SimilarityEditor.csproj", "{6131135E-1581-4505-8DFB-56FEC5CE850D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimilarityEditor", "SimilarityEditor\SimilarityEditor.csproj", "{6131135E-1581-4505-8DFB-56FEC5CE850D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
