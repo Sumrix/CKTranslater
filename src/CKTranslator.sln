@@ -3,34 +3,34 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29102.190
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Data", "Data", "{806A63C9-F883-4B0A-83CC-54F8005882FF}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "data", "data", "{806A63C9-F883-4B0A-83CC-54F8005882FF}"
 	ProjectSection(SolutionItems) = preProject
-		Data\EngToRusMap.json = Data\EngToRusMap.json
-		Data\IgnoreValues.txt = Data\IgnoreValues.txt
-		Data\LoadOrder.txt = Data\LoadOrder.txt
-		Data\StringKeys.txt = Data\StringKeys.txt
-		Data\ToTranslateWords (Test).txt = Data\ToTranslateWords (Test).txt
-		Data\ToTranslateWords.txt = Data\ToTranslateWords.txt
+		data\EngToRusMap.json = data\EngToRusMap.json
+		data\IgnoreValues.txt = data\IgnoreValues.txt
+		data\LoadOrder.txt = data\LoadOrder.txt
+		data\StringKeys.txt = data\StringKeys.txt
+		data\ToTranslateWords (Test).txt = data\ToTranslateWords (Test).txt
+		data\ToTranslateWords.txt = data\ToTranslateWords.txt
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DB", "DB", "{24EAD81E-0055-4862-929F-D21B87533F7C}"
 	ProjectSection(SolutionItems) = preProject
-		Data\DB\EngToRusScriptLines.json = Data\DB\EngToRusScriptLines.json
-		Data\DB\QueryCache.json = Data\DB\QueryCache.json
-		Data\DB\Translations.json = Data\DB\Translations.json
-		Data\DB\TransliterationRules.json = Data\DB\TransliterationRules.json
-		Data\DB\WebTranslationMisses.json = Data\DB\WebTranslationMisses.json
+		data\DB\EngToRusScriptLines.json = data\DB\EngToRusScriptLines.json
+		data\DB\QueryCache.json = data\DB\QueryCache.json
+		data\DB\Translations.json = data\DB\Translations.json
+		data\DB\TransliterationRules.json = data\DB\TransliterationRules.json
+		data\DB\WebTranslationMisses.json = data\DB\WebTranslationMisses.json
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Languages", "Languages", "{4261C616-63D6-4916-93FC-8D496CD56289}"
 	ProjectSection(SolutionItems) = preProject
-		Data\Languages\Eng.json = Data\Languages\Eng.json
-		Data\Languages\Rus.json = Data\Languages\Rus.json
+		data\Languages\Eng.json = data\Languages\Eng.json
+		data\Languages\Rus.json = data\Languages\Rus.json
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "LettersSimilarity", "LettersSimilarity", "{E6C6DF2F-361A-470E-81B9-7A08AB284F55}"
 	ProjectSection(SolutionItems) = preProject
-		Data\LettersSimilarity\EngToRus.json = Data\LettersSimilarity\EngToRus.json
+		data\LettersSimilarity\EngToRus.json = data\LettersSimilarity\EngToRus.json
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Strings", "Strings", "{3EFC0CDE-445D-4732-ADBF-079AFF69FA7E}"
