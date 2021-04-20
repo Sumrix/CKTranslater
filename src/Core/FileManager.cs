@@ -79,16 +79,16 @@ namespace Core
                 .ToArray();
         }
 
-        public static ICollection<ModInfo> LoadMods()
+        public static ICollection<ModInfo> LoadMods(string modsPath)
         {
             ScriptParser parser = new();
-            string[] fileNames = Directory.GetFiles(FileName.ModsPath, "*.mod");
+            string[] fileNames = Directory.GetFiles(modsPath, "*.mod");
 
             var mods = fileNames
                 .Select(file =>
                 {
                     ModInfo mod = parser.ParseMod(file);
-                    mod.Path = Path.Combine(FileName.ModsPath, mod.Path.Substring(4));
+                    mod.Path = Path.Combine(modsPath, mod.Path.Substring(4));
                     if (!mod.IsArchive)
                     {
                         int? modFilesCount = FileManager.GetModFiles(mod)?.Count;

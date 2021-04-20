@@ -1,0 +1,51 @@
+﻿<Page
+    x:Class="CKTranslator.Views.ModsPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="using:Microsoft.Toolkit.Uwp.UI.Controls"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    Style="{StaticResource PageStyle}"
+    mc:Ignorable="d">
+
+    <StackPanel x:Name="ContentArea" Margin="{StaticResource MediumLeftRightMargin}">
+        <CommandBar>
+            <AppBarButton
+                Click="{x:Bind ViewModel.LoadTranslation_Click}"
+                Icon="RepeatOne"
+                Label="Load Translation" />
+            <AppBarButton
+                Click="{x:Bind ViewModel.Click_Recode}"
+                Icon="Refresh"
+                Label="Recode" />
+            <AppBarButton
+                Click="{x:Bind ViewModel.Backup_Click}"
+                Icon="Download"
+                Label="Backup" />
+        </CommandBar>
+        <controls:DataGrid
+            AutoGenerateColumns="False"
+            GridLinesVisibility="Horizontal"
+            ItemsSource="{x:Bind ViewModel.RusMods, Mode=OneWay}">
+            <controls:DataGrid.Columns>
+                <!--
+                    TODO WTS:
+                    Remove this column definitions and define columns for your data.
+                    Consider adding header properties to Resources.resw
+                -->
+                <controls:DataGridTextColumn x:Uid="ModsPage_ModHeader_Name" Binding="{Binding ModInfo.Name}" />
+                <!--<controls:DataGridTemplateColumn Header="Symbol">
+                    <controls:DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <FontIcon
+                                Margin="{StaticResource SmallLeftRightMargin}"
+                                HorizontalAlignment="Left"
+                                FontFamily="{ThemeResource SymbolThemeFontFamily}"
+                                Glyph="{Binding Symbol}" />
+                        </DataTemplate>
+                    </controls:DataGridTemplateColumn.CellTemplate>
+                </controls:DataGridTemplateColumn>-->
+            </controls:DataGrid.Columns>
+        </controls:DataGrid>
+    </StackPanel>
+</Page>
