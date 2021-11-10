@@ -1,67 +1,106 @@
 grammar CK;
 
-script : record* EOF;
+script
+	: record* EOF;
 
-record : lvalue OPERATOR? rvalue;
+record
+	: lvalue OPERATOR? rvalue
+	;
 
-lvalue : BOOL
-	   | INT
-	   | FLOAT
-	   | DATE
-	   | HEX
-       | STRING
-	   ;
+lvalue
+	: BOOL
+	| INT
+	| FLOAT
+	| DATE
+	| HEX
+	| STRING
+	;
 
-rvalue : BOOL
-	   | INT
-	   | FLOAT
-	   | DATE
-	   | HEX
-       | STRING
-	   | block
-	   ;
+rvalue 
+	: BOOL
+	| INT
+	| FLOAT
+	| DATE
+	| HEX
+	| STRING
+	| block
+	;
 	   
-block : LQUOTE OPERATOR? (array | record*) (RQUOTE|EOF);
+block 
+	: LQUOTE OPERATOR? (array | record*) (RQUOTE|EOF)
+	;
 	   
-array :  (BOOL | STRING)+
-	   | (INT | FLOAT | HEX | STRING)+
-	   | (DATE | STRING)+
-       | STRING+
-       | block+
-       ;
+array 
+	: (BOOL | STRING)+
+	| (INT | FLOAT | HEX | STRING)+
+	| (DATE | STRING)+
+	| STRING+
+	| block+
+	;
 
 
-OPERATOR : '=' | '<' | '>' | '==' | '<=' | '>=' ;
+OPERATOR
+	: '='
+	| '<'
+	| '>'
+	| '=='
+	| '<='
+	| '>='
+	;
 
-fragment
-DIGIT:  '0'..'9' ; 
+fragment DIGIT
+	: '0'..'9'
+	; 
 
-INT :   ('-'|'+')? DIGIT+ ;
+INT
+	: ('-'|'+')? DIGIT+
+	;
 
-LQUOTE : '{';
-RQUOTE : '}';
+LQUOTE
+	: '{'
+	;
+RQUOTE
+	: '}'
+	;
 
-BOOL : 'yes' | 'no';
+BOOL
+	: 'yes'
+	| 'no'
+	;
 
-HEX :   '0' ('x'|'X') HEXDIGIT+ ;
+HEX
+	: '0' ('x'|'X') HEXDIGIT+
+	;
 
-DATE : INT '.' INT '.' INT '.'?;
+DATE
+	: INT '.' INT '.' INT '.'?
+	;
 
-fragment
-HEXDIGIT : (DIGIT|'a'..'f'|'A'..'F') ;
+fragment HEXDIGIT
+	: (DIGIT|'a'..'f'|'A'..'F')
+	;
 
-FLOAT: ('-'|'+')? DIGIT* '.' DIGIT* ;
+FLOAT
+	: ('-'|'+')? DIGIT* '.' DIGIT*
+	;
 
-fragment
-LETTER  : [a-zA-Z\u0080-\u00FF_] ;
+fragment LETTER
+	: [a-zA-Z\u0080-\u00FF_]
+	;
 
-COMMENT : '#' .*? (EOF|'\r'? '\n') -> channel(HIDDEN) ;
+COMMENT
+	: '#' .*? (EOF|'\r'? '\n') -> channel(HIDDEN)
+	;
 
-STRING : ('"' ~[{}]*? ('"'|NL))
-       | (~[ \r\n\t{}=<>#]+)
-       ;
+STRING
+	: ('"' ~[{}]*? ('"'|NL))
+    | (~[ \r\n\t{}=<>#]+)
+    ;
 
-fragment
-NL      :   '\r'? '\n' ;
+fragment NL
+	: '\r'? '\n'
+	;
 
-WS : [ \r\t\n]+ -> channel(HIDDEN) ;
+WS
+	: [ \r\t\n]+ -> channel(HIDDEN)
+	;
