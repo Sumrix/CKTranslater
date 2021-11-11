@@ -2,7 +2,6 @@
     x:Class="CKTranslator.Views.ModsPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:controls="using:Microsoft.Toolkit.Uwp.UI.Controls"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     Style="{StaticResource PageStyle}"
@@ -23,18 +22,25 @@
                 Icon="Download"
                 Label="Backup" />
         </CommandBar>
-        <controls:DataGrid
+        <ListView ItemsSource="{x:Bind ViewModel.RusMods, Mode=OneWay}">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding ModInfo.Name}"/>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+        <!--<controls:DataGrid
             AutoGenerateColumns="False"
             GridLinesVisibility="Horizontal"
             ItemsSource="{x:Bind ViewModel.RusMods, Mode=OneWay}">
             <controls:DataGrid.Columns>
-                <!--
+                --><!--
                     TODO WTS:
                     Remove this column definitions and define columns for your data.
                     Consider adding header properties to Resources.resw
-                -->
+                --><!--
                 <controls:DataGridTextColumn x:Uid="ModsPage_ModHeader_Name" Binding="{Binding ModInfo.Name}" />
-                <!--<controls:DataGridTemplateColumn Header="Symbol">
+                --><!--<controls:DataGridTemplateColumn Header="Symbol">
                     <controls:DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <FontIcon
@@ -44,8 +50,8 @@
                                 Glyph="{Binding Symbol}" />
                         </DataTemplate>
                     </controls:DataGridTemplateColumn.CellTemplate>
-                </controls:DataGridTemplateColumn>-->
+                </controls:DataGridTemplateColumn>--><!--
             </controls:DataGrid.Columns>
-        </controls:DataGrid>
+        </controls:DataGrid>-->
     </StackPanel>
 </Page>
