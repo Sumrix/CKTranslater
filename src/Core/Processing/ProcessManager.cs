@@ -4,22 +4,23 @@ namespace Core.Processing
 {
     public static class ProcessManager
     {
-        public static IProcess Backup(IList<ModViewData> mods)
+        public static IProcess Backup(IList<ModuleViewData> modules)
         {
             return new Process
             {
                 StartStatus = "Резервное копирование файлов...",
                 EndStatus = "Резервные копии успешно созданы",
-                FileNameGetter = FileManager.GetModFiles,
+                FileNameGetter = FileManager.GetModuleFiles,
                 FileProcessors = { Backupping.Backup },
-                Mods = mods,
-                ModProcessedInitializer = (_, e) => e.Mod.ModInfo.IsBackupped = true,
-                Condition = mod => !mod.ModInfo.IsBackupped
+                Modules = modules,
+                ModuleProcessedInitializer = (_, e) => e.Module.ModuleInfo.IsBackupped = true,
+                Condition = mod => !mod.ModuleInfo.IsBackupped
             };
         }
 
-        public static IEnumerable<Process> LoadTranslation(IList<ModViewData> rusMods,
-            IList<ModViewData> engMods,
+        public static IEnumerable<Process> LoadTranslation(
+            IList<ModuleViewData> rusModules,
+            IList<ModuleViewData> engModules,
             Translator translator)
         {
             return new[]
@@ -27,36 +28,36 @@ namespace Core.Processing
                 new Process
                 {
                     StartStatus = "Сканирование английских модов...",
-                    FileNameGetter = FileManager.GetModFiles,
+                    FileNameGetter = FileManager.GetModuleFiles,
                     FileProcessors = { translator.LoadEngFiles },
-                    Mods = engMods
+                    Modules = engModules
                 },
                 new Process
                 {
                     StartStatus = "Сканирование русских модов...",
                     EndStatus = "Сканирование завершено",
-                    FileNameGetter = FileManager.GetModFiles,
+                    FileNameGetter = FileManager.GetModuleFiles,
                     FileProcessors = { translator.LoadRusFiles },
-                    Mods = rusMods
+                    Modules = rusModules
                 }
             };
         }
 
-        public static IProcess Recode(IList<ModViewData> mods)
+        public static IProcess Recode(IList<ModuleViewData> modules)
         {
             return new Process
             {
                 StartStatus = "Перекодирование файлов...",
                 EndStatus = "Перекодирование завершено",
-                FileNameGetter = FileManager.GetModFiles,
+                FileNameGetter = FileManager.GetModuleFiles,
                 FileProcessors = { FileRecoder.Recode },
-                Mods = mods,
-                ModProcessedInitializer = (_, e) => e.Mod.ModInfo.IsRecoded = true,
-                Condition = mod => !mod.ModInfo.IsRecoded
+                Modules = modules,
+                ModuleProcessedInitializer = (_, e) => e.Module.ModuleInfo.IsRecoded = true,
+                Condition = mod => !mod.ModuleInfo.IsRecoded
             };
         }
 
-        public static IProcess Restore(IList<ModViewData> mods)
+        public static IProcess Restore(IList<ModuleViewData> modules)
         {
             return new Process
             {
@@ -64,25 +65,25 @@ namespace Core.Processing
                 EndStatus = "Файлы успешно восстановлены",
                 FileNameGetter = FileManager.GetBackupFiles,
                 FileProcessors = { Backupping.Restore },
-                Mods = mods,
-                ModProcessedInitializer = (_, e) =>
+                Modules = modules,
+                ModuleProcessedInitializer = (_, e) =>
                 {
-                    e.Mod.ModInfo.IsTranslated = false;
-                    e.Mod.ModInfo.IsRecoded = false;
+                    e.Module.ModuleInfo.IsTranslated = false;
+                    e.Module.ModuleInfo.IsRecoded = false;
                 }
             };
         }
 
-        public static IProcess Translate(IList<ModViewData> mods, Translator translator)
+        public static IProcess Translate(IList<ModuleViewData> modules, Translator translator)
         {
             return new Process
             {
                 StartStatus = "Перевод скриптов...",
                 EndStatus = "Перевод завершён",
-                FileNameGetter = FileManager.GetModFiles,
+                FileNameGetter = FileManager.GetModuleFiles,
                 FileProcessors = { translator.TranslateScript },
-                Mods = mods,
-                ModProcessedInitializer = (_, e) => e.Mod.ModInfo.IsTranslated = true
+                Modules = modules,
+                ModuleProcessedInitializer = (_, e) => e.Module.ModuleInfo.IsTranslated = true
             };
         }
     }

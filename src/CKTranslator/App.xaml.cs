@@ -68,8 +68,8 @@ namespace CKTranslator
 
             services.AddTransient<GeneralViewModel>();
             services.AddTransient<MainPage>();
-            services.AddTransient<ModsViewModel>();
-            services.AddTransient<ModsPage>();
+            services.AddTransient<ModulesViewModel>();
+            services.AddTransient<ModulesPage>();
             services.AddTransient<DictionaryViewModel>();
             //services.AddTransient<SettingsViewModel>();
             //services.AddTransient<SettingsPage>();

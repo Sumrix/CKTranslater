@@ -75,7 +75,7 @@ namespace Core.Parsing
             };
         }
 
-        public ModInfo? ParseMod(string fileName)
+        public ModuleInfo? ParseModule(string fileName)
         {
             using StreamReader reader = new(fileName, this.win1252);
 
@@ -102,15 +102,15 @@ namespace Core.Parsing
                 return null;
             }
 
-            return new ModInfo
+            return new ModuleInfo
             {
                 Name = name,
                 Path = path ?? archive,
                 IsArchive = archive != null,
                 Dependencies = dependencies
-                                   ?.Select(name => new ModInfo { Name = name })
+                                   ?.Select(name => new ModuleInfo { Name = name })
                                    .ToArray()
-                               ?? Array.Empty<ModInfo>()
+                               ?? Array.Empty<ModuleInfo>()
             };
         }
     }

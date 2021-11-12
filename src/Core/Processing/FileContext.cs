@@ -4,6 +4,6 @@
     {
         public string FullFileName { get; init; } = "";
         public string ModFolder { get; init; } = "";
-        public ModInfo? ModInfo { get; init; }
+        public ModuleInfo? ModInfo { get; init; }
     }
 }

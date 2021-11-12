@@ -11,7 +11,7 @@
     {
         public string Description { get; init; } = "";
         public string FileName { get; init; } = "";
-        public string ModName { get; set; } = "";
+        public string ModuleName { get; set; } = "";
         public EventType Type { get; init; }
     }
 }

@@ -126,8 +126,8 @@
   <data name="Shell_General.Content" xml:space="preserve">
     <value>General</value>
   </data>
-  <data name="Shell_Mods.Content" xml:space="preserve">
-    <value>Mods</value>
+  <data name="Shell_Modules.Content" xml:space="preserve">
+    <value>Modules</value>
   </data>
   <data name="Settings_Personalization.Text" xml:space="preserve">
     <value>Personalization</value>
@@ -220,7 +220,7 @@
   <data name="General_WindowsLanguageSettings.Text" xml:space="preserve">
     <value>Windows language settings</value>
   </data>
-  <data name="ModsPage_ModHeader_Name.Header" xml:space="preserve">
+  <data name="ModulesPage_ModuleHeader_Name.Header" xml:space="preserve">
     <value>Name</value>
   </data>
   <data name="Shell_Dictionary.Content" xml:space="preserve">

@@ -6,6 +6,7 @@ using CKTranslator.Contracts.Services;
 using CKTranslator.DataAnnotations;
 using CKTranslator.Helpers;
 
+using Microsoft.Toolkit.Mvvm.ComponentModel;
 using Microsoft.UI.Xaml;
 
 using Windows.ApplicationModel;
@@ -16,7 +17,7 @@ using Windows.System;
 
 namespace CKTranslator.ViewModels
 {
-    public class GeneralViewModel : Microsoft.Toolkit.Mvvm.ComponentModel.ObservableValidator
+    public partial class GeneralViewModel : ObservableValidator
     {
         public record LanguageDataModel(string DisplayName, string LanguageTag)
         {
@@ -41,22 +42,14 @@ namespace CKTranslator.ViewModels
         public string GamePath
         {
             get => settings.GamePath;
-            set
-            {
-                settings.GamePath = value;
-                ValidateProperty(value);
-            }
+            set => SetProperty(settings.GamePath, value, settings, (s, v) => s.GamePath = v, true);
         }
 
         [DirectoryPath]
         public string ModsPath
         {
             get => settings.ModsPath;
-            set
-            {
-                settings.ModsPath = value;
-                ValidateProperty(value);
-            }
+            set => SetProperty(settings.ModsPath, value, settings, (s, v) => s.ModsPath = v, true);
         }
 
         public ICollection<LanguageDataModel> LanguageValues { get; } = (
@@ -65,13 +58,8 @@ namespace CKTranslator.ViewModels
                 select new LanguageDataModel(language.DisplayName, language.LanguageTag)
             ).ToList();
 
+        [ObservableProperty]
         private LanguageDataModel language;
-
-        public LanguageDataModel Language
-        {
-            get => language;
-            set => SetProperty(ref language, value, true);
-        }
 
         public IList<ThemeDataModel> ThemeValues { get; } = new ThemeDataModel[]
             {

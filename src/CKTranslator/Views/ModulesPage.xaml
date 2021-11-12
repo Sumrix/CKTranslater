@@ -1,5 +1,5 @@
 ﻿<Page
-    x:Class="CKTranslator.Views.ModsPage"
+    x:Class="CKTranslator.Views.ModulesPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -36,7 +36,7 @@
                 Icon="OpenFile" />
         </CommandBar>
         <ListView
-            ItemsSource="{x:Bind ViewModel.RusMods, Mode=OneWay}"
+            ItemsSource="{x:Bind ViewModel.RusModules, Mode=OneWay}"
             SelectionMode="Multiple">
             <ListView.ItemTemplate>
                 <DataTemplate>
@@ -50,7 +50,7 @@
 
                                 <TextBlock
                                     Grid.Column="0"
-                                    Text="{Binding ModInfo.Name}" />
+                                    Text="{Binding ModuleInfo.Name}" />
 
                                 <StackPanel
                                     Grid.Column="1"
@@ -61,19 +61,19 @@
                                             <Setter Property="Margin" Value="0,-12,0,-12" />
                                         </Style>
                                     </StackPanel.Resources>
-                                    <Grid Visibility="{Binding ModInfo.IsBackupped, Converter={StaticResource BoolToVis}, Mode=OneWay}">
+                                    <Grid Visibility="{Binding ModuleInfo.IsBackupped, Converter={StaticResource BoolToVis}, Mode=OneWay}">
                                         <ToolTipService.ToolTip>
                                             <TextBlock x:Uid="Modules_Backuped" />
                                         </ToolTipService.ToolTip>
                                         <SymbolIcon Symbol="Save"/>
                                     </Grid>
-                                    <Grid Visibility="{Binding ModInfo.IsRecoded, Converter={StaticResource BoolToVis}, Mode=OneWay}">
+                                    <Grid Visibility="{Binding ModuleInfo.IsRecoded, Converter={StaticResource BoolToVis}, Mode=OneWay}">
                                         <ToolTipService.ToolTip>
                                             <TextBlock x:Uid="Modules_Recoded" />
                                         </ToolTipService.ToolTip>
                                         <SymbolIcon Symbol="Account" />
                                     </Grid>
-                                    <Grid Visibility="{Binding ModInfo.IsTranslated, Converter={StaticResource BoolToVis}, Mode=OneWay}">
+                                    <Grid Visibility="{Binding ModuleInfo.IsTranslated, Converter={StaticResource BoolToVis}, Mode=OneWay}">
                                         <ToolTipService.ToolTip>
                                             <TextBlock x:Uid="Modules_Translated" />
                                         </ToolTipService.ToolTip>

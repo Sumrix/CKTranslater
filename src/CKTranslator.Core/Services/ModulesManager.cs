@@ -1,8 +1,6 @@
 ﻿using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
-using System.Windows;
 
 using Core;
 using Core.Processing;
@@ -11,26 +9,26 @@ using Core.Storages;
 namespace CKTranslator
 {
     /// <summary>
-    ///     Класс реализующий функционал по работе с модами
+    ///     Класс реализующий функционал по работе с модулями
     /// </summary>
-    public class ModManager : INotifyPropertyChanged
+    public class ModulesManager : INotifyPropertyChanged
     {
         /// <summary>
-        ///     Временный функционал для анализа строк модов
+        ///     Временный функционал для анализа строк модулей
         /// </summary>
         private readonly StringAnalyzer stringsAnalyzer;
         /// <summary>
-        ///     Выполняемый процесс обработки модов
+        ///     Выполняемый процесс обработки модулей
         /// </summary>
         private MultiProcess? process;
 
-        public ModManager()
+        public ModulesManager()
         {
             this.stringsAnalyzer = new StringAnalyzer();
         }
 
         /// <summary>
-        ///     Выполняемый процесс обработки модов
+        ///     Выполняемый процесс обработки модулей
         /// </summary>
         public MultiProcess? Process
         {
@@ -55,9 +53,9 @@ namespace CKTranslator
         }
 
         /// <summary>
-        ///     Создать бэкапы модов
+        ///     Создать бэкапы модулей
         /// </summary>
-        public void Backup(IList<ModViewData> mods)
+        public void Backup(IList<ModuleViewData> modules)
         {
             this.Process = new MultiProcess
             {
@@ -65,46 +63,46 @@ namespace CKTranslator
                 EndStatus = "Общий прогресс окончен",
                 Processes =
                 {
-                    ProcessManager.Backup(mods)
+                    ProcessManager.Backup(modules)
                 }
             };
             this.Process.Run();
         }
 
         /// <summary>
-        ///     Представить игру в виде мода
+        ///     Представить игру в виде модуля
         /// </summary>
-        private static ModInfo CreateMainMod(string gamePath)
+        private static ModuleInfo CreateMainModule(string gamePath)
         {
-            ModInfo mainMod = new()
+            ModuleInfo mainModule = new()
             {
                 IsArchive = false,
                 Name = "Crusader Kings II",
                 Path = gamePath
             };
-            int? modFilesCount = FileManager.GetModFiles(mainMod).Count;
-            int? backupFilesCount = FileManager.GetBackupFiles(mainMod).Count;
-            mainMod.HasScripts = modFilesCount > 0;
-            mainMod.IsBackupped = backupFilesCount >= modFilesCount;
+            int? modFilesCount = FileManager.GetModuleFiles(mainModule).Count;
+            int? backupFilesCount = FileManager.GetBackupFiles(mainModule).Count;
+            mainModule.HasScripts = modFilesCount > 0;
+            mainModule.IsBackupped = backupFilesCount >= modFilesCount;
 
-            return mainMod;
+            return mainModule;
         }
 
         /// <summary>
-        ///     Загрузить информацию о модах
+        ///     Загрузить информацию о модулях
         /// </summary>
         public static void Load(string modsPath, string gamePath,
-            ICollection<string> rusModSettings, ICollection<string> engModSettings,
-            IList<ModViewData> rusMods, IList<ModViewData> engMods)
+            ICollection<string> rusModulesSettings, ICollection<string> engModulesSettings,
+            IList<ModuleViewData> rusModules, IList<ModuleViewData> engModules)
         {
-            var mods = FileManager.LoadMods(modsPath);
-            mods.Add(ModManager.CreateMainMod(gamePath));
-            InitModlist(rusModSettings, rusMods);
-            InitModlist(engModSettings, engMods);
+            var modules = FileManager.LoadModules(modsPath);
+            modules.Add(ModulesManager.CreateMainModule(gamePath));
+            InitModlist(rusModulesSettings, rusModules);
+            InitModlist(engModulesSettings, engModules);
 
-            void InitModlist(ICollection<string> settingLines, ICollection<ModViewData> modViews)
+            void InitModlist(ICollection<string> settingLines, ICollection<ModuleViewData> modViews)
             {
-                var modSettings = new Dictionary<string, string>();
+                var modulesSettings = new Dictionary<string, string>();
                 foreach (string line in settingLines)
                 {
                     if (line != null)
@@ -112,21 +110,21 @@ namespace CKTranslator
                         int pos = line.IndexOf('"');
                         if (pos != -1)
                         {
-                            modSettings.Add(line.Substring(0, pos), line[(pos + 1)..]);
+                            modulesSettings.Add(line.Substring(0, pos), line[(pos + 1)..]);
                         }
                     }
                 }
 
-                foreach (ModInfo mod in mods)
+                foreach (ModuleInfo module in modules)
                 {
-                    ModViewData modView = new(mod);
-                    if (modSettings.TryGetValue(mod.Name, out string? settingsLine))
+                    ModuleViewData modView = new(module);
+                    if (modulesSettings.TryGetValue(module.Name, out string? settingsLine))
                     {
                         string[] parts = settingsLine.Split('"');
                         modView.IsChecked = ToBool(parts.ElementAtOrDefault(0));
-                        modView.ModInfo.IsTranslated = ToBool(parts.ElementAtOrDefault(1));
-                        modView.ModInfo.IsRecoded = ToBool(parts.ElementAtOrDefault(2));
-                        modView.ModInfo.IsTranslationLoaded = ToBool(parts.ElementAtOrDefault(3));
+                        modView.ModuleInfo.IsTranslated = ToBool(parts.ElementAtOrDefault(1));
+                        modView.ModuleInfo.IsRecoded = ToBool(parts.ElementAtOrDefault(2));
+                        modView.ModuleInfo.IsTranslationLoaded = ToBool(parts.ElementAtOrDefault(3));
                     }
 
                     modViews.Add(modView);
@@ -145,9 +143,9 @@ namespace CKTranslator
         }
 
         /// <summary>
-        ///     Загрузить строки из модов
+        ///     Загрузить строки из модулей
         /// </summary>
-        public void LoadStrings(IList<ModViewData> rusMods, IList<ModViewData> engMods)
+        public void LoadStrings(IList<ModuleViewData> rusModules, IList<ModuleViewData> engModules)
         {
             this.Process = new MultiProcess
             {
@@ -158,17 +156,17 @@ namespace CKTranslator
                     new Process
                     {
                         StartStatus = "Сканирование скриптов игры...",
-                        FileNameGetter = FileManager.GetModFiles,
+                        FileNameGetter = FileManager.GetModuleFiles,
                         FileProcessors = { this.stringsAnalyzer.LoadEngFiles },
-                        Mods = engMods
+                        Modules = engModules
                     },
                     new Process
                     {
                         StartStatus = "Сканирование скриптов русификатора...",
                         EndStatus = "Сканирование завершено",
-                        FileNameGetter = FileManager.GetModFiles,
+                        FileNameGetter = FileManager.GetModuleFiles,
                         FileProcessors = { this.stringsAnalyzer.LoadRusFiles },
-                        Mods = ModManager.SortByDependencies(rusMods)
+                        Modules = ModulesManager.SortByDependencies(rusModules)
                     }
                 }
             };
@@ -178,10 +176,10 @@ namespace CKTranslator
         }
 
         /// <summary>
-        ///     Загрузить переводы из модов.
+        ///     Загрузить переводы из модулей.
         ///     Перед загрузкой будут созданы бэкапы файлов и файлы будут перекодированы.
         /// </summary>
-        public void LoadTranslation(IList<ModViewData> rusMods, IList<ModViewData> engMods)
+        public void LoadTranslation(IList<ModuleViewData> rusModules, IList<ModuleViewData> engModules)
         {
             Translator translator = new();
 
@@ -191,9 +189,9 @@ namespace CKTranslator
                 EndStatus = "Общий прогресс окончен",
                 Processes =
                 {
-                    ProcessManager.Backup(engMods),
-                    ProcessManager.Recode(engMods),
-                    ProcessManager.LoadTranslation(rusMods, engMods, translator)
+                    ProcessManager.Backup(engModules),
+                    ProcessManager.Recode(engModules),
+                    ProcessManager.LoadTranslation(rusModules, engModules, translator)
                 }
             };
             this.Process.Run();
@@ -202,11 +200,11 @@ namespace CKTranslator
 
             Db.Save();
 
-            foreach (ModViewData mod in rusMods)
+            foreach (ModuleViewData module in rusModules)
             {
-                if (!mod.ModInfo.IsArchive && mod.IsChecked)
+                if (!module.ModuleInfo.IsArchive && module.IsChecked)
                 {
-                    mod.ModInfo.IsTranslationLoaded = true;
+                    module.ModuleInfo.IsTranslationLoaded = true;
                 }
             }
         }
@@ -219,7 +217,7 @@ namespace CKTranslator
         /// <summary>
         ///     Перекодировать файлы
         /// </summary>
-        public void Recode(IList<ModViewData> mods)
+        public void Recode(IList<ModuleViewData> modules)
         {
             this.Process = new MultiProcess
             {
@@ -227,17 +225,17 @@ namespace CKTranslator
                 EndStatus = "Общий прогресс окончен",
                 Processes =
                 {
-                    ProcessManager.Backup(mods),
-                    ProcessManager.Recode(mods)
+                    ProcessManager.Backup(modules),
+                    ProcessManager.Recode(modules)
                 }
             };
             this.Process.Run();
         }
 
         /// <summary>
-        ///     Восстановить файлы модов из бэкапа
+        ///     Восстановить файлы модулей из бэкапа
         /// </summary>
-        public void Restore(IList<ModViewData> mods)
+        public void Restore(IList<ModuleViewData> modules)
         {
             this.Process = new MultiProcess
             {
@@ -245,40 +243,40 @@ namespace CKTranslator
                 EndStatus = "Общий прогресс окончен",
                 Processes =
                 {
-                    ProcessManager.Restore(mods)
+                    ProcessManager.Restore(modules)
                 }
             };
             this.Process.Run();
         }
 
         /// <summary>
-        ///     Сохранить информацию о модах
+        ///     Сохранить информацию о модулях
         /// </summary>
-        public static (ICollection<string> rusModSettings, ICollection<string> engModSettings) 
-            SaveSettings(IList<ModViewData> rusMods, IList<ModViewData> engMods)
+        public static (ICollection<string> rusModulesSettings, ICollection<string> engModulesSettings) 
+            SaveSettings(IList<ModuleViewData> rusModules, IList<ModuleViewData> engModules)
         {
-            ICollection<string> rusModSettings = new List<string>();
-            ICollection<string> engModSettings = new List<string>();
-            SaveModlist(rusModSettings, rusMods);
-            SaveModlist(engModSettings, engMods);
+            ICollection<string> rusModulesSettings = new List<string>();
+            ICollection<string> engModulesSettings = new List<string>();
+            SaveModlist(rusModulesSettings, rusModules);
+            SaveModlist(engModulesSettings, engModules);
 
-            static void SaveModlist(ICollection<string> settingLines, IList<ModViewData> modViews)
+            static void SaveModlist(ICollection<string> settingLines, IList<ModuleViewData> modViews)
             {
                 settingLines.Clear();
-                foreach (ModViewData mod in modViews)
+                foreach (ModuleViewData mod in modViews)
                 {
                     string settings = string.Join("\"",
-                        mod.ModInfo.Name,
+                        mod.ModuleInfo.Name,
                         ToIntString(mod.IsChecked),
-                        ToIntString(mod.ModInfo.IsTranslated),
-                        ToIntString(mod.ModInfo.IsRecoded),
-                        ToIntString(mod.ModInfo.IsTranslationLoaded)
+                        ToIntString(mod.ModuleInfo.IsTranslated),
+                        ToIntString(mod.ModuleInfo.IsRecoded),
+                        ToIntString(mod.ModuleInfo.IsTranslationLoaded)
                     );
                     settingLines.Add(settings);
                 }
             }
 
-            return (rusModSettings, engModSettings);
+            return (rusModulesSettings, engModulesSettings);
 
             static string ToIntString(bool value)
             {
@@ -287,21 +285,21 @@ namespace CKTranslator
         }
 
         /// <summary>
-        ///     Отсортировать моды в порядке зависимостей
+        ///     Отсортировать модули в порядке зависимостей
         /// </summary>
-        private static IList<ModViewData> SortByDependencies(IList<ModViewData> mods)
+        private static IList<ModuleViewData> SortByDependencies(IList<ModuleViewData> modules)
         {
-            return mods
-                .Select(modView => modView.ModInfo)
-                .OrderByTopology(modInfo => modInfo.Dependencies, true)
-                .Select(modInfo => mods.First(modView => modView.ModInfo == modInfo))
+            return modules
+                .Select(moduleView => moduleView.ModuleInfo)
+                .OrderByTopology(moduleInfo => moduleInfo.Dependencies, true)
+                .Select(moduleInfo => modules.First(modView => modView.ModuleInfo == moduleInfo))
                 .ToArray();
         }
 
         /// <summary>
-        ///     Перевести моды
+        ///     Перевести модули
         /// </summary>
-        public void Translate(IList<ModViewData> mods)
+        public void Translate(IList<ModuleViewData> modules)
         {
             Translator translator = new();
 
@@ -311,9 +309,9 @@ namespace CKTranslator
                 EndStatus = "Общий прогресс окончен",
                 Processes =
                 {
-                    ProcessManager.Backup(mods),
-                    ProcessManager.Recode(mods),
-                    ProcessManager.Translate(mods, translator)
+                    ProcessManager.Backup(modules),
+                    ProcessManager.Recode(modules),
+                    ProcessManager.Translate(modules, translator)
                 }
             };
             this.Process.Run();

@@ -5,15 +5,15 @@ namespace Core
     /// <summary>
     ///     Представление мода в интерфейсе
     /// </summary>
-    public class ModViewData : INotifyPropertyChanged
+    public class ModuleViewData : INotifyPropertyChanged
     {
         private bool isChecked;
         private int progress;
         private int progressMax;
 
-        public ModViewData(ModInfo modInfo)
+        public ModuleViewData(ModuleInfo moduleInfo)
         {
-            this.ModInfo = modInfo;
+            this.ModuleInfo = moduleInfo;
             this.progressMax = 100;
             this.progress = 0;
         }
@@ -28,7 +28,7 @@ namespace Core
             }
         }
 
-        public ModInfo ModInfo { get; }
+        public ModuleInfo ModuleInfo { get; }
 
         public int Progress
         {

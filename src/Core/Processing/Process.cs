@@ -7,13 +7,13 @@ namespace Core.Processing
 {
     public class Process : IProcess, INotifyPropertyChanged
     {
-        public delegate ICollection<FileContext> GetFileNames(ModInfo mod);
+        public delegate ICollection<FileContext> GetFileNames(ModuleInfo module);
 
         public delegate Event? ProcessFile(FileContext fileName);
 
-        private IDictionary<int, ICollection<FileContext>> modFiles =
+        private IDictionary<int, ICollection<FileContext>> moduleFiles =
             ImmutableDictionary<int, ICollection<FileContext>>.Empty;
-        public IList<ModViewData> Mods = ImmutableList<ModViewData>.Empty;
+        public IList<ModuleViewData> Modules = ImmutableList<ModuleViewData>.Empty;
         private Progress progress;
         private string? status;
 
@@ -48,17 +48,17 @@ namespace Core.Processing
             }
         }
 
-        public EventHandler<ModEventArgs> ModProcessedInitializer
+        public EventHandler<ModEventArgs> ModuleProcessedInitializer
         {
-            set => this.ModProcessed += value;
+            set => this.ModuleProcessed += value;
         }
 
         public EventLog EventLog { get; }
         public string? StartStatus { get; set; }
         public string? EndStatus { get; set; }
-        public Func<ModViewData, bool>? Condition { private get; set; }
+        public Func<ModuleViewData, bool>? Condition { private get; set; }
         public event PropertyChangedEventHandler? PropertyChanged;
-        public event EventHandler<ModEventArgs>? ModProcessed;
+        public event EventHandler<ModEventArgs>? ModuleProcessed;
 
         public void Prepare()
         {
@@ -67,25 +67,25 @@ namespace Core.Processing
                 this.Status = this.StartStatus;
             }
 
-            this.modFiles = new Dictionary<int, ICollection<FileContext>>();
+            this.moduleFiles = new Dictionary<int, ICollection<FileContext>>();
             int totalFilesAmount = 0;
 
-            for (int i = 0; i < this.Mods.Count; i++)
+            for (int i = 0; i < this.Modules.Count; i++)
             {
-                ModViewData mod = this.Mods[i];
+                ModuleViewData module = this.Modules[i];
 
-                if (mod.ModInfo.IsArchive ||
-                    !mod.IsChecked ||
-                    this.Condition != null && !this.Condition(mod))
+                if (module.ModuleInfo.IsArchive ||
+                    !module.IsChecked ||
+                    this.Condition != null && !this.Condition(module))
                 {
                     continue;
                 }
 
-                var fileNames = this.FileNameGetter?.Invoke(mod.ModInfo);
+                var fileNames = this.FileNameGetter?.Invoke(module.ModuleInfo);
 
                 if (fileNames != null && fileNames.Count > 0)
                 {
-                    this.modFiles[i] = fileNames;
+                    this.moduleFiles[i] = fileNames;
                     totalFilesAmount += fileNames.Count;
                 }
             }
@@ -95,18 +95,18 @@ namespace Core.Processing
 
         public void Run()
         {
-            foreach (int i in this.modFiles.Keys)
+            foreach (int i in this.moduleFiles.Keys)
             {
-                ModViewData mod = this.Mods[i];
-                var files = this.modFiles[i];
-                mod.Progress = 0;
-                mod.ProgressMax = files.Count;
+                ModuleViewData module = this.Modules[i];
+                var files = this.moduleFiles[i];
+                module.Progress = 0;
+                module.ProgressMax = files.Count;
             }
 
-            foreach (int i in this.modFiles.Keys)
+            foreach (int i in this.moduleFiles.Keys)
             {
-                ModViewData mod = this.Mods[i];
-                var files = this.modFiles[i];
+                ModuleViewData module = this.Modules[i];
+                var files = this.moduleFiles[i];
 
                 foreach (FileContext file in files)
                 {
@@ -121,16 +121,16 @@ namespace Core.Processing
                         Event? @event = processFile(file);
                         if (@event != null)
                         {
-                            @event.ModName = mod.ModInfo.Name;
+                            @event.ModuleName = module.ModuleInfo.Name;
                             this.EventLog.Add(@event);
                         }
                     }
 
                     this.Progress.Value += 1;
-                    mod.Progress += 1;
+                    module.Progress += 1;
                 }
 
-                this.OnModProcessed(mod);
+                this.OnModuleProcessed(module);
             }
 
             if (!string.IsNullOrEmpty(this.EndStatus))
@@ -149,9 +149,9 @@ namespace Core.Processing
             this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        private void OnModProcessed(ModViewData mod)
+        private void OnModuleProcessed(ModuleViewData module)
         {
-            this.ModProcessed?.Invoke(this, new ModEventArgs(mod));
+            this.ModuleProcessed?.Invoke(this, new ModEventArgs(module));
         }
     }
 }

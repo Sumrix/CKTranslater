@@ -18,7 +18,7 @@ namespace CKTranslator.Services
         public PageService()
         {
             Configure<GeneralViewModel, MainPage>();
-            Configure<ModsViewModel, ModsPage>();
+            Configure<ModulesViewModel, ModulesPage>();
             Configure<DictionaryViewModel, DictionaryPage>();
             //Configure<SettingsViewModel, SettingsPage>();
         }

@@ -6,18 +6,18 @@ namespace Core
     /// <summary>
     ///     Информация о моде
     /// </summary>
-    public class ModInfo : INotifyPropertyChanged
+    public class ModuleInfo : INotifyPropertyChanged
     {
         /// <summary>
-        ///     Создан ли бэкап мода
+        ///     Создан ли бэкап модуля
         /// </summary>
         private bool isBackupped;
         /// <summary>
-        ///     Перекодирован ли мод
+        ///     Перекодирован ли модуль
         /// </summary>
         private bool isRecoded;
         /// <summary>
-        ///     Переведён ли мод
+        ///     Переведён ли модуль
         /// </summary>
         private bool isTranslated;
         /// <summary>
@@ -26,9 +26,9 @@ namespace Core
         private bool isTranslationLoaded;
 
         /// <summary>
-        ///     Зависимости мода
+        ///     Зависимости модуля
         /// </summary>
-        public ModInfo[] Dependencies { get; set; } = Array.Empty<ModInfo>();
+        public ModuleInfo[] Dependencies { get; set; } = Array.Empty<ModuleInfo>();
 
         /// <summary>
         ///     Есть ли в моде скрипты
@@ -36,12 +36,12 @@ namespace Core
         public bool HasScripts { get; set; }
 
         /// <summary>
-        ///     Является ли мод архивом
+        ///     Является ли модуль архивом
         /// </summary>
         public bool IsArchive { get; set; }
 
         /// <summary>
-        ///     Создан ли бэкап мода
+        ///     Создан ли бэкап модуля
         /// </summary>
         public bool IsBackupped
         {

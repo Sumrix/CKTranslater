@@ -34,9 +34,9 @@ namespace Core
                 .ToArray();
         }
 
-        public static ICollection<FileContext> GetBackupFiles(ModInfo mod)
+        public static ICollection<FileContext> GetBackupFiles(ModuleInfo module)
         {
-            string dirName = Path.GetFileName(mod.Path);
+            string dirName = Path.GetFileName(module.Path);
             string backupDirPath = Path.Combine(FileManager.BackupPath, dirName);
 
             if (!Directory.Exists(backupDirPath))
@@ -47,14 +47,14 @@ namespace Core
             return Directory.GetFiles(backupDirPath, "*", SearchOption.AllDirectories)
                 .Select(file => new FileContext
                 {
-                    ModInfo = mod,
-                    ModFolder = Path.GetDirectoryName(file.Substring(mod.Path.Length + 1)) ?? "",
+                    ModInfo = module,
+                    ModFolder = Path.GetDirectoryName(file.Substring(module.Path.Length + 1)) ?? "",
                     FullFileName = file
                 })
                 .ToArray();
         }
 
-        public static ICollection<FileContext> GetModFiles(ModInfo mod)
+        public static ICollection<FileContext> GetModuleFiles(ModuleInfo mod)
         {
             return Directory
                 .EnumerateFiles(mod.Path, "*", SearchOption.AllDirectories)
@@ -79,41 +79,41 @@ namespace Core
                 .ToArray();
         }
 
-        public static ICollection<ModInfo> LoadMods(string modsPath)
+        public static ICollection<ModuleInfo> LoadModules(string modulesPath)
         {
             ScriptParser parser = new();
-            string[] fileNames = Directory.GetFiles(modsPath, "*.mod");
+            string[] fileNames = Directory.GetFiles(modulesPath, "*.mod");
 
-            var mods = fileNames
+            var modules = fileNames
                 .Select(file =>
                 {
-                    ModInfo mod = parser.ParseMod(file);
-                    mod.Path = Path.Combine(modsPath, mod.Path.Substring(4));
-                    if (!mod.IsArchive)
+                    ModuleInfo module = parser.ParseModule(file);
+                    module.Path = Path.Combine(modulesPath, module.Path.Substring(4));
+                    if (!module.IsArchive)
                     {
-                        int? modFilesCount = FileManager.GetModFiles(mod)?.Count;
-                        int? backupFilesCount = FileManager.GetBackupFiles(mod)?.Count;
-                        mod.HasScripts = modFilesCount > 0;
-                        mod.IsBackupped = backupFilesCount >= modFilesCount;
+                        int? moduleFilesCount = FileManager.GetModuleFiles(module)?.Count;
+                        int? backupFilesCount = FileManager.GetBackupFiles(module)?.Count;
+                        module.HasScripts = moduleFilesCount > 0;
+                        module.IsBackupped = backupFilesCount >= moduleFilesCount;
                     }
 
-                    return mod;
+                    return module;
                 })
-                .ToDictionary(mod => mod.Name);
+                .ToDictionary(module => module.Name);
 
-            foreach (ModInfo mod in mods.Values)
+            foreach (ModuleInfo module in modules.Values)
             {
-                mod.Dependencies =
-                    mod.Dependencies.Select(dependence =>
+                module.Dependencies =
+                    module.Dependencies.Select(dependence =>
                         {
-                            mods.TryGetValue(dependence.Name, out ModInfo? result);
+                            modules.TryGetValue(dependence.Name, out ModuleInfo? result);
                             return result;
                         })
-                        .OfType<ModInfo>()
+                        .OfType<ModuleInfo>()
                         .ToArray();
             }
 
-            return mods.Values
+            return modules.Values
                 .OrderBy(x => x.Name)
                 .ToList();
         }

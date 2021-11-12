@@ -1,63 +1,29 @@
 ﻿using System;
 using System.Collections.ObjectModel;
-using System.Collections.Specialized;
 using System.ComponentModel;
-using System.Diagnostics;
-
-using CKTranslator.Contracts.ViewModels;
-using CKTranslator.Core.Contracts.Services;
-using CKTranslator.Core.Models;
-
-using Core.Processing;
 
 using Core;
 
 using Microsoft.Toolkit.Mvvm.ComponentModel;
-using Microsoft.UI.Xaml.Data;
 using CKTranslator.Contracts.Services;
 using System.Threading.Tasks;
 
 namespace CKTranslator.ViewModels
 {
-    public class ModsViewModel : ObservableRecipient//, INavigationAware
+    public class ModulesViewModel : ObservableObject
     {
-        //private readonly ISampleDataService _sampleDataService;
 
-        //public ObservableCollection<SampleOrder> Source { get; } = new ObservableCollection<SampleOrder>();
-
-        //public ModsViewModel(ISampleDataService sampleDataService)
-        //{
-        //    _sampleDataService = sampleDataService;
-        //}
-
-        //public async void OnNavigatedTo(object parameter)
-        //{
-        //    Source.Clear();
-
-        //    // Replace this with your actual data
-        //    var data = await _sampleDataService.GetGridDataAsync();
-
-        //    foreach (var item in data)
-        //    {
-        //        Source.Add(item);
-        //    }
-        //}
-
-        //public void OnNavigatedFrom()
-        //{
-        //}
-
-        public ModsViewModel(ISettingsService settingsService)
+        public ModulesViewModel(ISettingsService settingsService)
         {
             this.settingsService = settingsService;
 
-            this.ModManager = new ModManager();
+            this.ModManager = new ModulesManager();
 
             //Settings.Default.RusMods ??= new StringCollection();
             //Settings.Default.EngMods ??= new StringCollection();
 
-            this.RusMods = new ObservableCollection<ModViewData>();
-            this.EngMods = new ObservableCollection<ModViewData>();
+            this.RusModules = new ObservableCollection<ModuleViewData>();
+            this.EngModules = new ObservableCollection<ModuleViewData>();
 
             //DependencyPropertyDescriptor dpd =
             //    DependencyPropertyDescriptor.FromProperty(ItemsControl.ItemsSourceProperty, typeof(ListView));
@@ -76,9 +42,9 @@ namespace CKTranslator.ViewModels
             //this.EngModsView.Items.SortDescriptions.Add(
             //    new SortDescription("ModInfo.Name", ListSortDirection.Ascending));
 
-            ModManager.Load(settingsService.ModsPath, settingsService.GamePath,
-                settingsService.ReadRusModSettings(), settingsService.ReadEngModSettings(),
-                this.RusMods, this.EngMods);
+            ModulesManager.Load(settingsService.ModsPath, settingsService.GamePath,
+                settingsService.ReadRusModulesSettings(), settingsService.ReadEngModulesSettings(),
+                this.RusModules, this.EngModules);
 
             //this.FilteredRusMods = CollectionViewSource.GetDefaultView(this.RusMods);
             //this.FilteredRusMods.Filter = this.FilterRusMods;
@@ -93,7 +59,7 @@ namespace CKTranslator.ViewModels
         /// <summary>
         ///     Английские моды в порядке загрузки
         /// </summary>
-        public ObservableCollection<ModViewData> EngMods { get; }
+        public ObservableCollection<ModuleViewData> EngModules { get; }
 
         ///// <summary>
         /////     Английские моды отсортированные для вывода на интерфейс
@@ -115,12 +81,12 @@ namespace CKTranslator.ViewModels
         /// <summary>
         ///     Функционал по работе с модами
         /// </summary>
-        public ModManager ModManager { get; }
+        public ModulesManager ModManager { get; }
 
         /// <summary>
         ///     Русские моды в порядке загрузки
         /// </summary>
-        public ObservableCollection<ModViewData> RusMods { get; }
+        public ObservableCollection<ModuleViewData> RusModules { get; }
 
         public void AnalizeStrings_Click()
         {
@@ -129,7 +95,7 @@ namespace CKTranslator.ViewModels
 
         public void Backup()
         {
-            this.StartProcess(() => this.ModManager.Backup(this.EngMods));
+            this.StartProcess(() => this.ModManager.Backup(this.EngModules));
         }
 
         //private void CheckEngMods_Click()
@@ -150,7 +116,7 @@ namespace CKTranslator.ViewModels
 
         public void Recode()
         {
-            this.StartProcess(() => this.ModManager.Recode(this.EngMods));
+            this.StartProcess(() => this.ModManager.Recode(this.EngModules));
         }
 
         //private void EngModOpen_Click()
@@ -221,12 +187,12 @@ namespace CKTranslator.ViewModels
 
         public void LoadStrings_Click()
         {
-            this.StartProcess(() => this.ModManager.LoadStrings(this.RusMods, this.EngMods));
+            this.StartProcess(() => this.ModManager.LoadStrings(this.RusModules, this.EngModules));
         }
 
         public void LoadTranslation_Click()
         {
-            this.StartProcess(() => this.ModManager.LoadTranslation(this.RusMods, this.EngMods));
+            this.StartProcess(() => this.ModManager.LoadTranslation(this.RusModules, this.EngModules));
         }
 
         //private void LogFilter_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -239,12 +205,12 @@ namespace CKTranslator.ViewModels
         /// </summary>
         public void ResetProgress()
         {
-            foreach (ModViewData mod in this.RusMods)
+            foreach (ModuleViewData mod in this.RusModules)
             {
                 mod.Progress = 0;
             }
 
-            foreach (ModViewData mod in this.EngMods)
+            foreach (ModuleViewData mod in this.EngModules)
             {
                 mod.Progress = 0;
             }
@@ -252,7 +218,7 @@ namespace CKTranslator.ViewModels
 
         public void Restore()
         {
-            this.StartProcess(() => this.ModManager.Restore(this.EngMods));
+            this.StartProcess(() => this.ModManager.Restore(this.EngModules));
         }
 
         //private void RusShowAll_Selected()
@@ -285,7 +251,7 @@ namespace CKTranslator.ViewModels
 
         public void Translate()
         {
-            this.StartProcess(() => this.ModManager.Translate(this.EngMods));
+            this.StartProcess(() => this.ModManager.Translate(this.EngModules));
         }
 
         private void Window_Closing(object sender, CancelEventArgs e)
@@ -312,10 +278,10 @@ namespace CKTranslator.ViewModels
             //Settings.Default.CheckEngMods = this.CheckEngMods.IsSelected;
 
             var (rusModSettings, engModSettings) = 
-                ModManager.SaveSettings(this.RusMods, this.EngMods);
+                ModulesManager.SaveSettings(this.RusModules, this.EngModules);
 
-            settingsService.SaveRusModSettings(rusModSettings);
-            settingsService.SaveEngModSettings(engModSettings);
+            settingsService.SaveRusModulesSettings(rusModSettings);
+            settingsService.SaveEngModulesSettings(engModSettings);
 
             //Settings.Default.ErrorToggle = this.ErrorToggle.IsSelected;
             //Settings.Default.WarningToggle = this.WarningToggle.IsSelected;

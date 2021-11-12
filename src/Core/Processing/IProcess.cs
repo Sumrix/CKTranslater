@@ -5,25 +5,25 @@ namespace Core.Processing
 {
     public class ModEventArgs : EventArgs
     {
-        public readonly ModViewData Mod;
+        public readonly ModuleViewData Module;
 
-        public ModEventArgs(ModViewData mod)
+        public ModEventArgs(ModuleViewData mod)
         {
-            this.Mod = mod;
+            this.Module = mod;
         }
     }
 
     public interface IProcess
     {
-        Func<ModViewData, bool> Condition { set; }
+        Func<ModuleViewData, bool> Condition { set; }
         string EndStatus { set; }
         EventLog EventLog { get; }
-        EventHandler<ModEventArgs> ModProcessedInitializer { set; }
+        EventHandler<ModEventArgs> ModuleProcessedInitializer { set; }
         Progress Progress { get; }
         string StartStatus { set; }
         string? Status { get; }
         void Cancel();
-        event EventHandler<ModEventArgs> ModProcessed;
+        event EventHandler<ModEventArgs> ModuleProcessed;
         void Prepare();
         event PropertyChangedEventHandler PropertyChanged;
         void Run();

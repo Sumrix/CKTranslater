@@ -45,28 +45,28 @@ namespace CKTranslator.Services
             set => SaveProperty(ref activePage, value);
         }
 
-        public List<string> ReadRusModSettings()
+        public List<string> ReadRusModulesSettings()
         {
-            return localStorage.FileExistsAsync("RusModSettings").Result
-                ? localStorage.ReadFileAsync("RusModSettings", new List<string>()).Result
+            return localStorage.FileExistsAsync("RusModulesSettings").Result
+                ? localStorage.ReadFileAsync("RusModulesSettings", new List<string>()).Result
                 : new List<string>();
         }
 
-        public List<string> ReadEngModSettings()
+        public List<string> ReadEngModulesSettings()
         {
-            return localStorage.FileExistsAsync("EngModSettings").Result
-                ? localStorage.ReadFileAsync("EngModSettings", new List<string>()).Result
+            return localStorage.FileExistsAsync("EngModulesSettings").Result
+                ? localStorage.ReadFileAsync("EngModulesSettings", new List<string>()).Result
                 : new List<string>();
         }
 
-        public void SaveRusModSettings(ICollection<string> rusModSettings)
+        public void SaveRusModulesSettings(ICollection<string> rusModulesSettings)
         {
-            localStorage.SaveFileAsync("RusModSettings", rusModSettings).Wait();
+            localStorage.SaveFileAsync("RusModulesSettings", rusModulesSettings).Wait();
         }
 
-        public void SaveEngModSettings(ICollection<string> engModSettings)
+        public void SaveEngModulesSettings(ICollection<string> engModulesSettings)
         {
-            localStorage.SaveFileAsync("EngModSettings", engModSettings).Wait();
+            localStorage.SaveFileAsync("EngModulesSettings", engModulesSettings).Wait();
         }
 
         public async Task InitializeAsync()

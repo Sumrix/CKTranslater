@@ -21,13 +21,13 @@ namespace CKTranslator.Contracts.Services
 
         string ActivePage { get; set; }
 
-        List<string> ReadRusModSettings();
+        List<string> ReadRusModulesSettings();
 
-        List<string> ReadEngModSettings();
+        List<string> ReadEngModulesSettings();
 
-        void SaveRusModSettings(ICollection<string> rusModSettings);
+        void SaveRusModulesSettings(ICollection<string> rusModulesSettings);
 
-        void SaveEngModSettings(ICollection<string> engModSettings);
+        void SaveEngModulesSettings(ICollection<string> engModulesSettings);
 
         Task InitializeAsync();
     }
