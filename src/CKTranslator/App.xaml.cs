@@ -15,7 +15,6 @@ using Microsoft.UI.Xaml;
 
 using LaunchActivatedEventArgs = Microsoft.UI.Xaml.LaunchActivatedEventArgs;
 
-// To learn more about WinUI3, see: https://docs.microsoft.com/windows/apps/winui/winui3/.
 namespace CKTranslator
 {
     public partial class App : Application
@@ -71,6 +70,7 @@ namespace CKTranslator
             services.AddTransient<MainPage>();
             services.AddTransient<ModsViewModel>();
             services.AddTransient<ModsPage>();
+            services.AddTransient<DictionaryViewModel>();
             //services.AddTransient<SettingsViewModel>();
             //services.AddTransient<SettingsPage>();
             return services.BuildServiceProvider();

@@ -14,13 +14,14 @@
   </PropertyGroup>
   <ItemGroup>
     <None Remove="Strings\ru-RU\Resources.resw" />
+    <None Remove="Views\DictionaryPage.xaml" />
   </ItemGroup>
   <ItemGroup>
     <Manifest Include="$(ApplicationManifest)" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.0" />
-    <PackageReference Include="Microsoft.Toolkit.Mvvm" Version="7.0.0-preview5" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.0" />
+    <PackageReference Include="Microsoft.Toolkit.Mvvm" Version="7.1.1" />
     <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.0.0-preview3" />
     <PackageReference Include="Microsoft.Xaml.Behaviors.WinUI.Managed" Version="2.0.7" />
     <PackageReference Include="PInvoke.User32" Version="0.7.104" />
@@ -33,5 +34,10 @@
   <ItemGroup>
     <ProjectReference Include="..\CKTranslator.Core\CKTranslator.Core.csproj" />
     <ProjectReference Include="..\Core\Core.old.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Views\DictionaryPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
 </Project>

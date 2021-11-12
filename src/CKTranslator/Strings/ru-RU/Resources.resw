@@ -223,4 +223,55 @@
   <data name="ModsPage_ModHeader_Name.Header" xml:space="preserve">
     <value>Наименование</value>
   </data>
+  <data name="Shell_Dictionary.Content" xml:space="preserve">
+    <value>Словарь</value>
+  </data>
+  <data name="Dictionary_Language1Module.Header" xml:space="preserve">
+    <value>Модуль на английском</value>
+  </data>
+  <data name="Dictionary_Language1Module.PlaceholderText" xml:space="preserve">
+    <value>Выберите модуль</value>
+  </data>
+  <data name="Dictionary_Language2Module.Header" xml:space="preserve">
+    <value>Модуль на русском</value>
+  </data>
+  <data name="Dictionary_Language2Module.PlaceholderText" xml:space="preserve">
+    <value>Выберите модуль</value>
+  </data>
+  <data name="Dictionary_Load.Content" xml:space="preserve">
+    <value>Загрузить</value>
+  </data>
+  <data name="Dictionary_LoadingCaption.Text" xml:space="preserve">
+    <value>Загрузка словаря из модулей</value>
+  </data>
+  <data name="Dictionary_LoadingHistory.Text" xml:space="preserve">
+    <value>История загрузки</value>
+  </data>
+  <data name="Modules_Backup.Label" xml:space="preserve">
+    <value>Бэкап</value>
+  </data>
+  <data name="Modules_Backuped.Text" xml:space="preserve">
+    <value>Есть бэкап</value>
+  </data>
+  <data name="Modules_Open.Label" xml:space="preserve">
+    <value>Открыть</value>
+  </data>
+  <data name="Modules_Recode.Label" xml:space="preserve">
+    <value>Перекодировать</value>
+  </data>
+  <data name="Modules_Recoded.Text" xml:space="preserve">
+    <value>Перекодирован</value>
+  </data>
+  <data name="Modules_Restore.Label" xml:space="preserve">
+    <value>Восстановить</value>
+  </data>
+  <data name="Modules_Stop.Label" xml:space="preserve">
+    <value>Стоп</value>
+  </data>
+  <data name="Modules_Translate.Label" xml:space="preserve">
+    <value>Перевести</value>
+  </data>
+  <data name="Modules_Translated.Text" xml:space="preserve">
+    <value>Переведён</value>
+  </data>
 </root>

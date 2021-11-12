@@ -14,7 +14,7 @@
                 <ColumnDefinition Width="*" MaxWidth="650" />
             </Grid.ColumnDefinitions>
 
-            <StackPanel Margin="{StaticResource MediumLeftRightMargin}">
+            <StackPanel Margin="{StaticResource MediumMargin}">
 
                 <TextBlock x:Uid="General_Locations" Style="{ThemeResource SubtitleTextBlockStyle}" />
 

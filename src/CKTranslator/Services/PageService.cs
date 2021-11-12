@@ -13,18 +13,19 @@ namespace CKTranslator.Services
 {
     public class PageService : IPageService
     {
-        private readonly Dictionary<string, Type> _pages = new Dictionary<string, Type>();
+        private readonly Dictionary<string, Type> _pages = new();
 
         public PageService()
         {
             Configure<GeneralViewModel, MainPage>();
             Configure<ModsViewModel, ModsPage>();
+            Configure<DictionaryViewModel, DictionaryPage>();
             //Configure<SettingsViewModel, SettingsPage>();
         }
 
         public Type GetPageType(string key)
         {
-            Type pageType;
+            Type? pageType;
             lock (_pages)
             {
                 if (!_pages.TryGetValue(key, out pageType))
@@ -43,6 +44,11 @@ namespace CKTranslator.Services
             lock (_pages)
             {
                 var key = typeof(VM).FullName;
+                if (key == null)
+                {
+                    throw new ArgumentNullException(nameof(key));
+                }
+
                 if (_pages.ContainsKey(key))
                 {
                     throw new ArgumentException($"The key {key} is already configured in PageService");

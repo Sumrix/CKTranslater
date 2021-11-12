@@ -127,7 +127,7 @@ namespace CKTranslator.ViewModels
             this.StartProcess(() => this.ModManager.AnalizeStrings());
         }
 
-        public void Backup_Click()
+        public void Backup()
         {
             this.StartProcess(() => this.ModManager.Backup(this.EngMods));
         }
@@ -148,7 +148,7 @@ namespace CKTranslator.ViewModels
         //    }
         //}
 
-        public void Click_Recode()
+        public void Recode()
         {
             this.StartProcess(() => this.ModManager.Recode(this.EngMods));
         }
@@ -250,7 +250,7 @@ namespace CKTranslator.ViewModels
             }
         }
 
-        public void RestoreBackup_Click()
+        public void Restore()
         {
             this.StartProcess(() => this.ModManager.Restore(this.EngMods));
         }
@@ -277,13 +277,13 @@ namespace CKTranslator.ViewModels
             });
         }
 
-        public void Stop_Click()
+        public void Stop()
         {
             this.ModManager.Process?.Cancel();
             //this.TaskbarItemInfo.ProgressState = TaskbarItemProgressState.None;
         }
 
-        public void Translate_Click()
+        public void Translate()
         {
             this.StartProcess(() => this.ModManager.Translate(this.EngMods));
         }
@@ -322,6 +322,11 @@ namespace CKTranslator.ViewModels
             //Settings.Default.InfoToggle = this.InfoToggle.IsSelected;
 
             //Settings.Default.Save();
+        }
+
+        public void Open()
+        {
+
         }
     }
 }

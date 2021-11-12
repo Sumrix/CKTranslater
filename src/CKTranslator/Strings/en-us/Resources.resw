@@ -223,4 +223,55 @@
   <data name="ModsPage_ModHeader_Name.Header" xml:space="preserve">
     <value>Name</value>
   </data>
+  <data name="Shell_Dictionary.Content" xml:space="preserve">
+    <value>Dictionary</value>
+  </data>
+  <data name="Dictionary_Language1Module.Header" xml:space="preserve">
+    <value>Module in English</value>
+  </data>
+  <data name="Dictionary_Language1Module.PlaceholderText" xml:space="preserve">
+    <value>Pick a module</value>
+  </data>
+  <data name="Dictionary_Language2Module.Header" xml:space="preserve">
+    <value>Module in Russian</value>
+  </data>
+  <data name="Dictionary_Language2Module.PlaceholderText" xml:space="preserve">
+    <value>Pick a module</value>
+  </data>
+  <data name="Dictionary_Load.Content" xml:space="preserve">
+    <value>Load</value>
+  </data>
+  <data name="Dictionary_LoadingCaption.Text" xml:space="preserve">
+    <value>Loading a dictionary from modules</value>
+  </data>
+  <data name="Dictionary_LoadingHistory.Text" xml:space="preserve">
+    <value>Loading history</value>
+  </data>
+  <data name="Modules_Backup.Label" xml:space="preserve">
+    <value>Backup</value>
+  </data>
+  <data name="Modules_Backuped.Text" xml:space="preserve">
+    <value>Backuped</value>
+  </data>
+  <data name="Modules_Open.Label" xml:space="preserve">
+    <value>Open</value>
+  </data>
+  <data name="Modules_Recode.Label" xml:space="preserve">
+    <value>Recode</value>
+  </data>
+  <data name="Modules_Recoded.Text" xml:space="preserve">
+    <value>Recoded</value>
+  </data>
+  <data name="Modules_Restore.Label" xml:space="preserve">
+    <value>Restore</value>
+  </data>
+  <data name="Modules_Stop.Label" xml:space="preserve">
+    <value>Stop</value>
+  </data>
+  <data name="Modules_Translate.Label" xml:space="preserve">
+    <value>Translate</value>
+  </data>
+  <data name="Modules_Translated.Text" xml:space="preserve">
+    <value>Translated</value>
+  </data>
 </root>

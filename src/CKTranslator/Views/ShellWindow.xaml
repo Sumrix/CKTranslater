@@ -19,7 +19,8 @@
         Background="{ThemeResource SystemControlBackgroundAltHighBrush}">
         <NavigationView.MenuItems>
             <NavigationViewItem x:Uid="Shell_General" Icon="Setting" helpers:NavHelper.NavigateTo="CKTranslator.ViewModels.GeneralViewModel" />
-            <NavigationViewItem x:Uid="Shell_Mods" Icon="Library" helpers:NavHelper.NavigateTo="CKTranslator.ViewModels.ModsViewModel" />
+            <NavigationViewItem x:Uid="Shell_Mods" Icon="AllApps" helpers:NavHelper.NavigateTo="CKTranslator.ViewModels.ModsViewModel" />
+            <NavigationViewItem x:Uid="Shell_Dictionary" Icon="Library" helpers:NavHelper.NavigateTo="CKTranslator.ViewModels.DictionaryViewModel" />
         </NavigationView.MenuItems>
         <Grid>
             <Frame x:Name="shellFrame" />
