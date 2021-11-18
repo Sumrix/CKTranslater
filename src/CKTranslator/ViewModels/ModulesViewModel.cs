@@ -8,7 +8,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace CKTranslator.ViewModels
 {
@@ -50,12 +49,12 @@ namespace CKTranslator.ViewModels
 
         public void Recode()
         {
-            Task.Run(() => ProcessModules(processingService.CreateBackupCommand()));
+            App.MainWindow.DispatcherQueue.TryEnqueue(() => ProcessModules(processingService.CreateBackupCommand()));
         }
 
         public void Restore()
         {
-            Task.Run(() => ProcessModules(processingService.CreateBackupCommand()));
+            App.MainWindow.DispatcherQueue.TryEnqueue(() => ProcessModules(processingService.CreateBackupCommand()));
         }
 
         public void Stop()
@@ -66,7 +65,7 @@ namespace CKTranslator.ViewModels
 
         public void Translate()
         {
-            Task.Run(() => ProcessModules(processingService.CreateBackupCommand()));
+            App.MainWindow.DispatcherQueue.TryEnqueue(() => ProcessModules(processingService.CreateBackupCommand()));
         }
 
         private void ProcessModules(IEnumerable<IModuleProcess> processes)

@@ -27,13 +27,15 @@
                 Grid.Column="0"
                 HorizontalAlignment="Stretch"
                 ItemsSource="{x:Bind ViewModel.Modules}"
-                SelectedItem="{x:Bind ViewModel.Language1Module, Mode=TwoWay}"/>
+                DisplayMemberPath="Name"
+                SelectedItem="{x:Bind ViewModel.Language1Module, Mode=TwoWay}" />
             <ComboBox
                 x:Uid="Dictionary_Language2Module"
                 Grid.Column="1"
                 HorizontalAlignment="Stretch"
                 ItemsSource="{x:Bind ViewModel.Modules}"
-                SelectedItem="{x:Bind ViewModel.Language2Module, Mode=TwoWay}"/>
+                DisplayMemberPath="Name"
+                SelectedItem="{x:Bind ViewModel.Language2Module, Mode=TwoWay}" />
             <Button
                 x:Uid="Dictionary_Load"
                 Grid.Column="2"
@@ -55,10 +57,10 @@
                         </Grid.ColumnDefinitions>
                         <TextBlock
                             Grid.Column="0"
-                            Text="{Binding Language1Module}"/>
+                            Text="{Binding Language1Module}" />
                         <TextBlock
                             Grid.Column="1"
-                            Text="{Binding Language2Module}"/>
+                            Text="{Binding Language2Module}" />
                     </Grid>
                 </DataTemplate>
             </ListView.ItemTemplate>

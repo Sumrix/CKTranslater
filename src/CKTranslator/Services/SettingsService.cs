@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
 using CKTranslator.Contracts.Services;
+using CKTranslator.Model;
 using CKTranslator.ViewModels;
 
 using Microsoft.Toolkit.Mvvm.ComponentModel;
@@ -44,6 +46,13 @@ namespace CKTranslator.Services
             set => SaveProperty(ref modsPath, value);
         }
 
+        public IEnumerable<LoadedDictionary> GetLoadedDictionaries()
+        {
+            return localStorage.FileExistsAsync("LoadedDictionaries").Result
+                ? localStorage.ReadFileAsync("LoadedDictionaries", new List<LoadedDictionary>()).Result
+                : new List<LoadedDictionary>();
+        }
+
         public async Task InitializeAsync()
         {
             localStorage = new LocalObjectStorageHelper(new SystemSerializer());
@@ -59,6 +68,11 @@ namespace CKTranslator.Services
             return localStorage.FileExistsAsync("ModulesSettings").Result
                 ? localStorage.ReadFileAsync("ModulesSettings", new List<string>()).Result
                 : new List<string>();
+        }
+
+        public void SaveLoadedDictionaries(ICollection<LoadedDictionary> loadedDictionaries)
+        {
+            localStorage.SaveFileAsync("ModuleSettings", loadedDictionaries).Wait();
         }
 
         public void SaveModuleSettings(ICollection<string> moduleSettings)
