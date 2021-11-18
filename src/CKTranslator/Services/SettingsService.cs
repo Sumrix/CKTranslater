@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
@@ -15,58 +14,34 @@ namespace CKTranslator.Services
 {
     public sealed class SettingsService : ObservableObject, ISettingsService
     {
-        private LocalObjectStorageHelper localStorage;
-
-        private ElementTheme appBackgroundRequestedTheme;
-        public ElementTheme AppBackgroundRequestedTheme
-        {
-            get => appBackgroundRequestedTheme;
-            set => SaveProperty(ref appBackgroundRequestedTheme, value);
-        }
-
-        private string gamePath = string.Empty;
-        public string GamePath
-        {
-            get => gamePath;
-            set => SaveProperty(ref gamePath, value);
-        }
-
-        private string modsPath = string.Empty;
-        public string ModsPath
-        {
-            get => modsPath;
-            set => SaveProperty(ref modsPath, value);
-        }
-
         private string activePage = string.Empty;
+        private ElementTheme appBackgroundRequestedTheme;
+        private string gamePath = string.Empty;
+        private LocalObjectStorageHelper localStorage;
+        private string modsPath = string.Empty;
+
         public string ActivePage
         {
             get => activePage;
             set => SaveProperty(ref activePage, value);
         }
 
-        public List<string> ReadRusModulesSettings()
+        public ElementTheme AppBackgroundRequestedTheme
         {
-            return localStorage.FileExistsAsync("RusModulesSettings").Result
-                ? localStorage.ReadFileAsync("RusModulesSettings", new List<string>()).Result
-                : new List<string>();
+            get => appBackgroundRequestedTheme;
+            set => SaveProperty(ref appBackgroundRequestedTheme, value);
         }
 
-        public List<string> ReadEngModulesSettings()
+        public string GamePath
         {
-            return localStorage.FileExistsAsync("EngModulesSettings").Result
-                ? localStorage.ReadFileAsync("EngModulesSettings", new List<string>()).Result
-                : new List<string>();
+            get => gamePath;
+            set => SaveProperty(ref gamePath, value);
         }
 
-        public void SaveRusModulesSettings(ICollection<string> rusModulesSettings)
+        public string ModsPath
         {
-            localStorage.SaveFileAsync("RusModulesSettings", rusModulesSettings).Wait();
-        }
-
-        public void SaveEngModulesSettings(ICollection<string> engModulesSettings)
-        {
-            localStorage.SaveFileAsync("EngModulesSettings", engModulesSettings).Wait();
+            get => modsPath;
+            set => SaveProperty(ref modsPath, value);
         }
 
         public async Task InitializeAsync()
@@ -77,6 +52,18 @@ namespace CKTranslator.Services
             gamePath = localStorage.Read<string>(nameof(GamePath));
             modsPath = localStorage.Read<string>(nameof(ModsPath));
             activePage = localStorage.Read<string>(nameof(ActivePage), typeof(GeneralViewModel).FullName);
+        }
+
+        public List<string> ReadModuleSettings()
+        {
+            return localStorage.FileExistsAsync("ModulesSettings").Result
+                ? localStorage.ReadFileAsync("ModulesSettings", new List<string>()).Result
+                : new List<string>();
+        }
+
+        public void SaveModuleSettings(ICollection<string> moduleSettings)
+        {
+            localStorage.SaveFileAsync("ModuleSettings", moduleSettings).Wait();
         }
 
         private bool SaveProperty<T>(ref T field, T newValue, [CallerMemberName] string? propertyName = null)

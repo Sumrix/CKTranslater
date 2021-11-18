@@ -36,11 +36,11 @@
                 Icon="OpenFile" />
         </CommandBar>
         <ListView
-            ItemsSource="{x:Bind ViewModel.RusModules, Mode=OneWay}"
-            SelectionMode="Multiple">
+            ItemsSource="{x:Bind ViewModel.Modules, Mode=OneWay}"
+            SelectionMode="Extended">
             <ListView.ItemTemplate>
                 <DataTemplate>
-                    <ListViewItem IsSelected="{Binding IsChecked, Mode=TwoWay}">
+                    <ListViewItem IsSelected="{Binding IsSelected, Mode=TwoWay}">
                         <StackPanel>
                             <Grid>
                                 <Grid.ColumnDefinitions>
@@ -50,7 +50,7 @@
 
                                 <TextBlock
                                     Grid.Column="0"
-                                    Text="{Binding ModuleInfo.Name}" />
+                                    Text="{Binding Module.Name}" />
 
                                 <StackPanel
                                     Grid.Column="1"
@@ -61,19 +61,19 @@
                                             <Setter Property="Margin" Value="0,-12,0,-12" />
                                         </Style>
                                     </StackPanel.Resources>
-                                    <Grid Visibility="{Binding ModuleInfo.IsBackupped, Converter={StaticResource BoolToVis}, Mode=OneWay}">
+                                    <Grid Visibility="{Binding Module.IsBackuped, Converter={StaticResource BoolToVis}, Mode=OneWay}">
                                         <ToolTipService.ToolTip>
                                             <TextBlock x:Uid="Modules_Backuped" />
                                         </ToolTipService.ToolTip>
-                                        <SymbolIcon Symbol="Save"/>
+                                        <SymbolIcon Symbol="Save" />
                                     </Grid>
-                                    <Grid Visibility="{Binding ModuleInfo.IsRecoded, Converter={StaticResource BoolToVis}, Mode=OneWay}">
+                                    <Grid Visibility="{Binding Module.IsRecoded, Converter={StaticResource BoolToVis}, Mode=OneWay}">
                                         <ToolTipService.ToolTip>
                                             <TextBlock x:Uid="Modules_Recoded" />
                                         </ToolTipService.ToolTip>
                                         <SymbolIcon Symbol="Account" />
                                     </Grid>
-                                    <Grid Visibility="{Binding ModuleInfo.IsTranslated, Converter={StaticResource BoolToVis}, Mode=OneWay}">
+                                    <Grid Visibility="{Binding Module.IsTranslated, Converter={StaticResource BoolToVis}, Mode=OneWay}">
                                         <ToolTipService.ToolTip>
                                             <TextBlock x:Uid="Modules_Translated" />
                                         </ToolTipService.ToolTip>
@@ -81,8 +81,8 @@
                                     </Grid>
                                 </StackPanel>
                             </Grid>
-                            <ProgressBar 
-                                Value="{Binding Progress, Mode=OneWay}" 
+                            <ProgressBar
+                                Value="{Binding Progress, Mode=OneWay}"
                                 Maximum="{Binding ProgressMax, Mode=OneTime}" />
                         </StackPanel>
                     </ListViewItem>

@@ -33,7 +33,6 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CKTranslator.Core\CKTranslator.Core.csproj" />
-    <ProjectReference Include="..\Core\Core.old.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Page Update="Views\DictionaryPage.xaml">

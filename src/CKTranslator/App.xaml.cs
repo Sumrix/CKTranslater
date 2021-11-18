@@ -1,6 +1,4 @@
-﻿using System;
-
-using CKTranslator.Activation;
+﻿using CKTranslator.Activation;
 using CKTranslator.Contracts.Services;
 using CKTranslator.Contracts.Views;
 using CKTranslator.Core.Contracts.Services;
@@ -19,8 +17,6 @@ namespace CKTranslator
 {
     public partial class App : Application
     {
-        public static Window MainWindow { get; set; }
-
         public App()
         {
             InitializeComponent();
@@ -28,11 +24,7 @@ namespace CKTranslator
             Ioc.Default.ConfigureServices(ConfigureServices());
         }
 
-        private void App_UnhandledException(object sender, Microsoft.UI.Xaml.UnhandledExceptionEventArgs e)
-        {
-            // TODO WTS: Please log and handle the exception as appropriate to your scenario
-            // For more info see https://docs.microsoft.com/windows/winui/api/microsoft.ui.xaml.unhandledexceptioneventargs
-        }
+        public static Window MainWindow { get; set; }
 
         protected override async void OnLaunched(LaunchActivatedEventArgs args)
         {
@@ -51,16 +43,20 @@ namespace CKTranslator
             // Other Activation Handlers
 
             // Services
-            services.AddSingleton<ISettingsService, SettingsService>();
+            SettingsService settingsService = new();
+            services.AddSingleton<ISettingsService, SettingsService>(_ => settingsService);
+            services.AddSingleton<IModuleSettingsService, SettingsService>(_ => settingsService);
             services.AddSingleton<IThemeSelectorService, ThemeSelectorService>();
             services.AddSingleton<ILanguageSelectorService, LanguageSelectorService>();
             services.AddTransient<INavigationViewService, NavigationViewService>();
             services.AddSingleton<IActivationService, ActivationService>();
             services.AddSingleton<IPageService, PageService>();
             services.AddSingleton<INavigationService, NavigationService>();
+            services.AddSingleton<ObservableModuleService>();
+            services.AddSingleton<ModuleProcessService>();
+            services.AddSingleton<ModuleService>();
 
             // Core Services
-            services.AddSingleton<ISampleDataService, SampleDataService>();
 
             // Views and ViewModels
             services.AddTransient<IShellWindow, ShellWindow>();
@@ -74,6 +70,12 @@ namespace CKTranslator
             //services.AddTransient<SettingsViewModel>();
             //services.AddTransient<SettingsPage>();
             return services.BuildServiceProvider();
+        }
+
+        private void App_UnhandledException(object sender, Microsoft.UI.Xaml.UnhandledExceptionEventArgs e)
+        {
+            // TODO WTS: Please log and handle the exception as appropriate to your scenario
+            // For more info see https://docs.microsoft.com/windows/winui/api/microsoft.ui.xaml.unhandledexceptioneventargs
         }
     }
 }

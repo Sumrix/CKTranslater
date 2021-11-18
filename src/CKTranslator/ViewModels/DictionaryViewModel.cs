@@ -1,11 +1,12 @@
-﻿using Microsoft.Toolkit.Mvvm.Input;
+﻿using Microsoft.Toolkit.Mvvm.ComponentModel;
+using Microsoft.Toolkit.Mvvm.Input;
 
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
 namespace CKTranslator.ViewModels
 {
-    public class DictionaryViewModel : Microsoft.Toolkit.Mvvm.ComponentModel.ObservableValidator
+    public class DictionaryViewModel : ObservableValidator
     {
         public record LoadedDictionary(string Language1Module, string Language2Module);
 

@@ -3,12 +3,14 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
+
 using BrightIdeasSoftware;
-using Core;
-using Core.Storages;
-using Core.Translation;
-using Core.Translation.Matching;
-using Core.Translation.Transliteration;
+
+using CKTranslator.Core;
+using CKTranslator.Core.Storages;
+using CKTranslator.Core.Translation;
+using CKTranslator.Core.Translation.Matching;
+using CKTranslator.Core.Translation.Transliteration;
 
 namespace SimilarityEditor
 {
@@ -16,8 +18,10 @@ namespace SimilarityEditor
     {
         private readonly Language language0 = Language.Load(Db.EngLetters);
         private readonly Language language1 = Language.Load(Db.RusLetters);
+
         //private readonly string[] toTranslateWords = File.ReadAllLines(FileName.ToTranslateWords);
         private string? filter;
+
         private List<WordsSimilarity>? filteredWords;
         private List<WordsSimilarity> words;
 
@@ -56,7 +60,7 @@ namespace SimilarityEditor
 
         public int GetObjectIndex(object model)
         {
-            return this.filteredWords?.IndexOf((WordsSimilarity) model) ?? -1;
+            return this.filteredWords?.IndexOf((WordsSimilarity)model) ?? -1;
         }
 
         public void InsertObjects(int index, ICollection modelObjects)
@@ -66,6 +70,12 @@ namespace SimilarityEditor
 
         public void PrepareCache(int first, int last)
         {
+        }
+
+        public void Rebuild()
+        {
+            this.RecalcSimilarities();
+            this.DoFilter();
         }
 
         public void RemoveObjects(ICollection modelObjects)
@@ -107,12 +117,6 @@ namespace SimilarityEditor
                                   ws.Lang2Word.EqualsWildcard(this.filter)))
                     .ToList();
             }
-        }
-
-        public void Rebuild()
-        {
-            this.RecalcSimilarities();
-            this.DoFilter();
         }
 
         private void RecalcSimilarities()
