@@ -10,7 +10,7 @@ namespace CKTranslator.DataAnnotations
     {
         protected override ValidationResult? IsValid(object? value, ValidationContext validationContext)
             => Directory.Exists((string?)value)
-                ? ValidationResult.Success :
-                new("Directory does not exists");
+            ? ValidationResult.Success
+            : new("Directory does not exists");
     }
 }

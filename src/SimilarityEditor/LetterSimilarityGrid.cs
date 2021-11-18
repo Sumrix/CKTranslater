@@ -1,11 +1,12 @@
-﻿using System;
+﻿using CKTranslator.Core.Storages;
+using CKTranslator.Core.Translation;
+
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Reflection;
 using System.Windows.Forms;
-using Core.Storages;
-using Core.Translation;
 
 namespace SimilarityEditor
 {
@@ -20,11 +21,6 @@ namespace SimilarityEditor
         {
             this.InitializeComponent();
             this.SetTableDoubleBuffering();
-        }
-
-        private int DBToTableSimilarity(float value)
-        {
-            return Convert.ToInt32(value * 10);
         }
 
         public void FillTable()
@@ -88,18 +84,10 @@ namespace SimilarityEditor
             this.Invalidate();
         }
 
-        private void InitializeComponent()
+        public void RemoveHighlights()
         {
-            this.AllowUserToAddRows = false;
-            this.AllowUserToDeleteRows = false;
-            this.AllowUserToResizeColumns = false;
-            this.AllowUserToResizeRows = false;
-            this.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
-            this.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-            this.EditMode = DataGridViewEditMode.EditOnKeystroke;
-            this.EnableHeadersVisualStyles = false;
-            this.RowHeadersWidth = 50;
-            this.RowHeadersWidthSizeMode = DataGridViewRowHeadersWidthSizeMode.DisableResizing;
+            this.highlightedCells.Clear();
+            this.Invalidate();
         }
 
         protected override void OnCellPainting(DataGridViewCellPaintingEventArgs e)
@@ -195,10 +183,28 @@ namespace SimilarityEditor
             this.InvalidateCell(this.Rows[this.selectedCell.Y].HeaderCell);
         }
 
-        public void RemoveHighlights()
+        private static float TableToDbSimilarity(object value)
         {
-            this.highlightedCells.Clear();
-            this.Invalidate();
+            return Convert.ToInt32(value) / 10f;
+        }
+
+        private int DBToTableSimilarity(float value)
+        {
+            return Convert.ToInt32(value * 10);
+        }
+
+        private void InitializeComponent()
+        {
+            this.AllowUserToAddRows = false;
+            this.AllowUserToDeleteRows = false;
+            this.AllowUserToResizeColumns = false;
+            this.AllowUserToResizeRows = false;
+            this.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
+            this.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            this.EditMode = DataGridViewEditMode.EditOnKeystroke;
+            this.EnableHeadersVisualStyles = false;
+            this.RowHeadersWidth = 50;
+            this.RowHeadersWidthSizeMode = DataGridViewRowHeadersWidthSizeMode.DisableResizing;
         }
 
         private void SetTableDoubleBuffering()
@@ -211,11 +217,6 @@ namespace SimilarityEditor
             Type dgvType = this.GetType();
             PropertyInfo? pi = dgvType.GetProperty("DoubleBuffered", BindingFlags.Instance | BindingFlags.NonPublic);
             pi?.SetValue(this, true, null);
-        }
-
-        private static float TableToDbSimilarity(object value)
-        {
-            return Convert.ToInt32(value) / 10f;
         }
 
         private void UpdateCellColor(int colIndex, int rowIndex)

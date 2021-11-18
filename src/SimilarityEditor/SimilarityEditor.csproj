@@ -12,7 +12,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Core\Core.old.csproj" />
+      <ProjectReference Include="..\CKTranslator.Core\CKTranslator.Core.csproj" />
     </ItemGroup>
 
 </Project>

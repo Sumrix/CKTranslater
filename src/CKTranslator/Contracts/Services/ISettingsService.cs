@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Security.Cryptography;
 using System.Threading.Tasks;
+
+using CKTranslator.Core.Contracts.Services;
+using CKTranslator.Model;
 
 using Microsoft.UI.Xaml;
 
@@ -11,24 +13,16 @@ namespace CKTranslator.Contracts.Services
     /// <summary>
     /// The default <see langword="interface"/> for the settings manager used in the app.
     /// </summary>
-    public interface ISettingsService : INotifyPropertyChanged, INotifyPropertyChanging
+    public interface ISettingsService : IModuleSettingsService, INotifyPropertyChanged, INotifyPropertyChanging
     {
-        ElementTheme AppBackgroundRequestedTheme { get; set; }
-
-        string GamePath { get; set; }
-
-        string ModsPath { get; set; }
-
         string ActivePage { get; set; }
 
-        List<string> ReadRusModSettings();
+        ElementTheme AppBackgroundRequestedTheme { get; set; }
 
-        List<string> ReadEngModSettings();
-
-        void SaveRusModSettings(ICollection<string> rusModSettings);
-
-        void SaveEngModSettings(ICollection<string> engModSettings);
+        IEnumerable<LoadedDictionary> GetLoadedDictionaries();
 
         Task InitializeAsync();
+
+        void SaveLoadedDictionaries(ICollection<LoadedDictionary> loadedDictionaries);
     }
 }

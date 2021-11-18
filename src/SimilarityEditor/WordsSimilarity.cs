@@ -1,5 +1,6 @@
-﻿using System;
-using Core.Translation.Matching;
+﻿using CKTranslator.Core.Translation.Matching;
+
+using System;
 
 namespace SimilarityEditor
 {

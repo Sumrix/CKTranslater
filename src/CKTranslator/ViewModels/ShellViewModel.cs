@@ -1,31 +1,21 @@
-﻿
-using CKTranslator.Contracts.Services;
+﻿using CKTranslator.Contracts.Services;
 
 using Microsoft.Toolkit.Mvvm.ComponentModel;
 using Microsoft.UI.Xaml.Navigation;
 
 namespace CKTranslator.ViewModels
 {
-    public class ShellViewModel : ObservableRecipient
+    public partial class ShellViewModel : ObservableObject
     {
-        private bool _isBackEnabled;
-        private object _selected;
+        [ObservableProperty]
+        private bool isBackEnabled;
+
+        [ObservableProperty]
+        private object? selected;
 
         public INavigationService NavigationService { get; }
 
         public INavigationViewService NavigationViewService { get; }
-
-        public bool IsBackEnabled
-        {
-            get { return _isBackEnabled; }
-            set { SetProperty(ref _isBackEnabled, value); }
-        }
-
-        public object Selected
-        {
-            get { return _selected; }
-            set { SetProperty(ref _selected, value); }
-        }
 
         public ShellViewModel(INavigationService navigationService, INavigationViewService navigationViewService)
         {

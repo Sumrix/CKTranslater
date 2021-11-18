@@ -1,11 +1,13 @@
-﻿using System;
+﻿using CKTranslator.Core;
+using CKTranslator.Core.Storages;
+using CKTranslator.Core.Translation;
+using CKTranslator.Core.Translation.Matching;
+using CKTranslator.Core.Web;
+
+using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Core;
-using Core.Storages;
-using Core.Translation;
-using Core.Translation.Matching;
-using Core.Web;
 
 namespace ConsoleTest
 {
@@ -14,6 +16,10 @@ namespace ConsoleTest
     /// </summary>
     internal static class Program
     {
+        private static void Backup(Document document)
+        {
+        }
+
         private static void Main(string[] args)
         {
             //Program.NewMatches();
@@ -86,6 +92,22 @@ namespace ConsoleTest
 
                 float similarity = match.Similarity;
                 Console.WriteLine($"\nSimilarity: {similarity}");
+                Console.WriteLine();
+            }
+        }
+
+        private static void T1(ModulesService modulesService)
+        {
+            IEnumerable<Module> modules = modulesService.GetModules();
+
+            foreach (Module module in modules)
+            {
+                int docNum = 0;
+                foreach (Document document in module.Documents)
+                {
+                    Backup(document);
+                    Console.Write($"{module.Name} ({docNum}/{module.Documents.Count}");
+                }
                 Console.WriteLine();
             }
         }
@@ -194,5 +216,16 @@ namespace ConsoleTest
         //    File.Delete(FileName.ToTranslateWords);
         //    File.WriteAllLines(FileName.ToTranslateWords, words);
         //}
+
+        record Module(ICollection<Document> Documents, string Name);
+        record Document();
+
+        private class ModulesService
+        {
+            internal IEnumerable<Module> GetModules()
+            {
+                throw new NotImplementedException();
+            }
+        }
     }
 }

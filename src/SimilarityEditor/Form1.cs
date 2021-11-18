@@ -2,9 +2,11 @@
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
+
 using BrightIdeasSoftware;
-using Core.Storages;
-using Core.Translation.Matching;
+
+using CKTranslator.Core.Storages;
+using CKTranslator.Core.Translation.Matching;
 
 namespace SimilarityEditor
 {
@@ -35,13 +37,13 @@ namespace SimilarityEditor
 
         private static void details_RowFormatter(OLVListItem olvItem)
         {
-            LettersMatch match = (LettersMatch) olvItem.RowObject;
+            LettersMatch match = (LettersMatch)olvItem.RowObject;
             olvItem.BackColor = Program.GetColorFotSimilarity(match.Similarity);
         }
 
         private void details_SelectedIndexChanged(object sender, EventArgs e)
         {
-            LettersMatch? match = (LettersMatch?) this.details.SelectedObject;
+            LettersMatch? match = (LettersMatch?)this.details.SelectedObject;
             this.similarities.RemoveHighlights();
 
             if (match == null)
@@ -80,7 +82,7 @@ namespace SimilarityEditor
                 return;
             }
 
-            WordsSimilarity match = (WordsSimilarity) this.wordsModel.GetNthObject(this.words.SelectedIndex);
+            WordsSimilarity match = (WordsSimilarity)this.wordsModel.GetNthObject(this.words.SelectedIndex);
 
             this.details.SetObjects(match.MatchInfo.LetterMatches);
         }
